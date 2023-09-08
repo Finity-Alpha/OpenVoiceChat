@@ -9,6 +9,7 @@ warnings.filterwarnings("ignore")
 from transformers import AutoTokenizer, AutoModelForCausalLM
 
 model_name = 'EleutherAI/gpt-neo-1.3B'
+# model_name = 'EleutherAI/gpt-neo-2.7B'
 
 model = AutoModelForCausalLM.from_pretrained(model_name, torch_dtype=torch.bfloat16)
 tokenizer = AutoTokenizer.from_pretrained(model_name)
@@ -18,29 +19,30 @@ device = 'cuda' if torch.cuda.is_available() else 'cpu'
 model.to(device)
 model.eval()
 @torch.no_grad()	
-def generate_response_greedy(input_text, pre_prompt, break_word, max_length=100, temp=0.6, name='',
-                            past_key_vals=None, next_id=None):
+def generate_response_greedy(input_text, pre_prompt, break_word, 
+                             max_length=100, temp=0.6, name='',
+                             past_key_vals=None, next_id=None, verbose=True):
 
     if past_key_vals is None:
         inputs = tokenizer.encode(pre_prompt + input_text + '\n' + name, return_tensors="pt")
         response_ids = inputs
-        # length_prompt = len(response_ids)
-        output = ''
-        last_n = ''
     else:
         inputs = tokenizer.encode(input_text + '\n' + name, return_tensors="pt")
         response_ids = torch.concat((next_id, inputs),dim=-1)
-        # length_prompt = len(response_ids)
-        output = ''
-        last_n = ''
-    print(name, end='')
+    output = ''
+    last_n = ''
+    if verbose:
+        print(name, end='')
+    response_text = ''
     for _ in (range(max_length)):
         out = model.forward(input_ids=response_ids.to(device), past_key_values=past_key_vals)
         next_token_id = torch.multinomial(F.softmax(out.logits[:, -1, :]/temp,  dim=-1), num_samples=1).to('cpu')
         past_key_vals = out.past_key_values
         response_ids = next_token_id
         output = tokenizer.decode([response_ids[0][-1]], skip_special_tokens=True)
-        print(output, end='')
+        if verbose:
+            print(output, end='')
+        response_text += output
         sys.stdout.flush()
         last_n += output
         last_n = last_n[-len(break_word):]
@@ -49,7 +51,7 @@ def generate_response_greedy(input_text, pre_prompt, break_word, max_length=100,
     decoded_output = tokenizer.decode(response_ids[0], skip_special_tokens=True)
     past_kv = past_key_vals
     next_id = response_ids
-    return decoded_output.replace(pre_prompt, '').replace(input_text, ''), past_kv, next_id
+    return response_text, past_kv, next_id
 
 sales_pre_prompt = '''
 JOHN is a saleman for Fakhir's tea. JOHN has been selling the tea his entire life. JOHN is a great tea salesman.
@@ -94,8 +96,11 @@ while True:
     if user_input.lower() in ["exit", "quit", "stop"]:
         break
     break_word = '[USER]'
-        
+    name = '[JOHN]'
     response,past_kv,next_id = generate_response_greedy(user_input, preprompt + log,
-                                        break_word,max_length=100000, name='[JOHN]',
-                                        past_key_vals=past_kv, next_id=next_id)
-    log += user_input  + response
+                                        break_word,max_length=100000, name=name,
+                                        past_key_vals=past_kv, next_id=next_id, 
+                                        verbose=False, temp=0.8)
+    
+    log += ' ' + user_input + '\n' + name + response
+    print('------\n'+ log + '\n----------')
