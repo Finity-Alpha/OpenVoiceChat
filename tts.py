@@ -18,6 +18,7 @@ class Mouth:
         inputs.to(self.device)
         output = self.model(**inputs).waveform[0].to('cpu')
         sd.play(output, samplerate=22050)
+        sd.wait()
 
 
 if __name__ == '__main__':
