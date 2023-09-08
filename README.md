@@ -8,4 +8,4 @@ STT + LLM + TTS
 
 | STT | TTS | LLM |
 | --- | --- | --- |
-| [VITS](https://jaywalnut310.github.io/vits-demo/index.html) | [Whisper](https://github.com/openai/whisper) | ? |
+| [VITS](https://jaywalnut310.github.io/vits-demo/index.html) | [Whisper](https://github.com/openai/whisper) | [gpt-neo](https://huggingface.co/EleutherAI/gpt-neo-2.7B) atm |
