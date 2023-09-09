@@ -48,7 +48,8 @@ next_id = None
 print("type: exit, quit or stop to end the chat")
 print("Chat started:")
 while True:
-    user_input = input(" ")
+    # user_input = input(" ")
+    user_input = ear.listen()
     if user_input.lower() in ["exit", "quit", "stop"]:
         break
     break_word = '[USER]'
@@ -59,4 +60,4 @@ while True:
                                         verbose=False, temp=0.8)
     mouth.say(response.replace('[USER]', ''))
     log += ' ' + user_input + '\n' + name + response
-    # print('------\n'+ log + '\n----------')
+    print(' ' + user_input + '\n' + name + response)

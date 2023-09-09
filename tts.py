@@ -15,7 +15,7 @@ class Mouth:
     def say(self, text):
         inputs = self.tokenizer(text, return_tensors="pt")
         inputs['speaker_id'] = torch.tensor(self.speaker_id)
-        inputs.to(self.device)
+        inputs = inputs.to(self.device)
         output = self.model(**inputs).waveform[0].to('cpu')
         sd.play(output, samplerate=22050)
         sd.wait()
