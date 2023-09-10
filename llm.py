@@ -14,7 +14,7 @@ warnings.filterwarnings("ignore")
 
 
 class Chatbot:
-    def __init__(self, model_name='EleutherAI/gpt-neo-1.3B', device='cuda'):
+    def __init__(self, model_name='EleutherAI/gpt-neo-2.7B', device='cuda'):
         self.model = AutoModelForCausalLM.from_pretrained(model_name, torch_dtype=torch.bfloat16)
         self.tokenizer = AutoTokenizer.from_pretrained(model_name)
 

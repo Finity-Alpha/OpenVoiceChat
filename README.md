@@ -17,6 +17,3 @@ STT + LLM + TTS
 - [ ] Handle interruptions
 - [ ] Better LLM prompt
 
-
-## Notes:
-Takes around 4GB GPU VRAM. Vits sounds very good and is fast. 

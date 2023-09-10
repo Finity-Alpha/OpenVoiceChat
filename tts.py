@@ -4,7 +4,7 @@ import torch
 print(); print()
 
 class Mouth:
-    def __init__(self, model_id='Matthijs/vits-vctk', speaker_id=0, device='cpu'):
+    def __init__(self, model_id='kakao-enterprise/vits-vctk', speaker_id=0, device='cpu'):
         self.model = VitsModel.from_pretrained(model_id)
         self.tokenizer = AutoTokenizer.from_pretrained(model_id)
         self.device = device
