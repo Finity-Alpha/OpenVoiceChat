@@ -13,7 +13,7 @@ STT + LLM + TTS
 
 
 ## TODO:
-- [ ] Fix LLM log (or atleast test it to make sure it works)
+- [x] ~~Fix LLM log (or atleast test it to make sure it works)~~ seems to work
 - [ ] Handle interruptions
 - [ ] Better LLM prompt
 
