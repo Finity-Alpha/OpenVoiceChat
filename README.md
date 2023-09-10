@@ -17,3 +17,7 @@ STT + LLM + TTS
 - [ ] Handle interruptions
 - [ ] Better LLM prompt
 
+
+## Notes
+How to handle interruptions? We constantly listen and transcribe and then stop tts. TTS has to stop on a word to make it natural. 
+Also do we even stop. Sometimes the other person just says "yes" or "yeah".
