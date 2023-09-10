@@ -27,10 +27,10 @@ class Chatbot:
                                 past_key_vals=None, next_id=None, verbose=True):
 
         if past_key_vals is None:
-            inputs = self.tokenizer.encode(pre_prompt + input_text + '\n' + name, return_tensors="pt")
+            inputs = self.tokenizer.encode(pre_prompt + input_text + '\n' + name, return_tensors="pt").to(self.device)
             response_ids = inputs
         else:
-            inputs = self.tokenizer.encode(input_text + '\n' + name, return_tensors="pt")
+            inputs = self.tokenizer.encode(input_text + '\n' + name, return_tensors="pt").to(self.device)
             response_ids = torch.concat((next_id, inputs),dim=-1)
         output = ''
         last_n = ''
@@ -38,11 +38,11 @@ class Chatbot:
             print(name, end='')
         response_text = ''
         for _ in (range(max_length)):
-            out = self.model.forward(input_ids=response_ids.to(self.device), past_key_values=past_key_vals)
-            next_token_id = torch.multinomial(F.softmax(out.logits[:, -1, :]/temp,  dim=-1), num_samples=1).to('cpu')
+            out = self.model.forward(input_ids=response_ids, past_key_values=past_key_vals)
+            next_token_id = torch.multinomial(F.softmax(out.logits[:, -1, :]/temp,  dim=-1), num_samples=1)
             past_key_vals = out.past_key_values
             response_ids = next_token_id
-            output = self.tokenizer.decode([response_ids[0][-1]], skip_special_tokens=True)
+            output = self.tokenizer.decode([response_ids[0][-1].to('cpu')], skip_special_tokens=True)
             if verbose:
                 print(output, end='')
             response_text += output
@@ -104,7 +104,7 @@ JOHN is a saleman for Fakhir's tea. JOHN has been selling the tea his entire lif
         response,past_kv,next_id = john.generate_response_greedy(' ' + user_input, preprompt + log,
                                             break_word,max_length=100000, name=name,
                                             past_key_vals=past_kv, next_id=next_id, 
-                                            verbose=False, temp=0.9)
+                                            verbose=False, temp=0.8)
         
         log += ' ' + user_input + '\n' + name + response
         print('------\n'+ log + '\n----------')
