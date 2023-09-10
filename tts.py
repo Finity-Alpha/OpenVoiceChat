@@ -17,15 +17,15 @@ class Mouth:
         inputs['speaker_id'] = torch.tensor(self.speaker_id)
         inputs = inputs.to(self.device)
         output = self.model(**inputs).waveform[0].to('cpu')
-        sd.play(output, samplerate=22050)
+        sd.play(output, samplerate=self.model.config.sampling_rate)
         sd.wait()
 
 
 if __name__ == '__main__':
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
-    mouth = Mouth(device=device, speaker_id=10)
+    mouth = Mouth(device=device, speaker_id=4)
 
-    text = "Hey, it's Hugging Face on the phone"
+    text = "If there's one thing that makes me nervous about the future of self-driving cars, it's that they'll replace human drivers.\nI think there's a huge opportunity to make human-driven cars safer and more efficient. There's no reason why we can't combine the benefits of self-driving cars with the ease of use of human-driven cars."
     print(text)
     mouth.say(text)
     sd.wait()
