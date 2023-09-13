@@ -20,4 +20,5 @@ STT + LLM + TTS
 
 ## Notes
 How to handle interruptions? We constantly listen and transcribe and then stop tts. TTS has to stop on a word to make it natural. 
-Also do we even stop. Sometimes the other person just says "yes" or "yeah".
+Also do we even stop. Sometimes the other person just says "yes" or "yeah". The stop recording policy is bad, it just stops recording after x
+number of silent seconds. There should be an EOS predictor for whisper and we should stop using it, this will allow having pauses in the middle.
