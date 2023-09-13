@@ -36,8 +36,8 @@ JOHN is a saleman for Fakhir's tea. JOHN has been selling the tea his entire lif
 
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
-mouth = Mouth(speaker_id=11, device=device)
-ear = Ear(device=device)
+mouth = Mouth(speaker_id=4, device=device)
+ear = Ear(device=device, silence_seconds=1)
 john = Chatbot(device=device)
 
 preprompt = sales_pre_prompt
@@ -57,7 +57,7 @@ while True:
     response,past_kv,next_id = john.generate_response_greedy(user_input, preprompt + log,
                                         break_word,max_length=100000, name=name,
                                         past_key_vals=past_kv, next_id=next_id, 
-                                        verbose=False, temp=0.8)
+                                        verbose=False, temp=0.6)
     mouth.say(response.replace('[USER]', ''))
     log += ' ' + user_input + '\n' + name + response
     print(' ' + user_input + '\n' + name + response)

@@ -10,11 +10,12 @@ print(); print()
 
 
 class Ear:
-    def __init__(self, model_id='openai/whisper-base.en', device='cpu'):
+    def __init__(self, model_id='openai/whisper-base.en', device='cpu', silence_seconds=1):
         self.processor = WhisperProcessor.from_pretrained(model_id)
         self.model = WhisperForConditionalGeneration.from_pretrained(model_id)
         self.device = device
         self.model.to(device)
+        self.silence_seconds = silence_seconds
 
     @torch.no_grad()
     def transcribe(self, audio):
@@ -24,7 +25,7 @@ class Ear:
         return ' '.join(transcription)
     
     def record(self):
-        seconds_silence = 2 #changing this might make the convo more natural
+        seconds_silence = self.silence_seconds #changing this might make the convo more natural
         CHUNK = 1024
         FORMAT = pyaudio.paInt16
         CHANNELS = 1 #make sure this is 1
