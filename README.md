@@ -10,6 +10,8 @@ STT + LLM + TTS
 | --- | --- | --- |
 | [VITS](https://jaywalnut310.github.io/vits-demo/index.html) | [Whisper](https://github.com/openai/whisper) | [gpt-neo](https://huggingface.co/EleutherAI/gpt-neo-2.7B) atm |
 
+Using [M4T](https://github.com/facebookresearch/seamless_communication) one model can do stt + tts + translation.
+The translation [quality is almost](./media/translation_quality.png) there.
 
 
 ## TODO:
