@@ -14,9 +14,8 @@ class Mouth:
     @torch.no_grad()
     def say(self, text):
         inputs = self.tokenizer(text, return_tensors="pt")
-        inputs['speaker_id'] = torch.tensor(self.speaker_id)
         inputs = inputs.to(self.device)
-        output = self.model(**inputs).waveform[0].to('cpu')
+        output = self.model(**inputs, speaker_id=self.speaker_id).waveform[0].to('cpu')
         sd.play(output, samplerate=self.model.config.sampling_rate)
         sd.wait()
 
