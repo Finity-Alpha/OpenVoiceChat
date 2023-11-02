@@ -8,7 +8,7 @@ print(); print()
 
 
 class Ear:
-    def __init__(self, model_id='openai/whisper-base.en', device='cpu', silence_seconds=1):
+    def __init__(self, model_id='openai/whisper-base.en', device='cpu', silence_seconds=2):
         self.processor = WhisperProcessor.from_pretrained(model_id)
         self.model = WhisperForConditionalGeneration.from_pretrained(model_id)
         self.device = device

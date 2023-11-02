@@ -6,15 +6,9 @@ import sys
 from transformers import AutoTokenizer, AutoModelForCausalLM
 warnings.filterwarnings("ignore")
 
-#TODO
-#there must be a problem with the cache stuff no? is there a way to figure out if there is?
-#preprompt in init
-#better way of kv cache
-#cleaner chat loop
-
 
 class Chatbot:
-    def __init__(self, model_name='EleutherAI/gpt-neo-2.7B', device='cuda'):
+    def __init__(self, model_name='princeton-nlp/Sheared-LLaMA-2.7B', device='cuda'):
         self.model = AutoModelForCausalLM.from_pretrained(model_name, torch_dtype=torch.bfloat16)
         self.tokenizer = AutoTokenizer.from_pretrained(model_name)
 
@@ -42,7 +36,7 @@ class Chatbot:
             next_token_id = torch.multinomial(F.softmax(out.logits[:, -1, :]/temp,  dim=-1), num_samples=1)
             past_key_vals = out.past_key_values
             response_ids = next_token_id
-            output = self.tokenizer.decode([response_ids[0][-1].to('cpu')], skip_special_tokens=True)
+            output = self.tokenizer.decode([response_ids[0][-1].to('cpu')], skip_special_tokens=False)
             if verbose:
                 print(output, end='')
             response_text += output
@@ -104,7 +98,7 @@ JOHN is a saleman for Fakhir's tea. JOHN has been selling the tea his entire lif
         response,past_kv,next_id = john.generate_response_greedy(' ' + user_input, preprompt + log,
                                             break_word,max_length=100000, name=name,
                                             past_key_vals=past_kv, next_id=next_id, 
-                                            verbose=False, temp=0.8)
+                                            verbose=True, temp=0.2)
         
         log += ' ' + user_input + '\n' + name + response
         print('------\n'+ log + '\n----------')

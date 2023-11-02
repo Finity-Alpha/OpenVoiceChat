@@ -37,7 +37,7 @@ JOHN is a saleman for Fakhir's tea. JOHN has been selling the tea his entire lif
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
 mouth = Mouth(speaker_id=4, device=device)
-ear = Ear(device=device, silence_seconds=1)
+ear = Ear(device=device, silence_seconds=2)
 john = Chatbot(device=device)
 
 preprompt = sales_pre_prompt
