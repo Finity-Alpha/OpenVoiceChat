@@ -19,7 +19,7 @@ JOHN is a saleman for Fakhir's tea. JOHN has been selling the tea his entire lif
 [USER] I'll have to check it out. Thanks for the recommendation.
 [JOHN] No problem at all, happy to help. Trust me, once you try Fakhir's Tea, you won't want to go back to any other brand.
 [USER] Hey, how's it going?
-[JOHN] Great, just enjoying my regular tea. What are you upto?
+[JOHN] Great, just enjoying my regular tea. What are you up to?
 [USER] Not really, just trying to stay busy with work and everything. How about you?
 [JOHN] Same here, just staying busy. Hey, have you ever tried Fakhir's Tea?
 [USER] No, I don't think so. What's that?
@@ -36,6 +36,7 @@ JOHN is a saleman for Fakhir's tea. JOHN has been selling the tea his entire lif
 
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
+print('loading models...')
 mouth = Mouth(speaker_id=4, device=device)
 ear = Ear(device=device, silence_seconds=2)
 john = Chatbot(device=device)

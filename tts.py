@@ -1,6 +1,7 @@
 from transformers import VitsModel, AutoTokenizer
 import sounddevice as sd
 import torch
+from visualizer import Visualizer
 print(); print()
 
 class Mouth:
@@ -10,6 +11,7 @@ class Mouth:
         self.device = device
         self.model.to(device)
         self.speaker_id = speaker_id
+        self.visualizer = Visualizer(self.model.config.sampling_rate)
 
     @torch.no_grad()
     def say(self, text):
@@ -17,6 +19,7 @@ class Mouth:
         inputs = inputs.to(self.device)
         output = self.model(**inputs, speaker_id=self.speaker_id).waveform[0].to('cpu')
         sd.play(output, samplerate=self.model.config.sampling_rate)
+        self.visualizer.visualize(output)
         sd.wait()
 
 

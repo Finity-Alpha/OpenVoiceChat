@@ -3,13 +3,14 @@ import numpy as np
 import torch.nn.functional as F
 import warnings
 import sys
-from transformers import AutoTokenizer, AutoModelForCausalLM
+from transformers import AutoTokenizer, AutoModelForCausalLM, AutoModelForSeq2SeqLM
+
 warnings.filterwarnings("ignore")
 
 
 class Chatbot:
-    def __init__(self, model_name='princeton-nlp/Sheared-LLaMA-2.7B', device='cuda'):
-        self.model = AutoModelForCausalLM.from_pretrained(model_name, torch_dtype=torch.bfloat16)
+    def __init__(self, model_name='stabilityai/stablelm-3b-4e1t', device='cuda'):
+        self.model = AutoModelForCausalLM.from_pretrained(model_name, torch_dtype=torch.bfloat16, trust_remote_code=True)
         self.tokenizer = AutoTokenizer.from_pretrained(model_name)
 
         self.device = device
@@ -36,7 +37,8 @@ class Chatbot:
             next_token_id = torch.multinomial(F.softmax(out.logits[:, -1, :]/temp,  dim=-1), num_samples=1)
             past_key_vals = out.past_key_values
             response_ids = next_token_id
-            output = self.tokenizer.decode([response_ids[0][-1].to('cpu')], skip_special_tokens=False)
+            # print([response_ids[0][-1].to('cpu')])
+            output = self.tokenizer.decode([response_ids[0][-1].to('cpu')])
             if verbose:
                 print(output, end='')
             response_text += output
