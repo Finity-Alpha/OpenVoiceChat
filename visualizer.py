@@ -33,8 +33,10 @@ class Visualizer:
         # pygame_thread = threading.Thread(target=keep_alive)
         # pygame_thread.start()
 
-    def visualize(self, audio):
+    def visualize(self, audio, text=None):
         clock = pygame.time.Clock()
+        font = pygame.font.Font('freesansbold.ttf', 12)
+
         running = True
         idx = 0
         while running:
@@ -55,6 +57,11 @@ class Visualizer:
             idx += self.sound_frame_size
             color = (int(255 * c), 0, int(255 * (1 - c)))
             pygame.draw.circle(self.screen, color, (400, 300), 250)
+            text_render = font.render(text, True, (0, 0, 0), WHITE)
+            textRect = text_render.get_rect()
+            textRect.center = (800 // 2, 600 // 2)
+
+            self.screen.blit(text_render, textRect)
 
             # Update the display
             pygame.display.flip()

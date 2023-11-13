@@ -5,21 +5,27 @@ from visualizer import Visualizer
 print(); print()
 
 class Mouth:
-    def __init__(self, model_id='kakao-enterprise/vits-vctk', speaker_id=0, device='cpu'):
+    def __init__(self, model_id='kakao-enterprise/vits-vctk', speaker_id=0, device='cpu', visualize=False):
         self.model = VitsModel.from_pretrained(model_id)
         self.tokenizer = AutoTokenizer.from_pretrained(model_id)
         self.device = device
         self.model.to(device)
         self.speaker_id = speaker_id
-        self.visualizer = Visualizer(self.model.config.sampling_rate)
-
+        self.visualize = visualize
+        if visualize:
+            self.visualizer = Visualizer(self.model.config.sampling_rate)
     @torch.no_grad()
-    def say(self, text):
+    def run_tts(self, text):
         inputs = self.tokenizer(text, return_tensors="pt")
         inputs = inputs.to(self.device)
         output = self.model(**inputs, speaker_id=self.speaker_id).waveform[0].to('cpu')
+        return output
+
+    def say(self, text):
+        output = self.run_tts(text)
         sd.play(output, samplerate=self.model.config.sampling_rate)
-        self.visualizer.visualize(output)
+        if self.visualize:
+            self.visualizer.visualize(output, text)
         sd.wait()
 
 
