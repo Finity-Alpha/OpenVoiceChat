@@ -31,7 +31,7 @@ class Mouth:
 
 if __name__ == '__main__':
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
-    mouth = Mouth(device=device, speaker_id=4)
+    mouth = Mouth(device=device, speaker_id=7)
 
     text = "If there's one thing that makes me nervous about the future of self-driving cars, it's that they'll replace human drivers.\nI think there's a huge opportunity to make human-driven cars safer and more efficient. There's no reason why we can't combine the benefits of self-driving cars with the ease of use of human-driven cars."
     print(text)
