@@ -6,7 +6,8 @@ from playsound import playsound
 
 url = 'https://f7d2-154-192-45-8.ngrok-free.app'
 file_path = 'media/test.wav'
-
+res = requests.get(f'{url}/reset')
+print(res.json())
 while True:
     audio = record(2)
     sf.write(file_path, audio, 16_000, 'PCM_24')
