@@ -45,7 +45,7 @@ class Chatbot:
             sys.stdout.flush()
             last_n += output
             last_n = last_n[-len(break_word):]
-            if last_n == break_word:
+            if last_n == break_word or response_text.strip().endswith('<|endoftext|>') or response_text.strip().endswith('[END]'):
                 break
         past_kv = past_key_vals
         next_id = response_ids

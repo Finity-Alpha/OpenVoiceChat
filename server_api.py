@@ -3,14 +3,13 @@ from werkzeug.utils import secure_filename
 import os
 from flask import Flask, jsonify, request, send_file, g, render_template
 from main import Ear, Chatbot, Mouth
-from preprompts import call_pre_prompt
+from preprompts import call_pre_prompt, advisor_pre_prompt, sales_pre_prompt
 import torch
 import librosa
 import soundfile as sf
 
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
-preprompt = call_pre_prompt
 # log = ''
 # past_kv = None
 # next_id = None
@@ -70,7 +69,7 @@ def upload_audio():
         user_input = ear.transcribe(audio)
         break_word = '[USER]'
         name = '[JOHN]'
-        response, g.past_kv, g.next_id = john.generate_response_greedy(user_input, preprompt + g.log,
+        response, g.past_kv, g.next_id = john.generate_response_greedy(user_input, call_pre_prompt + g.log,
                                                                    break_word, max_length=100, name=name,
                                                                    past_key_vals=g.past_kv, next_id=g.next_id,
                                                                    verbose=True, temp=0.6)
@@ -105,7 +104,7 @@ def get_response():
     user_message = request.form['user_message']
     break_word = '[USER]'
     name = '[JOHN]'
-    response, g.past_kv, g.next_id = john.generate_response_greedy(user_message, preprompt + g.log,
+    response, g.past_kv, g.next_id = john.generate_response_greedy(user_message, advisor_pre_prompt + g.log,
                                                                break_word, max_length=100, name=name,
                                                                past_key_vals=g.past_kv, next_id=g.next_id,
                                                                verbose=True, temp=0.6)

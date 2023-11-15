@@ -10,8 +10,8 @@ if __name__ == "__main__":
     print('loading models...')
     ear = Ear(device=device, silence_seconds=2)
     john = Chatbot(device=device)
-    mouth = Mouth(speaker_id=5, device=device)
-    # mouth.say('Hi, How can I help you?')
+    mouth = Mouth(speaker_id=5, device=device, visualize=False)
+    mouth.say('Good morning! Thank you for calling Apple. My name is John, how can I assist you today?')
 
     # preprompt = sales_pre_prompt
     # preprompt = advisor_pre_prompt
@@ -32,11 +32,12 @@ if __name__ == "__main__":
         response,past_kv,next_id = john.generate_response_greedy(user_input, preprompt + log,
                                             break_word,max_length=100000, name=name,
                                             past_key_vals=past_kv, next_id=next_id,
-                                            verbose=False, temp=0.6)
+                                            verbose=True, temp=0.6)
 
         mouth.say(response.replace('[USER]', '').replace('[END]', '').replace('[START]', ''))
 
         log += ' ' + user_input + '\n' + name + response
-        print(' ' + user_input + '\n' + name + response)
+        # print(' ' + user_input + '\n' + name + response)
+        print(response)
         if response.find('[END]') != -1:
             break
