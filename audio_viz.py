@@ -6,6 +6,7 @@
 import numpy as np
 import librosa
 import pygame
+import time
 
 # pygame setup
 pygame.init()
@@ -15,10 +16,12 @@ screen = pygame.display.set_mode((800, 600))
 clock = pygame.time.Clock()
 
 # load audio file
-audio_file = 'media/john_call.mp3'
+audio_file = 'media/john_call_new.mp3'
 y, sr = librosa.load(audio_file)
+total_audio_time = len(y) / sr
+time.sleep(15)
 fft = librosa.stft(y)
-frame_rate = sr / 512  # 512 is the window size
+# frame_rate = len(fft[0]) / total_audio_time  # 512 is the window size
 print(fft.shape)
 
 # play audio
@@ -30,6 +33,9 @@ running = True
 j = 0
 total_frames = 0
 while running:
+    c_time = pygame.mixer.music.get_pos() / 1_000
+    frame_rate = (len(fft[0])-j) / (total_audio_time - c_time)
+
     clock.tick(frame_rate)
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -44,3 +50,4 @@ while running:
                          (i*viz_width, 300+float(fft[i][j])*5), 2)
     j += 1
     pygame.display.flip()
+

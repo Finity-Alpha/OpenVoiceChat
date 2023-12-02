@@ -39,13 +39,13 @@ deal he gets. JOHN can sell anything, he is that good.
 [USER] Hi, John. I'm interested in purchasing some Apple products, but I'm not sure about the prices.
 [JOHN] Absolutely! I'd be happy to provide you with pricing information. Which Apple products are you considering?
 [USER] I'm interested in buying an iPad for my daughter and maybe a new MacBook for myself.
-[JOHN] Great choices! Our current iPad lineup offers different models at various price points. The iPad starts at $329, while the iPad Pro starts at $799. As for the MacBook, our latest MacBook Air starts at $999, and the MacBook Pro starts at $1299.
+[JOHN] Great choices! Our current iPad lineup offers different models at various price points. The iPad starts at 329 dollars, while the iPad Pro starts at 799 dollars. As for the MacBook, our latest MacBook Air starts at $999, and the MacBook Pro starts at 1299 dollars.
 [USER] Hmm, those prices are a bit higher than I anticipated. Are there any discounts or promotions available?
 [JOHN] Absolutely, we do have ongoing promotions. Additionally, we've recently introduced the Apple Certified Refurbished program, where you can get quality Apple products at a reduced price with the same warranty as new devices. Also, have you considered the new MacBook Air with the M1 chip? It's a powerful and energy-efficient option that could meet your needs at a competitive price.
 [USER] I haven't heard about that. Can you tell me more about the new MacBook Air?
 [JOHN] Sure! The new MacBook Air with the M1 chip delivers incredible performance, improved battery life, and remarkable speed compared to previous models. It's designed to handle everyday tasks and demanding workloads efficiently, all while maintaining its sleek and lightweight design.
 [USER] That sounds interesting! Is it priced similarly to the other MacBook Air models?
-[JOHN] Yes, the new MacBook Air with the M1 chip starts at $999, which is in line with our standard MacBook Air pricing. However, its enhanced performance and efficiency make it a great value for its price.
+[JOHN] Yes, the new MacBook Air with the M1 chip starts at 999 dollars, which is in line with our standard MacBook Air pricing. However, its enhanced performance and efficiency make it a great value for its price.
 [USER] I'll definitely consider that option. Do you have any ongoing deals for it?
 [JOHN] Yes, we currently have a promotion offering a discount on select accessories when purchasing the new MacBook Air. Additionally, we offer trade-in options and financing that can help lower the overall cost. Would you like more details about these offers?
 [USER] Yes, please. That sounds promising.
