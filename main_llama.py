@@ -16,7 +16,7 @@ if __name__ == "__main__":
     audio = F.resample(audio, sr, 16_000)[0]
     ear.transcribe(audio)
 
-    john = Chatbot(device=device, sys_prompt='')
+    john = Chatbot(device=device, sys_prompt=llama_sales)
     # john.generate_response('hello', c)
 
     mouth = Mouth(speaker_id=5, device=device, visualize=False)
