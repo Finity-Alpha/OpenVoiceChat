@@ -30,5 +30,6 @@ Also do we even stop. Sometimes the other person just says "yes" or "yeah". The 
 number of silent seconds. There should be an EOS predictor for whisper and we should stop using it, this will allow having pauses in the middle.
 Done some work on the [interruptions branch](https://github.com/fakhirali/VoiceChat/tree/interuptions). Just flags 
 interrupt on some sound. Don't know how to handle 'yes' or 'yeah' yet. Will try to run the stt in another thread next.
+Some ideas at [Ideas.md](Ideas.md)
 
 
