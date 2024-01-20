@@ -2,6 +2,8 @@ from transformers import VitsModel, AutoTokenizer
 import sounddevice as sd
 import torch
 from visualizer import Visualizer
+import re
+
 print(); print()
 
 class Mouth:
@@ -28,6 +30,13 @@ class Mouth:
             self.visualizer.visualize(output, text)
         sd.wait()
 
+    def say_multiple(self, text):
+        pattern = r'[.?!]'
+        sentences = re.split(pattern, text)
+        sentences = [sentence.strip() for sentence in sentences if sentence.strip()]
+        print(sentences)
+        for sentence in sentences:
+            self.say(sentence)
 
 if __name__ == '__main__':
     device = 'cuda' if torch.cuda.is_available() else 'cpu'

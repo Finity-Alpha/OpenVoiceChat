@@ -44,7 +44,8 @@ if __name__ == "__main__":
                                                                    past_key_vals=past_kv, next_id=next_id,
                                                                    verbose=True, temp=0.6)
 
-        mouth.say(response.replace('[USER]', '').replace('[END]', '').replace('[START]', ''))
+        # mouth.say(response.replace('[USER]', '').replace('[END]', '').replace('[START]', ''))
+        mouth.say_multiple(response.replace('[USER]', '').replace('[END]', '').replace('[START]', ''))
 
         log += ' ' + user_input + '\n' + name + response
         # print(' ' + user_input + '\n' + name + response)
