@@ -22,7 +22,7 @@ Now [uses](main_llama.py) llama 7B thanks to [llama cpp python](https://github.c
 ## TODO:
 - [x] ~~Fix LLM log (or atleast test it to make sure it works)~~ seems to work
 - [ ] Handle interruptions (doing in the "interruptions" branch)
-- [ ] [Silero VAD](https://github.com/snakers4/silero-vad) for better silence detection
+- [x] [Silero VAD](https://github.com/snakers4/silero-vad) for better silence detection
 - [ ] Colab notebook
 
 
