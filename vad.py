@@ -3,6 +3,7 @@ from IPython.display import Audio
 from pprint import pprint
 import time
 import numpy as np
+from utils import record
 
 class VoiceActivityDetection:
     def __init__(self, sampling_rate=16000):
@@ -19,7 +20,7 @@ class VoiceActivityDetection:
         self.sampling_rate = sampling_rate
 
     def contains_speech(self, audio):
-        frames = np.frombuffer(audio, dtype=np.int16)
+        frames = np.frombuffer(b''.join(audio), dtype=np.int16)
 
         # normalization see https://discuss.pytorch.org/t/torchaudio-load-normalization-question/71470
         frames = frames / (1 << 15)
@@ -28,6 +29,11 @@ class VoiceActivityDetection:
         speech_timestamps = self.get_speech_timestamps(audio, self.model,
                                                        sampling_rate=self.sampling_rate)
         return len(speech_timestamps) > 0
+
+
+if __name__ == "__main__":
+    vad = VoiceActivityDetection()
+    audio = record(3, vad)
 
 
 

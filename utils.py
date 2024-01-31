@@ -44,11 +44,10 @@ def record(silence_seconds, vad=None):
             if silent_iters >= one_second_iters * seconds_silence:
                 break
         else:
-            if vad.contains_speech(data):
-                silent_iters = 0
-            else:
-                silent_iters += 1
-            if silent_iters >= one_second_iters * seconds_silence:
+            contains_speech = vad.contains_speech(frames[-one_second_iters*silence_seconds:])
+            if not started and contains_speech:
+                started = True
+            if started and contains_speech is False:
                 break
 
     print("* done recording")
