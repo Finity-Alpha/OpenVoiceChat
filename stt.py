@@ -3,6 +3,7 @@ import torchaudio
 import torchaudio.functional as F
 import torch
 from utils import record
+from vad import VoiceActivityDetection
 print(); print()
 
 
@@ -13,6 +14,7 @@ class Ear:
         self.model = WhisperForConditionalGeneration.from_pretrained(model_id)
         self.device = device
         self.model.to(device)
+        self.vad = VoiceActivityDetection()
         self.silence_seconds = silence_seconds
 
     @torch.no_grad()
@@ -24,7 +26,7 @@ class Ear:
     
 
     def listen(self):
-        audio = record(self.silence_seconds)
+        audio = record(self.silence_seconds, self.vad)
         text = self.transcribe(audio)
         return text
        

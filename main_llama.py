@@ -5,13 +5,14 @@ import torch
 from preprompts import call_pre_prompt
 import torchaudio
 import torchaudio.functional as F
+from vad import VoiceActivityDetection
 
 if __name__ == "__main__":
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
     print('loading models...')
 
-    ear = Ear(device=device, silence_seconds=1)
+    ear = Ear(device=device, silence_seconds=4)
     audio, sr = torchaudio.load('media/test.wav')
     audio = F.resample(audio, sr, 16_000)[0]
     ear.transcribe(audio)
