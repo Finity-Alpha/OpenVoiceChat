@@ -2,7 +2,7 @@ from llm_llama import Chatbot
 from tts import Mouth
 from stt import Ear
 import torch
-from preprompts import llama_sales
+from preprompts import call_pre_prompt
 import torchaudio
 import torchaudio.functional as F
 
@@ -16,7 +16,7 @@ if __name__ == "__main__":
     audio = F.resample(audio, sr, 16_000)[0]
     ear.transcribe(audio)
 
-    john = Chatbot(device=device, sys_prompt=llama_sales)
+    john = Chatbot(device=device, sys_prompt=call_pre_prompt)
     # john.generate_response('hello', c)
 
     mouth = Mouth(speaker_id=5, device=device, visualize=False)
@@ -36,6 +36,6 @@ if __name__ == "__main__":
         response = john.generate_response(user_input)
         print(response)
 
-        mouth.say(response)
+        mouth.say_multiple(response.replace('[USER]', '').replace('[END]', '').replace('[START]', ''))
         if response.find('[END]') != -1:
             break
