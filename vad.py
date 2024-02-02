@@ -3,7 +3,7 @@ from IPython.display import Audio
 from pprint import pprint
 import time
 import numpy as np
-from utils import record
+from utils import record_user
 
 class VoiceActivityDetection:
     def __init__(self, sampling_rate=16000):
@@ -33,7 +33,7 @@ class VoiceActivityDetection:
 
 if __name__ == "__main__":
     vad = VoiceActivityDetection()
-    audio = record(3, vad)
+    audio = record_user(3, vad)
 
 
 

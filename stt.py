@@ -31,7 +31,7 @@ class Ear:
         return text
 
 
-    def vad_listen(self, record_seconds=100):
+    def interrupt_listen(self, record_seconds=100):
         interruption = record_interruption(self.vad, record_seconds)
         return interruption
 
