@@ -2,7 +2,7 @@ from transformers import WhisperProcessor, WhisperForConditionalGeneration
 import torchaudio
 import torchaudio.functional as F
 import torch
-from utils import record
+from utils import record_user, record_interruption
 from vad import VoiceActivityDetection
 print(); print()
 
@@ -26,10 +26,14 @@ class Ear:
     
 
     def listen(self):
-        audio = record(self.silence_seconds, self.vad)
+        audio = record_user(self.silence_seconds, self.vad)
         text = self.transcribe(audio)
         return text
-       
+
+
+    def vad_listen(self, record_seconds=100):
+        interruption = record_interruption(self.vad, record_seconds)
+        return interruption
 
 if __name__ == "__main__":
     device = 'cuda' if torch.cuda.is_available() else 'cpu'

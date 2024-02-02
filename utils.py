@@ -1,14 +1,16 @@
 import numpy as np
 import pyaudio
 import audioop
-def record(silence_seconds, vad=None):
-    seconds_silence = silence_seconds  # changing this might make the convo more natural
-    CHUNK = 1024
-    FORMAT = pyaudio.paInt16
-    CHANNELS = 1  # make sure this is 1
-    RATE = 16000
-    RECORD_SECONDS = 100
-    WAVE_OUTPUT_FILENAME = "user.wav"
+
+CHUNK = 1024
+FORMAT = pyaudio.paInt16
+CHANNELS = 1
+RATE = 16000
+
+def record_audio(record_seconds=100):
+    # yield audio frames
+
+    RECORD_SECONDS = record_seconds
 
     p = pyaudio.PyAudio()
 
@@ -18,37 +20,34 @@ def record(silence_seconds, vad=None):
                     input=True,
                     frames_per_buffer=CHUNK)
 
-    print("* recording")
+    for i in range(0, int(RATE / CHUNK * RECORD_SECONDS)):
+        data = stream.read(CHUNK)
+        yield data
 
+
+def record_interruption(vad, recond_seconds=100):
+    print("* recording for interruption")
+    for data in record_audio(recond_seconds):
+        contains_speech = vad.contains_speech([data])
+        if contains_speech:
+            return True
+    return False
+
+
+
+def record_user(silence_seconds, vad):
+    print("* recording")
     frames = []
 
     started = False
     one_second_iters = int(RATE / CHUNK)
-    silent_iters = 0
-
-    for i in range(0, int(RATE / CHUNK * RECORD_SECONDS)):
-        data = stream.read(CHUNK)
+    for data in record_audio(100):
         frames.append(data)
-        if vad is None:
-            rms = audioop.rms(data, p.get_sample_size(FORMAT))
-            decibel = 20 * np.log10(rms)
-            if not started and decibel > 50:
-                started = True
-
-            if started and decibel < 50:
-                silent_iters += 1
-
-            if started and decibel > 50:
-                silent_iters = 0
-
-            if silent_iters >= one_second_iters * seconds_silence:
-                break
-        else:
-            contains_speech = vad.contains_speech(frames[-one_second_iters*silence_seconds:])
-            if not started and contains_speech:
-                started = True
-            if started and contains_speech is False:
-                break
+        contains_speech = vad.contains_speech(frames[-one_second_iters*silence_seconds:])
+        if not started and contains_speech:
+            started = True
+        if started and contains_speech is False:
+            break
 
     print("* done recording")
 
