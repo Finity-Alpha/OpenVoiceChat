@@ -1,0 +1,5 @@
+transformers
+sounddevice
+pygame
+pyaudio
+phonemizer
