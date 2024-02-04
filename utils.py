@@ -16,6 +16,7 @@ def make_stream():
                   input=True,
                   frames_per_buffer=CHUNK)
 
+
 # def record_audio(record_seconds=100):
 #     # yield audio frames
 #
@@ -35,13 +36,14 @@ def record_interruption(vad, recond_seconds=100):
     for _ in range(0, int(RATE / CHUNK * recond_seconds)):
         data = stream.read(CHUNK)
         frames.append(data)
-        contains_speech = vad.contains_speech(frames[int(RATE/CHUNK) * -2 :])
+        contains_speech = vad.contains_speech(frames[int(RATE / CHUNK) * -2:])
         if contains_speech:
             stream.close()
-            return True
+            frames = np.frombuffer(b''.join(frames), dtype=np.int16)
+            frames = frames / (1 << 15)
+            return frames.astype(np.float32)
     stream.close()
-    return False
-
+    return None
 
 
 def record_user(silence_seconds, vad):
@@ -55,7 +57,7 @@ def record_user(silence_seconds, vad):
     while True:
         data = stream.read(CHUNK)
         frames.append(data)
-        contains_speech = vad.contains_speech(frames[-one_second_iters*silence_seconds:])
+        contains_speech = vad.contains_speech(frames[-one_second_iters * silence_seconds:])
         if not started and contains_speech:
             started = True
         if started and contains_speech is False:
