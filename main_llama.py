@@ -22,7 +22,7 @@ if __name__ == "__main__":
 
     mouth = Mouth(speaker_id=5, device=device, visualize=False)
     # mouth.say('Good morning! Thank you for calling Apple. My name is John, how can I assist you today?')
-    mouth.say('Good morning!')
+    mouth.say('Good morning!', ear.interrupt_listen)
 
     # preprompt = sales_pre_prompt
     # preprompt = advisor_pre_prompt
@@ -37,7 +37,7 @@ if __name__ == "__main__":
         response = john.generate_response(user_input)
         print(response)
 
-        # mouth.say_multiple(response.replace('[USER]', '').replace('[END]', '').replace('[START]', ''))
-        mouth.say_interruption(response.replace('[USER]', '').replace('[END]', '').replace('[START]', ''), ear.interrupt_listen)
+        mouth.say(response.replace('[USER]', '').replace('[END]', '').replace('[START]', ''), ear.interrupt_listen)
+        # mouth.say_multiple(response.replace('[USER]', '').replace('[END]', '').replace('[START]', ''), ear.interrupt_listen)
         if response.find('[END]') != -1:
             break

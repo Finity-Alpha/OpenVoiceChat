@@ -23,15 +23,7 @@ class Mouth:
         output = self.model(**inputs, speaker_id=self.speaker_id).waveform[0].to('cpu')
         return output
 
-    def say(self, text):
-        output = self.run_tts(text)
-        # get the duration of audio
-        sd.play(output, samplerate=self.model.config.sampling_rate)
-        if self.visualize:
-            self.visualizer.visualize(output, text)
-        sd.wait()
-
-    def say_interruption(self, text, listen_interruption_func):
+    def say(self, text, listen_interruption_func):
         output = self.run_tts(text)
         # get the duration of audio
         duration = len(output) / self.model.config.sampling_rate
@@ -39,17 +31,21 @@ class Mouth:
         interruption = listen_interruption_func(duration)
         if interruption:
             sd.stop()
+            return True
         else:
             sd.wait()
+            return False
 
 
-    def say_multiple(self, text):
+    def say_multiple(self, text, listen_interruption_func):
         pattern = r'[.?!]'
         sentences = re.split(pattern, text)
         sentences = [sentence.strip() for sentence in sentences if sentence.strip()]
         print(sentences)
         for sentence in sentences:
-            self.say(sentence)
+            interruption = self.say(sentence, listen_interruption_func)
+            if interruption:
+                break
 
 if __name__ == '__main__':
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
@@ -57,7 +53,7 @@ if __name__ == '__main__':
 
     text = "If there's one thing that makes me nervous about the future of self-driving cars, it's that they'll replace human drivers.\nI think there's a huge opportunity to make human-driven cars safer and more efficient. There's no reason why we can't combine the benefits of self-driving cars with the ease of use of human-driven cars."
     print(text)
-    mouth.say(text)
+    mouth.run_tts(text)
     sd.wait()
 
 
