@@ -3,7 +3,6 @@ import sounddevice as sd
 import torch
 from visualizer import Visualizer
 import re
-from multiprocessing import Process
 
 print(); print()
 
@@ -36,13 +35,12 @@ class Mouth:
         output = self.run_tts(text)
         # get the duration of audio
         duration = len(output) / self.model.config.sampling_rate
-        p = Process(target=sd.play, args=(output, self.model.config.sampling_rate))
-        p1 = Process(target=listen_interruption_func, args=(duration,))
-        p.start() # start saying the text
-        p1.start() # start listening for interruption
-        p1.join() # get interruption result
-        sd.stop() # stop saying the text (if it's still saying bc then it's interrupted)
-        p.join()
+        sd.play(output, samplerate=self.model.config.sampling_rate)
+        interruption = listen_interruption_func(duration)
+        if interruption:
+            sd.stop()
+        else:
+            sd.wait()
 
 
     def say_multiple(self, text):
