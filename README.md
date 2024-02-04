@@ -21,17 +21,9 @@ Now [uses](main_llama.py) llama 7B thanks to [llama cpp python](https://github.c
 
 ## TODO:
 - [x] ~~Fix LLM log (or atleast test it to make sure it works)~~ seems to work
-- [ ] Handle interruptions (doing in the "interruptions" branch)
+- [x] Handle interruptions (merged from the ["interruptions"](https://github.com/fakhirali/VoiceChat/tree/interruptions) branch)
 - [x] [Silero VAD](https://github.com/snakers4/silero-vad) for better silence detection
 - [ ] Colab notebook
 
-
-## Notes
-How to handle interruptions? We constantly listen and transcribe and then stop tts. TTS has to stop on a word to make it natural. 
-Also do we even stop. Sometimes the other person just says "yes" or "yeah". The stop recording policy is bad, it just stops recording after x
-number of silent seconds. There should be an EOS predictor for whisper and we should stop using it, this will allow having pauses in the middle.
-Done some work on the [interruptions branch](https://github.com/fakhirali/VoiceChat/tree/interuptions). Just flags 
-interrupt on some sound. Don't know how to handle 'yes' or 'yeah' yet. Will try to run the stt in another thread next.
-Some ideas at [Ideas.md](Ideas.md)
 
 
