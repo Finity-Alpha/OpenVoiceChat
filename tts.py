@@ -25,10 +25,23 @@ class Mouth:
 
     def say(self, text):
         output = self.run_tts(text)
+        # get the duration of audio
         sd.play(output, samplerate=self.model.config.sampling_rate)
         if self.visualize:
             self.visualizer.visualize(output, text)
         sd.wait()
+
+    def say_interruption(self, text, listen_interruption_func):
+        output = self.run_tts(text)
+        # get the duration of audio
+        duration = len(output) / self.model.config.sampling_rate
+        sd.play(output, samplerate=self.model.config.sampling_rate)
+        interruption = listen_interruption_func(duration)
+        if interruption:
+            sd.stop()
+        else:
+            sd.wait()
+
 
     def say_multiple(self, text):
         pattern = r'[.?!]'

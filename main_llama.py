@@ -37,6 +37,7 @@ if __name__ == "__main__":
         response = john.generate_response(user_input)
         print(response)
 
-        mouth.say_multiple(response.replace('[USER]', '').replace('[END]', '').replace('[START]', ''))
+        # mouth.say_multiple(response.replace('[USER]', '').replace('[END]', '').replace('[START]', ''))
+        mouth.say_interruption(response.replace('[USER]', '').replace('[END]', '').replace('[START]', ''), ear.interrupt_listen)
         if response.find('[END]') != -1:
             break

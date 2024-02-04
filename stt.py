@@ -2,8 +2,9 @@ from transformers import WhisperProcessor, WhisperForConditionalGeneration
 import torchaudio
 import torchaudio.functional as F
 import torch
-from utils import record
+from utils import record_user, record_interruption
 from vad import VoiceActivityDetection
+import re
 print(); print()
 
 
@@ -16,6 +17,7 @@ class Ear:
         self.model.to(device)
         self.vad = VoiceActivityDetection()
         self.silence_seconds = silence_seconds
+        self.not_interrupt_words = ['you', 'yes', 'yeah', 'hmm']
 
     @torch.no_grad()
     def transcribe(self, audio):
@@ -26,10 +28,30 @@ class Ear:
     
 
     def listen(self):
-        audio = record(self.silence_seconds, self.vad)
+        audio = record_user(self.silence_seconds, self.vad)
         text = self.transcribe(audio)
         return text
-       
+
+
+    def interrupt_listen(self, record_seconds=100):
+        while record_seconds > 0:
+            interruption_audio = record_interruption(self.vad, record_seconds)
+            # duration of interruption audio
+            if interruption_audio is None:
+                return False
+            else:
+                duration = len(interruption_audio) / 16_000
+                text = self.transcribe(interruption_audio)
+                #remove any punctuation using re
+                text = re.sub(r'[^\w\s]', '', text)
+                text = text.lower()
+                text = text.strip()
+                print(text)
+                if text in self.not_interrupt_words:
+                    record_seconds -= duration
+                else:
+                    return True
+
 
 if __name__ == "__main__":
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
