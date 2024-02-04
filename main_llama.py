@@ -24,12 +24,9 @@ if __name__ == "__main__":
     # mouth.say('Good morning! Thank you for calling Apple. My name is John, how can I assist you today?')
     mouth.say('Good morning!', ear.interrupt_listen)
 
-    # preprompt = sales_pre_prompt
-    # preprompt = advisor_pre_prompt
     print("type: exit, quit or stop to end the chat")
     print("Chat started:")
     while True:
-        # user_input = input(" ")
         user_input = ear.listen()
         if user_input.lower() in ["exit", "quit", "stop"]:
             break
