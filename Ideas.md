@@ -18,3 +18,8 @@ There should be an EOS predictor for whisper, and we should stop using it,
 this will allow having pauses in the middle.
 Use the whisper no speech tag as well.
 Some good ideas [here](https://alphacephei.com/nsh/2023/09/22/time-brain-ctc-blank.html).
+
+## Best Fast TTS
+
+Bark is too slow, sounds alright. May hallucinate here and there. 
+Xtts2 is slow. your_tts is fast but bad, glow_tts is better but not really. 

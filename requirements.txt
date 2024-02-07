@@ -3,3 +3,4 @@ sounddevice
 pygame
 pyaudio
 phonemizer
+librosa

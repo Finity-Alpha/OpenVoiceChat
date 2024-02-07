@@ -20,7 +20,7 @@ if __name__ == "__main__":
     john = Chatbot(device=device, sys_prompt=call_pre_prompt)
     # john.generate_response('hello', c)
 
-    mouth = Mouth(speaker_id=5, device=device, visualize=False)
+    mouth = Mouth(speaker_id=4, device=device, visualize=False)
     # mouth.say('Good morning! Thank you for calling Apple. My name is John, how can I assist you today?')
     mouth.say('Good morning!', ear.interrupt_listen)
 
