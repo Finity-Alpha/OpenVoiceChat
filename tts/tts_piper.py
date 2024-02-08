@@ -3,6 +3,7 @@ import piper
 import numpy as np
 import torch
 import re
+import time
 
 
 # Get device
@@ -35,12 +36,21 @@ class Mouth:
             return False
 
     def say_multiple(self, text, listen_interruption_func):
-        pattern = r'[.?!]'
+        # split the text into sentences but keep the punctuation
+        pattern = r'(?<=[.!?]) +'
         sentences = re.split(pattern, text)
         sentences = [sentence.strip() for sentence in sentences if sentence.strip()]
+        # merge small sentences to make a bigger sentence
+        for i in range(len(sentences) - 1):
+            if len(sentences[i].split()) < 5:
+                sentences[i] = sentences[i] + ' ' + sentences[i + 1]
+                sentences[i + 1] = ''
         print(sentences)
         for sentence in sentences:
+            if sentence == '':
+                continue
             interruption = self.say(sentence, listen_interruption_func)
+            time.sleep(0.05)
             if interruption:
                 break
 
