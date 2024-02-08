@@ -10,8 +10,8 @@ import re
 
 class Mouth:
     def __init__(self, device='cpu'):
-        self.model = piper.PiperVoice.load(model_path='../models/en_US-ryan-high.onnx',
-                                           config_path='../models/en_en_US_ryan_high_en_US-ryan-high.onnx.json',
+        self.model = piper.PiperVoice.load(model_path='models/en_US-ryan-high.onnx',
+                                           config_path='models/en_en_US_ryan_high_en_US-ryan-high.onnx.json',
                                            use_cuda=True if device == 'cuda' else False)
         self.sample_rate = self.model.config.sample_rate
 

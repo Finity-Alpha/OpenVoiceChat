@@ -1,12 +1,11 @@
-from tts import Mouth_xtts
-from llm import Chatbot_llama
+from tts import Mouth_piper as Mouth
+from llm import Chatbot_llama as Chatbot
 
 from stt import Ear
 import torch
 from preprompts import call_pre_prompt
 import torchaudio
 import torchaudio.functional as F
-from vad import VoiceActivityDetection
 
 if __name__ == "__main__":
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
@@ -18,10 +17,10 @@ if __name__ == "__main__":
     audio = F.resample(audio, sr, 16_000)[0]
     ear.transcribe(audio)
 
-    john = Chatbot_llama(device=device, sys_prompt=call_pre_prompt)
+    john = Chatbot(device=device, sys_prompt=call_pre_prompt)
     # john.generate_response('hello', c)
 
-    mouth = Mouth_xtts(device=device)
+    mouth = Mouth(device=device)
     # mouth.say('Good morning! Thank you for calling Apple. My name is John, how can I assist you today?')
     mouth.say('Good morning!', ear.interrupt_listen)
 

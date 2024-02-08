@@ -6,6 +6,7 @@ import queue
 import threading
 import re
 
+
 def play_audio_paralell(audio_queue, sample_rate, listen_interruption_func):
     while True:
         chunk = audio_queue.get()
@@ -13,14 +14,7 @@ def play_audio_paralell(audio_queue, sample_rate, listen_interruption_func):
             break
         chunk = chunk.cpu().numpy()
         sd.play(chunk, samplerate=sample_rate)
-        duration = len(chunk) / sample_rate
-        # sd.play(output, samplerate=self.model.config.sampling_rate)
-        interruption = listen_interruption_func(duration)
-        if interruption:
-            sd.stop()
-            break
-        else:
-            sd.wait()
+
 
 class Mouth:
     def __init__(self):
@@ -31,22 +25,28 @@ class Mouth:
     @torch.no_grad()
     def say(self, text, listen_interruption_func):
         audio_queue = queue.Queue()
+        listen_queue = queue.Queue()  # same as audio_queue for interruption
         playback_thread = threading.Thread(target=play_audio_paralell, args=(audio_queue,
                                                                              self.sample_rate,
                                                                              listen_interruption_func))
+        interruption_thread = threading.Thread(target=listen_interruption_func, args=(listen_queue,))
         playback_thread.start()
+        interruption_thread.start()
         audio_generator = self.model.tts_stream(text,
-                                         voice_samples=self.voice_samples,
-                                         conditioning_latents=self.conditioning_latents)
+                                                voice_samples=self.voice_samples,
+                                                conditioning_latents=self.conditioning_latents)
         for wav_chunk in audio_generator:
             audio_queue.put(wav_chunk)
-            if playback_thread.is_alive() is False:
+            listen_queue.put(wav_chunk)
+            if interruption_thread.is_alive() is False:
                 playback_thread.join()
+                interruption_thread.join()
                 return True
         audio_queue.put(None)
+        listen_queue.put(None)
         playback_thread.join()
+        interruption_thread.join()
         return False
-
 
     def say_multiple(self, text, listen_interruption_func):
         pattern = r'[.?!]'

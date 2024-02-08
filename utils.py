@@ -2,7 +2,7 @@ import numpy as np
 import pyaudio
 import audioop
 
-CHUNK = 1024
+CHUNK = int(1024*2)
 FORMAT = pyaudio.paInt16
 CHANNELS = 1
 RATE = 16000
@@ -28,6 +28,27 @@ def make_stream():
 #         data = stream.read(CHUNK)
 #         yield data
 #
+
+
+def record_interruption_parallel(vad, listen_queue):
+    #listen for interruption untill the queue is not empty
+    frames = []
+    stream = make_stream()
+    while True:
+        a = listen_queue.get()
+        if a is None:
+            break
+        data = stream.read(CHUNK)
+        frames.append(data)
+        contains_speech = vad.contains_speech(frames[int(RATE / CHUNK) * -2:])
+        if contains_speech:
+            stream.close()
+            frames = np.frombuffer(b''.join(frames), dtype=np.int16)
+            frames = frames / (1 << 15)
+            return frames.astype(np.float32)
+    stream.close()
+    return None
+
 
 def record_interruption(vad, recond_seconds=100):
     print("* recording for interruption")
