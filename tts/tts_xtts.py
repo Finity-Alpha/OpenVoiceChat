@@ -1,29 +1,28 @@
 from TTS.api import TTS
 import sounddevice as sd
 import torch
+import re
+
 
 # Get device
 
 
-
 class Mouth:
-    def __init__(self, model_id='tts_models/multilingual/multi-dataset/xtts_v2', device='cpu'):
+    def __init__(self, model_id='tts_models/en/jenny/jenny', device='cpu'):
         self.model = TTS(model_id)
         self.device = device
         self.model.to(device)
+        self.sample_rate = self.model.synthesizer.output_sample_rate
 
     def run_tts(self, text):
-        output = self.model.tts(text=text,
-                                speaker_wav='media/my_voice.wav',
-                                language='en')
+        output = self.model.tts(text=text, split_sentences=False)
         return output
-
 
     def say(self, text, listen_interruption_func):
         output = self.run_tts(text)
         # get the duration of audio
-        duration = len(output) / self.model.config.sampling_rate
-        sd.play(output, samplerate=self.model.config.sampling_rate)
+        duration = len(output) / self.sample_rate
+        sd.play(output, samplerate=self.sample_rate)
         interruption = listen_interruption_func(duration)
         if interruption:
             sd.stop()
@@ -31,6 +30,16 @@ class Mouth:
         else:
             sd.wait()
             return False
+
+    def say_multiple(self, text, listen_interruption_func):
+        pattern = r'[.?!]'
+        sentences = re.split(pattern, text)
+        sentences = [sentence.strip() for sentence in sentences if sentence.strip()]
+        print(sentences)
+        for sentence in sentences:
+            interruption = self.say(sentence, listen_interruption_func)
+            if interruption:
+                break
 
 if __name__ == '__main__':
     device = 'cuda' if torch.cuda.is_available() else 'cpu'

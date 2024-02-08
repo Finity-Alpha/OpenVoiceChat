@@ -1,5 +1,6 @@
 from llm_llama import Chatbot
-from tts import Mouth
+# from tts import Mouth
+from tts import Mouth_xtts
 from stt import Ear
 import torch
 from preprompts import call_pre_prompt
@@ -20,7 +21,7 @@ if __name__ == "__main__":
     john = Chatbot(device=device, sys_prompt=call_pre_prompt)
     # john.generate_response('hello', c)
 
-    mouth = Mouth(speaker_id=4, device=device, visualize=False)
+    mouth = Mouth_xtts(device=device)
     # mouth.say('Good morning! Thank you for calling Apple. My name is John, how can I assist you today?')
     mouth.say('Good morning!', ear.interrupt_listen)
 
@@ -34,7 +35,7 @@ if __name__ == "__main__":
         response = john.generate_response(user_input)
         print(response)
 
-        mouth.say(response.replace('[USER]', '').replace('[END]', '').replace('[START]', ''), ear.interrupt_listen)
-        # mouth.say_multiple(response.replace('[USER]', '').replace('[END]', '').replace('[START]', ''), ear.interrupt_listen)
+        # mouth.say(response.replace('[USER]', '').replace('[END]', '').replace('[START]', ''), ear.interrupt_listen)
+        mouth.say_multiple(response.replace('[USER]', '').replace('[END]', '').replace('[START]', ''), ear.interrupt_listen)
         if response.find('[END]') != -1:
             break

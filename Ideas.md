@@ -23,3 +23,4 @@ Some good ideas [here](https://alphacephei.com/nsh/2023/09/22/time-brain-ctc-bla
 
 Bark is too slow, sounds alright. May hallucinate here and there. 
 Xtts2 is slow. your_tts is fast but bad, glow_tts is better but not really. 
+Jenny is alright, good quality audio.
