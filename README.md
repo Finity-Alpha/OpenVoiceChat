@@ -21,4 +21,5 @@ Now [uses](main_llama.py) llama 7B thanks to [llama cpp python](https://github.c
 
 ## TODO:
 - [ ] Fix streaming tortoise interruption
+- [ ] Better tts abstractions with multiple and interruption
 
