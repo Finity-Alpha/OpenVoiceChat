@@ -1,4 +1,4 @@
-from llm import Chatbot
+from llm import Chatbot_hf
 from tts import Mouth
 from stt import Ear
 import torch
@@ -16,7 +16,7 @@ if __name__ == "__main__":
     audio = F.resample(audio, sr, 16_000)[0]
     ear.transcribe(audio)
 
-    john = Chatbot(device=device)
+    john = Chatbot_hf(device=device)
     john.generate_response_greedy('hello', call_pre_prompt, '[USER]')  # warmup
 
     mouth = Mouth(speaker_id=5, device=device, visualize=False)

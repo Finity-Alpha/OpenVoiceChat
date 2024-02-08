@@ -1,6 +1,6 @@
-from llm_llama import Chatbot
-# from tts import Mouth
 from tts import Mouth_xtts
+from llm import Chatbot_llama
+
 from stt import Ear
 import torch
 from preprompts import call_pre_prompt
@@ -18,7 +18,7 @@ if __name__ == "__main__":
     audio = F.resample(audio, sr, 16_000)[0]
     ear.transcribe(audio)
 
-    john = Chatbot(device=device, sys_prompt=call_pre_prompt)
+    john = Chatbot_llama(device=device, sys_prompt=call_pre_prompt)
     # john.generate_response('hello', c)
 
     mouth = Mouth_xtts(device=device)
