@@ -19,6 +19,10 @@ Runs locally on a [consumer GPU](https://www.nvidia.com/en-us/geforce/graphics-c
 [Installation](INSTALL.md).
 Some ideas are [here](Ideas.md)
 
+```python 
+python main_llama.py
+```
+
 ---
 
 ## TODO:
