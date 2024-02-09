@@ -19,13 +19,17 @@ Runs locally on a [consumer GPU](https://www.nvidia.com/en-us/geforce/graphics-c
 [Installation](INSTALL.md).
 Some ideas are [here](Ideas.md)
 
-```python 
+```shell 
 python main_llama.py
 ```
 
 ---
 
-## TODO:
+### TODO:
+- [ ] OpenAI GPT support
+- [ ] UI
+
+### Bug Fix:
 - [ ] Fix streaming tortoise interruption
 - [ ] Better tts abstractions with multiple_say and interruption
 - [ ] Sounddevice underrun error
