@@ -28,6 +28,7 @@ python main_llama.py
 ### TODO:
 - [ ] OpenAI GPT support
 - [ ] UI
+- [ ] Web interface/API
 
 ### Bug Fix:
 - [ ] Fix streaming tortoise interruption
