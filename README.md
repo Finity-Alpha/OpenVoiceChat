@@ -1,26 +1,26 @@
-# Voice Chat
+<div align="center">
 
-Trying to create a pipeline where I can talk to an LLM.
+![logo](media/logo.gif)
 
-STT + LLM + TTS
+<h3>
 
-[some](./media/john_call_new.mp3) [examples](./media/john_call.mp3) (the examples shown are with gpt-neo, will update with llama soon)
+Having a natural conversation with an LLM
 
-### models used
+</h3>
 
-| TTS                                                         | STT                                          | LLM                                                                    |
-|-------------------------------------------------------------|----------------------------------------------|------------------------------------------------------------------------|
-| [VITS](https://jaywalnut310.github.io/vits-demo/index.html) | [Whisper](https://github.com/openai/whisper) | [llama-7b-chat-q4](https://huggingface.co/TheBloke/Llama-2-7B-Chat-GGUF) |
+</div>
 
-Using [M4T](https://github.com/facebookresearch/seamless_communication) one model can do stt + tts + translation.
-The translation [quality is almost](./media/translation_quality.png) there.
+---
 
-Now [uses](main_llama.py) llama 7B thanks to [llama cpp python](https://github.com/abetlen/llama-cpp-python)
+Uses open source stt, tts and llm models.
+Supports interruptions with the help of [silero VAD](https://github.com/snakers4/silero-vad).
+Well [abstracted](/llm) apis, easy to use and extend.
+Runs locally on a [consumer GPU](https://www.nvidia.com/en-us/geforce/graphics-cards/30-series/rtx-3080-3080ti/)
 
-
+---
 
 ## TODO:
 - [ ] Fix streaming tortoise interruption
-- [ ] Better tts abstractions with multiple and interruption
+- [ ] Better tts abstractions with multiple_say and interruption
 - [ ] Sounddevice underrun error
 
