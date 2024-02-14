@@ -24,3 +24,25 @@ Some good ideas [here](https://alphacephei.com/nsh/2023/09/22/time-brain-ctc-bla
 Bark is too slow, sounds alright. May hallucinate here and there. 
 Xtts2 is slow. your_tts is fast but bad, glow_tts is better but not really. 
 Jenny is alright, good quality audio.
+
+## Thinking while speaking
+
+We would want the agent to also think while the tts is running. 
+The LLM response would be streamed out. The tts would get the LLM response and
+stream the audio output. As the LLM buffer accumulates the audio buffer will also accumulate.
+
+## How to get rid of the 2s silence detection delay
+
+We need to understand when the human has stopped speaking, 
+and wants the bot to speak. There could be many language cues.
+To make a classifier utilizing the language cues we would need to
+stream the audio and transcribe it in real time. I think one can make a 
+classifier that gives the probability of the human stopping speaking.
+VAD can also be used in conjunction to the probability to make a better 
+decision. 
+
+
+
+
+
+

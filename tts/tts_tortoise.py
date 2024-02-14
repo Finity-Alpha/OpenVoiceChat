@@ -17,7 +17,7 @@ def play_audio_paralell(audio_queue, sample_rate, listen_interruption_func):
 
 
 class Mouth:
-    def __init__(self):
+    def __init__(self, device='cpu'):
         self.model = TextToSpeech(use_deepspeed=True, kv_cache=True, half=True)
         self.sample_rate = 24000
         self.voice_samples, self.conditioning_latents = load_voice('tom')

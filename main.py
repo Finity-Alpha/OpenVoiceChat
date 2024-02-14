@@ -1,8 +1,13 @@
-from llm import Chatbot_hf
-from tts import Mouth
+from tts import Mouth_piper as Mouth
+# from tts import Mouth_tortoise as Mouth
+# from tts import Mouth_xtts as Mouth
+
+from llm import Chatbot_llama as Chatbot
+# from llm import Chatbot_hf as Chatbot
+
 from stt import Ear
 import torch
-from preprompts import call_pre_prompt, sales_pre_prompt, advisor_pre_prompt
+from preprompts import call_pre_prompt
 import torchaudio
 import torchaudio.functional as F
 
@@ -16,39 +21,24 @@ if __name__ == "__main__":
     audio = F.resample(audio, sr, 16_000)[0]
     ear.transcribe(audio)
 
-    john = Chatbot_hf(device=device)
-    john.generate_response_greedy('hello', call_pre_prompt, '[USER]')  # warmup
+    john = Chatbot(device=device, sys_prompt=call_pre_prompt)
+    # john.generate_response('hello', c)
 
-    mouth = Mouth(speaker_id=5, device=device, visualize=False)
-    mouth.say('Good morning! Thank you for calling Apple. My name is John, how can I assist you today?')
+    mouth = Mouth(device=device)
+    # mouth.say('Good morning! Thank you for calling Apple. My name is John, how can I assist you today?')
+    mouth.say('Good morning!', ear.interrupt_listen)
 
-    # preprompt = sales_pre_prompt
-    # preprompt = advisor_pre_prompt
-    preprompt = call_pre_prompt
-
-    log = ''
-    past_kv = None
-    next_id = None
     print("type: exit, quit or stop to end the chat")
     print("Chat started:")
     while True:
-        # user_input = input(" ")
         user_input = ear.listen()
         if user_input.lower() in ["exit", "quit", "stop"]:
             break
-        break_word = '[USER]'
-        name = '[JOHN]'
         print(user_input)
-        response, past_kv, next_id = john.generate_response_greedy(user_input, preprompt + log,
-                                                                   break_word, max_length=100000, name=name,
-                                                                   past_key_vals=past_kv, next_id=next_id,
-                                                                   verbose=True, temp=0.6)
-
-        # mouth.say(response.replace('[USER]', '').replace('[END]', '').replace('[START]', ''))
-        mouth.say_multiple(response.replace('[USER]', '').replace('[END]', '').replace('[START]', ''))
-
-        log += ' ' + user_input + '\n' + name + response
-        # print(' ' + user_input + '\n' + name + response)
+        response = john.generate_response(user_input)
         print(response)
+
+        # mouth.say(response.replace('[USER]', '').replace('[END]', '').replace('[START]', ''), ear.interrupt_listen)
+        mouth.say_multiple(response.replace('[USER]', '').replace('[END]', '').replace('[START]', ''), ear.interrupt_listen)
         if response.find('[END]') != -1:
             break

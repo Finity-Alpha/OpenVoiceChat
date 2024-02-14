@@ -7,3 +7,5 @@ librosa
 piper-tts
 tortoise-tts
 TTS
+piper-tts
+piper-phonemize

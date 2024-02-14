@@ -27,6 +27,7 @@ python main_llama.py
 
 ### TODO:
 - [ ] OpenAI GPT support
+- [ ] Streaming everything (stt, tts, llm)
 - [ ] UI
 - [ ] Web interface/API
 
