@@ -3,7 +3,7 @@
 
 ## Speculative decoding of whisper output
 
-We can stream the output of whisper and have an LLM predict what the person will say next (also predicting what 
+We can stream the output of stt and have an LLM predict what the person will say next (also predicting what 
 the bot will say). Do beam search and keep the beams that were correct according to the whisper output.
 This is like "thinking while listening". 
 

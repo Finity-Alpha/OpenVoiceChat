@@ -6,7 +6,7 @@ from utils import record_user, record_interruption, record_interruption_parallel
 from vad import VoiceActivityDetection
 import re
 
-print();
+print()
 print()
 
 

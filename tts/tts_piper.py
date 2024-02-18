@@ -50,7 +50,7 @@ class Mouth:
             if sentence == '':
                 continue
             interruption = self.say(sentence, listen_interruption_func)
-            time.sleep(0.05)
+            time.sleep(0.025)
             if interruption:
                 break
 

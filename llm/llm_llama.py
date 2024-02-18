@@ -32,7 +32,7 @@ class Chatbot:
 
 if __name__ == "__main__":
     preprompt = call_pre_prompt
-    john = Chatbot(sys_prompt=preprompt)
+    john = Chatbot(model_path='../models/llama-2-7b.Q4_K_M.gguf', sys_prompt=preprompt)
     print("type: exit, quit or stop to end the chat")
     print("Chat started:")
     while True:

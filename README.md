@@ -37,9 +37,12 @@ python main.py
 - [ ] Streaming everything (stt, tts, llm)
 - [ ] UI
 - [ ] Web interface/API
+- [ ] Good abstractions for streaming stt output (vosk, wav2vec2 can be streamed)
 
 ### Bug Fix:
+- [ ] stt hf model should be able to tkae any models not just whisper
 - [ ] Fix streaming tortoise interruption
 - [ ] Better tts abstractions with multiple_say and interruption
+- [ ] Super classes of stt, tts and llm for the things that are common
 - [ ] Sounddevice underrun error
 

@@ -5,7 +5,10 @@ from tts import Mouth_piper as Mouth
 from llm import Chatbot_llama as Chatbot
 # from llm import Chatbot_hf as Chatbot
 
-from stt import Ear
+from stt import Ear_hf as Ear
+# from stt import Ear_vosk as Ear
+
+
 import torch
 from preprompts import call_pre_prompt
 import torchaudio
@@ -39,6 +42,7 @@ if __name__ == "__main__":
         print(response)
 
         # mouth.say(response.replace('[USER]', '').replace('[END]', '').replace('[START]', ''), ear.interrupt_listen)
-        mouth.say_multiple(response.replace('[USER]', '').replace('[END]', '').replace('[START]', ''), ear.interrupt_listen)
+        mouth.say_multiple(response.replace('[USER]', '').replace('[END]', '').replace('[START]', ''),
+                           ear.interrupt_listen)
         if response.find('[END]') != -1:
             break
