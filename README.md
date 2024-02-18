@@ -19,11 +19,18 @@ Runs locally on a [consumer GPU](https://www.nvidia.com/en-us/geforce/graphics-c
 [Installation](INSTALL.md).
 Some ideas are [here](Notes/Ideas.md)
 
+
 ```shell 
 python main.py
 ```
 
 ---
+
+### Features
+- low latency
+- handles interruptions
+- supports multiple stt, tts and llm models from different sources
+
 
 ### TODO:
 - [ ] OpenAI GPT support
