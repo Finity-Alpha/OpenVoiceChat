@@ -4,7 +4,7 @@
 
 <h3>
 
-Having a natural conversation with an LLM
+Have a natural conversation with an LLM
 
 </h3>
 
