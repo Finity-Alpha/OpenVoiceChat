@@ -13,12 +13,14 @@ def play_audio_paralell(audio_queue, sample_rate, listen_interruption_func):
         if chunk is None:
             break
         chunk = chunk.cpu().numpy()
+        # wait if already playing
         sd.play(chunk, samplerate=sample_rate)
+        sd.wait()
 
 
 class Mouth:
     def __init__(self, device='cpu'):
-        self.model = TextToSpeech(use_deepspeed=True, kv_cache=True, half=True)
+        self.model = TextToSpeech(use_deepspeed=False, kv_cache=True, half=True)
         self.sample_rate = 24000
         self.voice_samples, self.conditioning_latents = load_voice('tom')
 
@@ -37,15 +39,19 @@ class Mouth:
                                                 conditioning_latents=self.conditioning_latents)
         for wav_chunk in audio_generator:
             audio_queue.put(wav_chunk)
-            listen_queue.put(wav_chunk)
+            listen_queue.put('smth')
             if interruption_thread.is_alive() is False:
+                audio_queue.put(None)
+                sd.stop()
+                print('interruption')
                 playback_thread.join()
                 interruption_thread.join()
                 return True
-        audio_queue.put(None)
-        listen_queue.put(None)
-        playback_thread.join()
-        interruption_thread.join()
+        if audio_queue.empty():
+            audio_queue.put(None)
+            listen_queue.put(None)
+            playback_thread.join()
+            interruption_thread.join()
         return False
 
     def say_multiple(self, text, listen_interruption_func):
