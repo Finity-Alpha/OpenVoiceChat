@@ -28,4 +28,14 @@ Does a "umm" when interrupted. Not sure whether the chatbot is an LLM.
 
 ### [Bland ai](https://bland.ai)
 
+Is alright. The sound is good, I think it also does interruptions.
+
+### [Retell AI](https://www.retellai.com/)
+
+Same thing. Everyone is doing it. 
+
+### [SmartChild](https://smarterchild.chat/)
+
+This it the best one so far. Very very fast.
+But interruptions are not great. It speaks over me a lot.
 

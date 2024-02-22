@@ -1,5 +1,5 @@
-# from tts import Mouth_piper as Mouth
-from tts import Mouth_tortoise as Mouth
+from tts import Mouth_piper as Mouth
+# from tts import Mouth_tortoise as Mouth
 # from tts import Mouth_xtts as Mouth
 
 from llm import Chatbot_llama as Chatbot
@@ -29,7 +29,7 @@ if __name__ == "__main__":
 
     mouth = Mouth(device=device)
     # mouth.say('Good morning! Thank you for calling Apple. My name is John, how can I assist you today?')
-    mouth.say('Good morning!', ear.interrupt_listen_parallel)
+    mouth.say('Good morning!', ear.interrupt_listen)
 
     print("type: exit, quit or stop to end the chat")
     print("Chat started:")
@@ -43,6 +43,6 @@ if __name__ == "__main__":
 
         # mouth.say(response.replace('[USER]', '').replace('[END]', '').replace('[START]', ''), ear.interrupt_listen)
         mouth.say_multiple(response.replace('[USER]', '').replace('[END]', '').replace('[START]', ''),
-                           ear.interrupt_listen_parallel)
+                           ear.interrupt_listen)
         if response.find('[END]') != -1:
             break
