@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Audio Streaming via WebSocket</title>
+</head>
+<body>
+<h1>Audio Streaming via WebSocket</h1>
+<button id="startButton">Start Streaming</button>
+<button id="stopButton" disabled>Stop Streaming</button>
+<script>
+    // make a websocket connection to local host
+    // make a start and stop button
+    // when the start button is pressed audio is recorded
+    // when the stop button is pressed audio recording stops
+
+    var startButton = document.getElementById('startButton');
+    var stopButton = document.getElementById('stopButton');
+    var mediaRecorder;
+    var audioChunks = [];
+    startButton.onclick = function() {
+        startButton.disabled = true;
+        stopButton.disabled = false;
+        audioChunks = [];
+        navigator.mediaDevices.getUserMedia({ audio: true })
+        .then(stream => {
+            mediaRecorder = new MediaRecorder(stream);
+            mediaRecorder.ondataavailable = function(e) {
+                audioChunks.push(e.data);
+                if (mediaRecorder.state === 'inactive') {
+                    ws.send(new Blob(audioChunks, { type: 'audio/webm' }));
+                }
+            };
+            mediaRecorder.start();
+        });
+    };
+    stopButton.onclick = function() {
+        startButton.disabled = false;
+        stopButton.disabled = true;
+        mediaRecorder.stop();
+    };
+
+
+</script>
+</body>
+</html>

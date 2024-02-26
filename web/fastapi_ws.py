@@ -5,7 +5,7 @@ import uvicorn
 app = FastAPI()
 @app.get("/")
 async def get():
-    return HTMLResponse(open('client.html', 'r').read())
+    return HTMLResponse(open('voice_chat.html', 'r').read())
 
 
 @app.websocket("/ws")
@@ -18,4 +18,4 @@ async def websocket_endpoint(websocket: WebSocket):
 
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(app, port=8000)
