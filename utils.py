@@ -81,6 +81,7 @@ def record_user(silence_seconds, vad):
         contains_speech = vad.contains_speech(frames[-one_second_iters * silence_seconds:])
         if not started and contains_speech:
             started = True
+            print("*listening to speech*")
         if started and contains_speech is False:
             break
     stream.close()

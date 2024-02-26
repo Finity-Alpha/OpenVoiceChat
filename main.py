@@ -20,7 +20,7 @@ if __name__ == "__main__":
     print('loading models...')
 
     ear = Ear(device=device, silence_seconds=2)
-    audio, sr = torchaudio.load('media/test.wav')
+    audio, sr = torchaudio.load('media/my_voice.wav')
     audio = F.resample(audio, sr, 16_000)[0]
     ear.transcribe(audio)
 

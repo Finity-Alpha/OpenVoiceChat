@@ -9,3 +9,4 @@ tortoise-tts
 TTS
 piper-tts
 piper-phonemize
+vosk
