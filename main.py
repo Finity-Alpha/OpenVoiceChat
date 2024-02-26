@@ -8,7 +8,6 @@ from llm import Chatbot_llama as Chatbot
 from stt import Ear_hf as Ear
 # from stt import Ear_vosk as Ear
 
-
 import torch
 from preprompts import call_pre_prompt
 import torchaudio
@@ -26,6 +25,7 @@ if __name__ == "__main__":
 
     john = Chatbot(device=device, sys_prompt=call_pre_prompt)
     # john.generate_response('hello', c)
+
 
     mouth = Mouth(device=device)
     # mouth.say('Good morning! Thank you for calling Apple. My name is John, how can I assist you today?')

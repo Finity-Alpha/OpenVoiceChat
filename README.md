@@ -17,7 +17,7 @@ Supports interruptions with the help of [silero VAD](https://github.com/snakers4
 Well [abstracted](/llm) apis, easy to use and extend.
 Runs locally on a [consumer GPU](https://www.nvidia.com/en-us/geforce/graphics-cards/30-series/rtx-3080-3080ti/).
 [Installation](INSTALL.md).
-Some ideas are [here](Notes/Ideas.md)
+Some ideas are [here](notes/Ideas.md)
 
 
 ```shell 
