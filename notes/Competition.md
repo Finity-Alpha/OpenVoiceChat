@@ -39,3 +39,9 @@ Same thing. Everyone is doing it.
 This it the best one so far. Very very fast.
 But interruptions are not great. It speaks over me a lot.
 
+### [Call Annie](https://callannie.ai/)
+
+Good response time, no interruptions tho. 
+The Avatar is very responsive. Seems to be able to do 
+function calling.
+
