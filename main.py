@@ -5,7 +5,7 @@ from tts import Mouth_piper as Mouth
 from llm import Chatbot_llama as Chatbot
 # from llm import Chatbot_hf as Chatbot
 
-from stt import Ear_hf as Ear
+from stt.stt_hf import Ear_hf as Ear
 # from stt import Ear_vosk as Ear
 
 import torch
