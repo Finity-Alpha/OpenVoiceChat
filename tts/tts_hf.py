@@ -1,4 +1,4 @@
-from transformers import VitsModel, AutoTokenizer
+from transformers import pipeline
 import sounddevice as sd
 import torch
 from tts.base import BaseMouth
@@ -9,18 +9,17 @@ print()
 
 class Mouth_hf(BaseMouth):
     def __init__(self, model_id='kakao-enterprise/vits-vctk', speaker_id=0, device='cpu'):
-        self.model = VitsModel.from_pretrained(model_id)
-        self.tokenizer = AutoTokenizer.from_pretrained(model_id)
+        self.pipe = pipeline('text-to-speech', model=model_id, device=device)
         self.device = device
-        self.model.to(device)
         self.speaker_id = speaker_id
-        super().__init__(sample_rate=self.model.config.sampling_rate)
+        super().__init__(sample_rate=self.pipe.model.config.sampling_rate)
 
     @torch.no_grad()
     def run_tts(self, text):
-        inputs = self.tokenizer(text, return_tensors="pt")
-        inputs = inputs.to(self.device)
-        output = self.model(**inputs, speaker_id=self.speaker_id).waveform[0].to('cpu')
+        # inputs = self.tokenizer(text, return_tensors="pt")
+        # inputs = inputs.to(self.device)
+        # output = self.model(**inputs, speaker_id=self.speaker_id).waveform[0].to('cpu')
+        output = self.pipe(text, forward_params={'speaker_id': self.speaker_id})['audio'][0]
         return output
 
 
