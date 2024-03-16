@@ -4,7 +4,7 @@ import json
 import torchaudio
 import torchaudio.functional as F
 import torch
-from base import BaseEar
+from .base import BaseEar
 
 
 class Ear(BaseEar):

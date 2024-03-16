@@ -3,7 +3,7 @@ from transformers import pipeline
 import torchaudio
 import torchaudio.functional as F
 import torch
-from base import BaseEar
+from .base import BaseEar
 import numpy as np
 
 print()

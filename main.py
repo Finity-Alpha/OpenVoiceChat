@@ -12,6 +12,7 @@ import torch
 from preprompts import call_pre_prompt
 import torchaudio
 import torchaudio.functional as F
+import numpy as np
 
 if __name__ == "__main__":
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
@@ -21,7 +22,7 @@ if __name__ == "__main__":
     ear = Ear(device=device, silence_seconds=2)
     audio, sr = torchaudio.load('media/my_voice.wav')
     audio = F.resample(audio, sr, 16_000)[0]
-    ear.transcribe(audio)
+    ear.transcribe(np.array(audio))
 
     john = Chatbot(device=device, sys_prompt=call_pre_prompt)
     # john.generate_response('hello', c)
