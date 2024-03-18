@@ -54,16 +54,19 @@ class BaseMouth:
             if text is None:
                 response = remove_words_in_brackets_and_spaces(response).strip()
                 interruption = self.say(response, listen_interruption_func)
-                print(all_response)
+                text_queue.put(all_response)
+                # print(all_response)
                 break
             response += text
             all_response += text
             pattern = r'[.?](?=\s|$)'  # TODO: This should be an attribute
-            if bool(re.search(pattern, response)):
-                print(response)
+            if bool(re.search(pattern, response)):  # TODO: We should wait for the next char to see if this is the end
+                # of the sentence.
+                # print(response)
                 response = remove_words_in_brackets_and_spaces(response).strip()
                 interruption = self.say(response, listen_interruption_func)
                 if interruption:
+                    text_queue.put(all_response)  # TODO: We have to inform the llm of an interruption
                     break
                 response = ''
 

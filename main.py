@@ -51,3 +51,4 @@ if __name__ == "__main__":
         llm_thread.join()
 
         # TODO: How to end it?
+        print(llm_output_queue.get())
