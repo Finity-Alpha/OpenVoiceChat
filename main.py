@@ -12,6 +12,8 @@ from preprompts import call_pre_prompt
 import torchaudio
 import torchaudio.functional as F
 import numpy as np
+import threading
+import queue
 
 if __name__ == "__main__":
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
@@ -37,11 +39,15 @@ if __name__ == "__main__":
         if user_input.lower() in ["exit", "quit", "stop"]:
             break
         print(user_input)
-        response = john.generate_response(user_input)
-        print(response)
 
-        # mouth.say(response.replace('[USER]', '').replace('[END]', '').replace('[START]', ''), ear.interrupt_listen)
-        mouth.say_multiple(response.replace('[USER]', '').replace('[END]', '').replace('[START]', ''),
-                           ear.interrupt_listen)
-        if response.find('[END]') != -1:
-            break
+        llm_output_queue = queue.Queue()
+        llm_thread = threading.Thread(target=john.generate_response_stream, args=(user_input, llm_output_queue))
+        tts_thread = threading.Thread(target=mouth.say_multiple_stream, args=(llm_output_queue, ear.interrupt_listen))
+
+        llm_thread.start()
+        tts_thread.start()
+
+        tts_thread.join()
+        llm_thread.join()
+
+        # TODO: How to end it?

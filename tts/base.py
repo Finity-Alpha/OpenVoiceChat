@@ -4,6 +4,17 @@ import re
 from time import monotonic
 
 
+def remove_words_in_brackets_and_spaces(text):
+    # Pattern to match optional spaces, content inside square brackets, and optional spaces again
+    # This will handle spaces before and after the brackets
+    pattern = r'\s*\[.*?\]\s*'
+    # Remove the matching content and replace it with a single space to avoid multiple spaces
+    cleaned_text = re.sub(pattern, ' ', text)
+    # Optionally, you might want to trim leading or trailing spaces
+    cleaned_text = cleaned_text.strip()
+    return cleaned_text
+
+
 class BaseMouth:
     def __init__(self, sample_rate):
         self.sample_rate = sample_rate
@@ -35,6 +46,27 @@ class BaseMouth:
             if interruption:
                 break
 
+    def say_multiple_stream(self, text_queue, listen_interruption_func):
+        response = ''
+        all_response = ''
+        while True:
+            text = text_queue.get()
+            if text is None:
+                response = remove_words_in_brackets_and_spaces(response).strip()
+                interruption = self.say(response, listen_interruption_func)
+                print(all_response)
+                break
+            response += text
+            all_response += text
+            pattern = r'[.?](?=\s|$)'  # TODO: This should be an attribute
+            if bool(re.search(pattern, response)):
+                print(response)
+                response = remove_words_in_brackets_and_spaces(response).strip()
+                interruption = self.say(response, listen_interruption_func)
+                if interruption:
+                    break
+                response = ''
+
     def say_timing(self, text, listen_interruption_func):
         start = monotonic()
         output = self.run_tts(text)
@@ -63,3 +95,29 @@ class BaseMouth:
             if interruption:
                 break
         return time_taken
+
+    def say_multiple_stream_timing(self, text_queue, listen_interruption_func):
+        s = monotonic()
+        first_sentence = True
+        response = ''
+        all_response = ''
+        while True:
+            text = text_queue.get()
+            if text is None:
+                print(all_response)
+                break
+            response += text
+            all_response += text
+            pattern = r'[.?!]'
+            if bool(re.search(pattern, response)):
+                response = remove_words_in_brackets_and_spaces(response).strip()
+                e = monotonic()
+                interruption, time_taken = self.say_timing(response, listen_interruption_func)
+                if first_sentence:
+                    print("Time to first sentence:", e - s)
+                    print("Time taken for tts:", time_taken)
+                    first_sentence = False
+
+                if interruption:
+                    break
+                response = ''
