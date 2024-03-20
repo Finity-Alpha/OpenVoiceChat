@@ -41,8 +41,9 @@ if __name__ == "__main__":
         print(user_input)
 
         llm_output_queue = queue.Queue()
-        llm_thread = threading.Thread(target=john.generate_response_stream, args=(user_input, llm_output_queue))
-        tts_thread = threading.Thread(target=mouth.say_multiple_stream, args=(llm_output_queue, ear.interrupt_listen))
+        interrupt_queue = queue.Queue()
+        llm_thread = threading.Thread(target=john.generate_response_stream, args=(user_input, llm_output_queue, interrupt_queue))
+        tts_thread = threading.Thread(target=mouth.say_multiple_stream, args=(llm_output_queue, ear.interrupt_listen, interrupt_queue))
 
         llm_thread.start()
         tts_thread.start()
@@ -50,5 +51,5 @@ if __name__ == "__main__":
         tts_thread.join()
         llm_thread.join()
 
-        # TODO: How to end it?
-        print(llm_output_queue.get())
+        if '[END]' in llm_output_queue.get():
+            break

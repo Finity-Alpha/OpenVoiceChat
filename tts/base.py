@@ -46,7 +46,7 @@ class BaseMouth:
             if interruption:
                 break
 
-    def say_multiple_stream(self, text_queue, listen_interruption_func):
+    def say_multiple_stream(self, text_queue, listen_interruption_func, interrupt_queue):
         response = ''
         all_response = ''
         while True:
@@ -54,6 +54,8 @@ class BaseMouth:
             if text is None:
                 response = remove_words_in_brackets_and_spaces(response).strip()
                 interruption = self.say(response, listen_interruption_func)
+                if interruption:
+                    interrupt_queue.put(True)
                 text_queue.put(all_response)
                 # print(all_response)
                 break
@@ -66,7 +68,8 @@ class BaseMouth:
                 response = remove_words_in_brackets_and_spaces(response).strip()
                 interruption = self.say(response, listen_interruption_func)
                 if interruption:
-                    text_queue.put(all_response)  # TODO: We have to inform the llm of an interruption
+                    text_queue.put(all_response)
+                    interrupt_queue.put(True)
                     break
                 response = ''
 
