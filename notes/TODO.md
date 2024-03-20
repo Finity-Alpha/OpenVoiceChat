@@ -2,6 +2,11 @@
 
 Streaming everything (stt, tts, llm), if it'll help latency
 
+Send llama model to llm instead of instantiating it in the class.
+Gives more control over the model. 
+
+Documentation and Doc string for functions
+
 Make it a pip package
 
 Turn Taking model? Retell seems to be doing it.
