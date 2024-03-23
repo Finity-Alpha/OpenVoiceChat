@@ -29,6 +29,22 @@ class Chatbot:
         self.messages.append(response_text)
         return response_text
 
+    def generate_response_stream(self, input_text, output_queue, interrupt_queue):
+        self.messages.append(input_text + '\n' + self.name)
+        out = self.model.create_completion(''.join(self.messages),
+                                           max_tokens=1000, stream=True)
+        response_text = ''
+        for o in out:
+            if not interrupt_queue.empty():
+                break
+            text = o['choices'][0]['text']
+            output_queue.put(text)
+            response_text += text
+            if any([response_text.strip().endswith(break_word) for break_word in self.break_words]):
+                output_queue.put(None)
+                break
+        self.messages.append(response_text)
+
 
 if __name__ == "__main__":
     preprompt = call_pre_prompt

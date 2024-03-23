@@ -13,6 +13,8 @@ import torchaudio
 import torchaudio.functional as F
 import numpy as np
 from time import monotonic
+import threading
+import queue
 
 if __name__ == "__main__":
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
@@ -37,22 +39,18 @@ if __name__ == "__main__":
         user_input, time_taken_stt = ear.listen_timing()
         if user_input.lower() in ["exit", "quit", "stop"]:
             break
-        # print(user_input)
-        start = monotonic()
-        response = john.generate_response(user_input)
-        end = monotonic()
-        time_taken_llm = end - start
-        # print(response)
-
-        # mouth.say(response.replace('[USER]', '').replace('[END]', '').replace('[START]', ''), ear.interrupt_listen)
-        time_taken_tts = mouth.say_multiple_timing(
-            response.replace('[USER]', '').replace('[END]', '').replace('[START]', ''),
-            ear.interrupt_listen)
-
-        if response.find('[END]') != -1:
-            break
 
         print(f'time taken for stt: {time_taken_stt}')
-        print(f'time taken for llm: {time_taken_llm}')
-        print(f'time taken for tts: {time_taken_tts}')
-        print()
+        llm_output_queue = queue.Queue()
+        interrupt_queue = queue.Queue()
+        llm_thread = threading.Thread(target=john.generate_response_stream,
+                                      args=(user_input, llm_output_queue, interrupt_queue))
+        tts_thread = threading.Thread(target=mouth.say_multiple_stream_timing,
+                                      args=(llm_output_queue, ear.interrupt_listen, interrupt_queue))
+
+        llm_thread.start()
+        tts_thread.start()
+
+        tts_thread.join()
+        llm_thread.join()
+

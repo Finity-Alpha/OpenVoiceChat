@@ -12,6 +12,8 @@ from preprompts import call_pre_prompt
 import torchaudio
 import torchaudio.functional as F
 import numpy as np
+import threading
+import queue
 
 if __name__ == "__main__":
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
@@ -24,10 +26,8 @@ if __name__ == "__main__":
     ear.transcribe(np.array(audio))
 
     john = Chatbot(device=device, sys_prompt=call_pre_prompt)
-    # john.generate_response('hello', c)
 
     mouth = Mouth(device=device)
-    # mouth.say('Good morning! Thank you for calling Apple. My name is John, how can I assist you today?')
     mouth.say('Good morning!', ear.interrupt_listen)
 
     print("type: exit, quit or stop to end the chat")
@@ -37,11 +37,19 @@ if __name__ == "__main__":
         if user_input.lower() in ["exit", "quit", "stop"]:
             break
         print(user_input)
-        response = john.generate_response(user_input)
-        print(response)
 
-        # mouth.say(response.replace('[USER]', '').replace('[END]', '').replace('[START]', ''), ear.interrupt_listen)
-        mouth.say_multiple(response.replace('[USER]', '').replace('[END]', '').replace('[START]', ''),
-                           ear.interrupt_listen)
-        if response.find('[END]') != -1:
+        llm_output_queue = queue.Queue()
+        interrupt_queue = queue.Queue()
+        llm_thread = threading.Thread(target=john.generate_response_stream,
+                                      args=(user_input, llm_output_queue, interrupt_queue))
+        tts_thread = threading.Thread(target=mouth.say_multiple_stream,
+                                      args=(llm_output_queue, ear.interrupt_listen, interrupt_queue))
+
+        llm_thread.start()
+        tts_thread.start()
+
+        tts_thread.join()
+        llm_thread.join()
+
+        if '[END]' in llm_output_queue.get():
             break
