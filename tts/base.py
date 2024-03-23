@@ -124,8 +124,8 @@ class BaseMouth:
                 response = sentences[1]
                 # print(response)
                 sentence = remove_words_in_brackets_and_spaces(sentence).strip()
-                interruption, time_taken = self.say_timing(sentence, listen_interruption_func)
                 e = monotonic()
+                interruption, time_taken = self.say_timing(sentence, listen_interruption_func)
                 if first_sentence:
                     print("Time to first sentence:", e - s)
                     print("Time taken for tts:", time_taken)
