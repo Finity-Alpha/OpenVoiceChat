@@ -18,6 +18,7 @@ def remove_words_in_brackets_and_spaces(text):
 class BaseMouth:
     def __init__(self, sample_rate):
         self.sample_rate = sample_rate
+        self.sentence_stop_pattern = r'[.?](?=\s+\S)'
 
     @torch.no_grad()
     def run_tts(self, text):
@@ -61,17 +62,18 @@ class BaseMouth:
                 break
             response += text
             all_response += text
-            pattern = r'[.?](?=\s|$)'  # TODO: This should be an attribute
-            if bool(re.search(pattern, response)):  # TODO: We should wait for the next char to see if this is the end
-                # of the sentence.
+            if bool(re.search(self.sentence_stop_pattern, response)):
+                sentences = re.split(self.sentence_stop_pattern, response, maxsplit=1)
+                print(sentences)
+                sentence = sentences[0]
+                response = sentences[1]
                 # print(response)
-                response = remove_words_in_brackets_and_spaces(response).strip()
-                interruption = self.say(response, listen_interruption_func)
+                sentence = remove_words_in_brackets_and_spaces(sentence).strip()
+                interruption = self.say(sentence, listen_interruption_func)
                 if interruption:
                     text_queue.put(all_response)
                     interrupt_queue.put(True)
                     break
-                response = ''
 
     def say_timing(self, text, listen_interruption_func):
         start = monotonic()
