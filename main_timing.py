@@ -42,9 +42,11 @@ if __name__ == "__main__":
 
         print(f'time taken for stt: {time_taken_stt}')
         llm_output_queue = queue.Queue()
-        llm_thread = threading.Thread(target=john.generate_response_stream, args=(user_input, llm_output_queue))
+        interrupt_queue = queue.Queue()
+        llm_thread = threading.Thread(target=john.generate_response_stream,
+                                      args=(user_input, llm_output_queue, interrupt_queue))
         tts_thread = threading.Thread(target=mouth.say_multiple_stream_timing,
-                                      args=(llm_output_queue, ear.interrupt_listen))
+                                      args=(llm_output_queue, ear.interrupt_listen, interrupt_queue))
 
         llm_thread.start()
         tts_thread.start()

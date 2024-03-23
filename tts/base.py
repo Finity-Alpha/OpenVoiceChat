@@ -58,13 +58,11 @@ class BaseMouth:
                 if interruption:
                     interrupt_queue.put(True)
                 text_queue.put(all_response)
-                # print(all_response)
                 break
             response += text
             all_response += text
             if bool(re.search(self.sentence_stop_pattern, response)):
                 sentences = re.split(self.sentence_stop_pattern, response, maxsplit=1)
-                print(sentences)
                 sentence = sentences[0]
                 response = sentences[1]
                 # print(response)
@@ -104,7 +102,7 @@ class BaseMouth:
                 break
         return time_taken
 
-    def say_multiple_stream_timing(self, text_queue, listen_interruption_func):
+    def say_multiple_stream_timing(self, text_queue, listen_interruption_func, interrupt_queue):
         s = monotonic()
         first_sentence = True
         response = ''
@@ -112,20 +110,25 @@ class BaseMouth:
         while True:
             text = text_queue.get()
             if text is None:
-                print(all_response)
+                response = remove_words_in_brackets_and_spaces(response).strip()
+                interruption = self.say(response, listen_interruption_func)
+                if interruption:
+                    interrupt_queue.put(True)
+                text_queue.put(all_response)
                 break
             response += text
             all_response += text
-            pattern = r'[.?!]'
-            if bool(re.search(pattern, response)):
-                response = remove_words_in_brackets_and_spaces(response).strip()
+            if bool(re.search(self.sentence_stop_pattern, response)):
+                sentences = re.split(self.sentence_stop_pattern, response, maxsplit=1)
+                sentence = sentences[0]
+                response = sentences[1]
+                # print(response)
+                sentence = remove_words_in_brackets_and_spaces(sentence).strip()
+                interruption, time_taken = self.say_timing(sentence, listen_interruption_func)
                 e = monotonic()
-                interruption, time_taken = self.say_timing(response, listen_interruption_func)
                 if first_sentence:
                     print("Time to first sentence:", e - s)
                     print("Time taken for tts:", time_taken)
                     first_sentence = False
-
                 if interruption:
                     break
-                response = ''
