@@ -12,7 +12,7 @@ Have a natural voice conversation with an LLM
 
 ---
 
-<audio src="https://github.com/fakhirali/OpenVoiceChat/raw/master/media/demo.mp3" controls preload></audio>
+<audio src="https://raw.githubusercontent.com/fakhirali/OpenVoiceChat/master/media/demo.mp3" controls preload></audio>
 
 Uses open source stt, tts and llm [models](notes/Models.md).
 Supports interruptions with the help of [silero voice activity detection](https://github.com/snakers4/silero-vad).
