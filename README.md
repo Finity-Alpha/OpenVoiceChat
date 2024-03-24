@@ -1,3 +1,4 @@
+
 <div align="center">
 
 ![logo](media/logo.gif)
@@ -12,7 +13,7 @@ Have a natural voice conversation with an LLM
 
 ---
 
-<audio src="https://raw.githubusercontent.com/fakhirali/OpenVoiceChat/master/media/demo.mp3" controls preload></audio>
+https://github.com/fakhirali/OpenVoiceChat/assets/32309516/88b7973d-a362-46f3-ab18-232bb59a188e
 
 Uses open source stt, tts and llm [models](notes/Models.md).
 Supports interruptions with the help of [silero voice activity detection](https://github.com/snakers4/silero-vad).
@@ -25,3 +26,6 @@ Some ideas are [here](notes/Ideas.md). [TODO](notes/TODO.md).
 ```shell 
 python main.py
 ```
+
+
+
