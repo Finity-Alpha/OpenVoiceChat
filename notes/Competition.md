@@ -1,6 +1,6 @@
 # Other Voice Chat solutions on the market
 
-
+## Commercial
 
 ### [elto.ai](https://elto.ai)
 
@@ -50,3 +50,15 @@ function calling.
 ### [Vapi AI](https://vapi.ai/)
 
 Similar to Retell AI, they also have an endpointing model.
+
+## Open Source
+
+### [Bud-e](https://github.com/LAION-AI/natural_voice_assistant)
+
+A project by LAION AI. The code base is not very clean.
+Seems like a standalone project. Very talented people working.
+Good discussion and research on their discord.
+Interruptions aren't really robust to umms and ahs.
+Signal strength based VAD. They calc attention kvs while 
+stt is running which is good. They say the biggest bottleneck 
+is waiting for a sentence to TTS.
