@@ -64,3 +64,8 @@ stt is running which is good. They say the biggest bottleneck
 is waiting for a sentence to TTS.
 Their [roadmap](https://laion.ai/blog/bud-e/#a-roadmap-towards-empathic--natural-ai-voice-assistants) is very cool. 
 They aim for a speech to speech model for chat.
+
+### [Vocode](https://github.com/vocodedev/vocode-python)
+
+Also have a hosted version [company](https://www.vocode.dev/).
+Codebase is bad again. Not clear if they support interruptions.
