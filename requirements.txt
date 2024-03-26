@@ -10,3 +10,5 @@ TTS
 piper-tts
 piper-phonemize
 vosk
+python-dotenv
+openai
