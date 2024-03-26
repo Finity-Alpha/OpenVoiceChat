@@ -12,3 +12,4 @@ piper-phonemize
 vosk
 python-dotenv
 openai
+pydub

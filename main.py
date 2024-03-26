@@ -1,8 +1,9 @@
 from tts.tts_piper import Mouth_piper as Mouth
+from tts.tts_elevenlabs import Mouth_elevenlabs as Mouth
 # from tts.tts_xtts import Mouth_xtts as Mouth
 
 from llm.llm_llama import Chatbot_llama as Chatbot
-from llm.llm_gpt import Chatbot_gpt as Chatbot
+# from llm.llm_gpt import Chatbot_gpt as Chatbot
 
 # from llm import Chatbot_hf as Chatbot
 
@@ -27,9 +28,9 @@ if __name__ == "__main__":
     audio = F.resample(audio, sr, 16_000)[0]
     ear.transcribe(np.array(audio))
 
-    john = Chatbot(sys_prompt=llama_sales)
+    john = Chatbot(sys_prompt=call_pre_prompt)
 
-    mouth = Mouth(device=device)
+    mouth = Mouth()
     mouth.say('Good morning!', ear.interrupt_listen)
 
     print("type: exit, quit or stop to end the chat")
