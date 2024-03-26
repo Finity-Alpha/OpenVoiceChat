@@ -1,7 +1,6 @@
 # TODO
 
-~~Streaming everything (stt, tts, llm), if it'll help latency~~
-Streaming stt. llm+tts are streamed at first sentence.
+OpenAI GPT API support
 
 Send llama model to llm instead of instantiating it in the class.
 Gives more control over the model. 
@@ -11,8 +10,6 @@ Documentation and Doc string for functions
 Make it a pip package
 
 Turn Taking model? Retell seems to be doing it. And Vapi ai.
-
-OpenAI GPT API support
 
 Web interface/API. Two websockets, audio in and audio out.
 
