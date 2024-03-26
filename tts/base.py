@@ -54,7 +54,10 @@ class BaseMouth:
             text = text_queue.get()
             if text is None:
                 response = remove_words_in_brackets_and_spaces(response).strip()
-                interruption = self.say(response, listen_interruption_func)
+                if response.strip() != '':
+                    interruption = self.say(response, listen_interruption_func)
+                else:
+                    interruption = False
                 if interruption:
                     interrupt_queue.put(True)
                 text_queue.put(all_response)
@@ -65,7 +68,6 @@ class BaseMouth:
                 sentences = re.split(self.sentence_stop_pattern, response, maxsplit=1)
                 sentence = sentences[0]
                 response = sentences[1]
-                # print(response)
                 sentence = remove_words_in_brackets_and_spaces(sentence).strip()
                 interruption = self.say(sentence, listen_interruption_func)
                 if interruption:
