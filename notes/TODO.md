@@ -1,6 +1,7 @@
 # TODO
 
-OpenAI GPT API support
+Elevenlabs is a bit slow when pauses. Make it so we don't wait
+for the tts to finish before starting the next one.
 
 Solve underruns by filling in [silence](https://stackoverflow.com/questions/19230983/prevent-alsa-underruns-with-pyaudio)
 
@@ -30,3 +31,4 @@ Integrations with popular LLM packages and software
 Speaker diarization for group chat
 
 ~~There should be a better way to import different things from stt and tts etc.~~
+~~OpenAI GPT API support~~
