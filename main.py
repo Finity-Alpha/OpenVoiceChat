@@ -53,5 +53,7 @@ if __name__ == "__main__":
         tts_thread.join()
         llm_thread.join()
 
-        if '[END]' in llm_output_queue.get():
+        res = llm_output_queue.get()
+        print(res)
+        if '[END]' in res:
             break
