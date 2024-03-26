@@ -2,6 +2,10 @@
 
 OpenAI GPT API support
 
+Solve underruns by filling in [silence](https://stackoverflow.com/questions/19230983/prevent-alsa-underruns-with-pyaudio)
+
+Write Docs to add any custom model
+
 Send llama model to llm instead of instantiating it in the class.
 Gives more control over the model. 
 

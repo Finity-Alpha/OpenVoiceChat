@@ -1,14 +1,16 @@
 from tts.tts_piper import Mouth_piper as Mouth
 # from tts.tts_xtts import Mouth_xtts as Mouth
 
-from llm import Chatbot_llama as Chatbot
+from llm.llm_llama import Chatbot_llama as Chatbot
+from llm.llm_gpt import Chatbot_gpt as Chatbot
+
 # from llm import Chatbot_hf as Chatbot
 
 from stt.stt_hf import Ear_hf as Ear
 # from stt.stt_vosk import Ear_vosk as Ear
 
 import torch
-from preprompts import call_pre_prompt
+from preprompts import call_pre_prompt, llama_sales
 import torchaudio
 import torchaudio.functional as F
 import numpy as np
@@ -25,7 +27,7 @@ if __name__ == "__main__":
     audio = F.resample(audio, sr, 16_000)[0]
     ear.transcribe(np.array(audio))
 
-    john = Chatbot(device=device, sys_prompt=call_pre_prompt)
+    john = Chatbot(sys_prompt=llama_sales)
 
     mouth = Mouth(device=device)
     mouth.say('Good morning!', ear.interrupt_listen)
