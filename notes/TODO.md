@@ -27,4 +27,6 @@ Integrations with popular LLM packages and software
 
 [Silero](https://github.com/snakers4/silero-models) seems to work fast on cpu and has a lot of control over tts.
 
+Speaker diarization for group chat
+
 ~~There should be a better way to import different things from stt and tts etc.~~
