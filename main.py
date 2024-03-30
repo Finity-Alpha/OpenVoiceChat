@@ -31,7 +31,7 @@ if __name__ == "__main__":
     john = Chatbot(sys_prompt=call_pre_prompt)
 
     mouth = Mouth()
-    mouth.say('Good morning!', ear.interrupt_listen)
+    mouth.say_text('Good morning!')
 
     print("type: exit, quit or stop to end the chat")
     print("Chat started:")

@@ -3,6 +3,9 @@
 Elevenlabs is a bit slow when pauses. Make it so we don't wait
 for the tts to finish before starting the next one.
 
+Timing code is bad. Should be able to time better. 
+Some inspiration is [here](https://github.com/LAION-AI/natural_voice_assistant).
+
 Solve underruns by filling in [silence](https://stackoverflow.com/questions/19230983/prevent-alsa-underruns-with-pyaudio)
 
 Write Docs to add any custom model
