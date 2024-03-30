@@ -1,6 +1,5 @@
 # TODO
 
-Write Docs to add any custom model
 
 Documentation and Doc string for functions
 
@@ -34,3 +33,5 @@ for the tts to finish before starting the next one.~~
 ~~There should be a better way to import different things from stt and tts etc.~~
 
 ~~OpenAI GPT API support~~
+
+~~Write Docs to add any custom model~~
