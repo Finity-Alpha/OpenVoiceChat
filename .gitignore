@@ -6,3 +6,4 @@ notes/_*
 venv/
 data/
 .env
+build/
