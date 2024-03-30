@@ -1,8 +1,5 @@
 # TODO
 
-Elevenlabs is a bit slow when pauses. Make it so we don't wait
-for the tts to finish before starting the next one.
-
 Timing code is bad. Should be able to time better. 
 Some inspiration is [here](https://github.com/LAION-AI/natural_voice_assistant).
 
@@ -33,5 +30,9 @@ Integrations with popular LLM packages and software
 
 Speaker diarization for group chat
 
+~~Elevenlabs is a bit slow when pauses. Make it so we don't wait
+for the tts to finish before starting the next one.~~
+
 ~~There should be a better way to import different things from stt and tts etc.~~
+
 ~~OpenAI GPT API support~~
