@@ -20,7 +20,7 @@ Supports all kinds of stt, tts and llm [models](notes/Models.md).
 
 Supports interruptions.
 
-Well [abstracted](/tts) apis, easy to use and extend.
+Well [abstracted](/tts) apis, easy to use and [extend](notes/Adding_models.md).
 
 Runs locally on a [consumer GPU](https://www.nvidia.com/en-us/geforce/graphics-cards/30-series/rtx-3080-3080ti/).
 
