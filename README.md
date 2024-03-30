@@ -36,5 +36,6 @@ Some ideas are [here](notes/Ideas.md).
 python main.py
 ```
 
+[Discord](https://discord.gg/M5S2JksapH)
 
 
