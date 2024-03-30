@@ -56,6 +56,7 @@ To add a new LLM model you need to create a new class that inherits from the `Ba
 This class should implement the `run` method that takes in the user message and yields the assistant's response, and
 the `post_process` method that takes in the response of the assistant does any post-processing and returns it.
 
+Here is how the gpt model is implemented:
 ```python
 class Chatbot_gpt(BaseChatbot):
     def __init__(self, sys_prompt='', Model='gpt-3.5-turbo'):
