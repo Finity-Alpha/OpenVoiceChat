@@ -1,4 +1,7 @@
-from tts.base import BaseMouth
+if __name__ == '__main__':
+    from base import BaseMouth
+else:
+    from .base import BaseMouth
 from dotenv import load_dotenv
 from pydub import AudioSegment
 import io
@@ -45,6 +48,7 @@ class Mouth_elevenlabs(BaseMouth):
 
 
 if __name__ == '__main__':
+
     mouth = Mouth_elevenlabs()
 
     text = ("If there's one thing that makes me nervous about the future of self-driving cars, it's that they'll "
