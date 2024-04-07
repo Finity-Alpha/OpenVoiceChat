@@ -1,61 +1,38 @@
-from transformers import VitsModel, AutoTokenizer
+from transformers import pipeline
 import sounddevice as sd
 import torch
-from visualizer import Visualizer
-import re
+from tts.base import BaseMouth
 
-print(); print()
+print()
+print()
 
-class Mouth:
-    def __init__(self, model_id='kakao-enterprise/vits-vctk', speaker_id=0, device='cpu', visualize=False):
-        self.model = VitsModel.from_pretrained(model_id)
-        self.tokenizer = AutoTokenizer.from_pretrained(model_id)
+
+class Mouth_hf(BaseMouth):
+    def __init__(self, model_id='kakao-enterprise/vits-vctk', device='cpu',
+                 forward_params=None):
+        self.pipe = pipeline('text-to-speech', model=model_id, device=device)
         self.device = device
-        self.model.to(device)
-        self.speaker_id = speaker_id
-        self.visualize = visualize
-        if visualize:
-            self.visualizer = Visualizer(self.model.config.sampling_rate)
+        self.forward_params = forward_params
+        super().__init__(sample_rate=self.pipe.sampling_rate)
+
     @torch.no_grad()
     def run_tts(self, text):
-        inputs = self.tokenizer(text, return_tensors="pt")
-        inputs = inputs.to(self.device)
-        output = self.model(**inputs, speaker_id=self.speaker_id).waveform[0].to('cpu')
-        return output
+        # inputs = self.tokenizer(text, return_tensors="pt")
+        # inputs = inputs.to(self.device)
+        # output = self.model(**inputs, speaker_id=self.speaker_id).waveform[0].to('cpu')
+        output = self.pipe(text, forward_params=self.forward_params)
+        self.sample_rate = output['sampling_rate']
+        return output['audio'][0]
 
-    def say(self, text, listen_interruption_func):
-        output = self.run_tts(text)
-        # get the duration of audio
-        duration = len(output) / self.model.config.sampling_rate
-        sd.play(output, samplerate=self.model.config.sampling_rate)
-        interruption = listen_interruption_func(duration)
-        if interruption:
-            sd.stop()
-            return True
-        else:
-            sd.wait()
-            return False
-
-
-    def say_multiple(self, text, listen_interruption_func):
-        pattern = r'[.?!]'
-        sentences = re.split(pattern, text)
-        sentences = [sentence.strip() for sentence in sentences if sentence.strip()]
-        print(sentences)
-        for sentence in sentences:
-            interruption = self.say(sentence, listen_interruption_func)
-            if interruption:
-                break
 
 if __name__ == '__main__':
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
-    mouth = Mouth(device=device, speaker_id=7)
+    mouth = Mouth_hf(model_id='kakao-enterprise/vits-vctk', device=device, forward_params={"speaker_id": 10})
 
-    text = "If there's one thing that makes me nervous about the future of self-driving cars, it's that they'll replace human drivers.\nI think there's a huge opportunity to make human-driven cars safer and more efficient. There's no reason why we can't combine the benefits of self-driving cars with the ease of use of human-driven cars."
+    text = ("If there's one thing that makes me nervous about the future of self-driving cars, it's that they'll "
+            "replace human drivers.\nI think there's a huge opportunity to make human-driven cars safer and more "
+            "efficient. There's no reason why we can't combine the benefits of self-driving cars with the ease of use "
+            "of human-driven cars.")
     print(text)
-    mouth.run_tts(text)
+    mouth.say_multiple(text, lambda x: False)
     sd.wait()
-
-
-
-
