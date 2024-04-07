@@ -1,4 +1,4 @@
-const socket = new WebSocket('ws://0.0.0.0:8000/ws');
+const socket = new WebSocket('ws://localhost:8000/ws');
 // Start recording when the WebSocket connection is open
 socket.onopen = () => {
   console.log('WebSocket connection opened');
@@ -25,6 +25,7 @@ navigator.mediaDevices.getUserMedia({ audio: true })
     // Event handler for audio processing
     audioProcessor.onaudioprocess = (event) => {
       const audioData = event.inputBuffer.getChannelData(0);
+      console.log(audioData); // Log the audio data to the console
       socket.send(audioData);
     };
 
