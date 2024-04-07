@@ -10,3 +10,8 @@
 |                    |                         | Streaming stt            |             |
 |                    |                         | Filler words etc         |             |
 |                    |                         | RAG                      |             |
+|                    |                         |                          |             |
+|                    |                         |                          |             |
+|                    |                         |                          |             |
+|                    |                         |                          |             |
+|                    |                         |                          |             |

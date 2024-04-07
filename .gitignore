@@ -4,6 +4,6 @@ __pycache__/
 models/
 notes/_*
 venv/
+build/
 data/
 .env
-build/
