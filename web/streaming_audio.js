@@ -2,13 +2,13 @@ const socket = new WebSocket('ws://localhost:8000/ws');
 // Start recording when the WebSocket connection is open
 socket.onopen = () => {
   console.log('WebSocket connection opened');
-  mediaRecorder.start();
+//  mediaRecorder.start();
 };
 
 // Stop recording when the WebSocket connection is closed
 socket.onclose = () => {
   console.log('WebSocket connection closed');
-  mediaRecorder.stop();
+//  mediaRecorder.stop();
 };
 
 // Handle WebSocket connection error
@@ -25,7 +25,6 @@ navigator.mediaDevices.getUserMedia({ audio: true })
     // Event handler for audio processing
     audioProcessor.onaudioprocess = (event) => {
       const audioData = event.inputBuffer.getChannelData(0);
-      console.log(audioData); // Log the audio data to the console
       socket.send(audioData);
     };
 
@@ -36,3 +35,28 @@ navigator.mediaDevices.getUserMedia({ audio: true })
   .catch((error) => {
     console.error('Error accessing microphone:', error);
   });
+
+
+  const ws = new WebSocket('ws://localhost:8000/ws/audio');
+    let audioCtx;
+    let sourceNode;
+
+    ws.addEventListener('open', (event) => {
+      console.log('WebSocket connection opened:', event);
+    });
+
+    ws.addEventListener('message', async (event) => {
+      const float32Array = new Float32Array(await event.data.arrayBuffer());
+      console.log('Received audio data:', float32Array);
+      audioCtx = new AudioContext();
+      const audioBuffer = audioCtx.createBuffer(1, float32Array.length, 44100);
+      audioBuffer.getChannelData(0).set(float32Array);
+      if (!sourceNode){
+          sourceNode = audioCtx.createBufferSource();
+          sourceNode.connect(audioCtx.destination);
+
+      }
+      sourceNode.buffer = audioBuffer;
+      sourceNode.start();
+
+    });
