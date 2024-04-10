@@ -1,9 +1,9 @@
-from tts.tts_piper import Mouth_piper as Mouth
+# from tts.tts_piper import Mouth_piper as Mouth
 from tts.tts_elevenlabs import Mouth_elevenlabs as Mouth
 # from tts.tts_xtts import Mouth_xtts as Mouth
 
-from llm.llm_llama import Chatbot_llama as Chatbot
-# from llm.llm_gpt import Chatbot_gpt as Chatbot
+# from llm.llm_llama import Chatbot_llama as Chatbot
+from llm.llm_gpt import Chatbot_gpt as Chatbot
 
 # from llm import Chatbot_hf as Chatbot
 
