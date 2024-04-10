@@ -283,3 +283,4 @@ xxhash==3.4.1
 yarl==1.9.4
 yt-dlp==2023.12.30
 zipp==3.17.0
+-e git+https://github.com/huggingface/parler-tts.git#egg=parler-tts
