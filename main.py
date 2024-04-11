@@ -1,5 +1,6 @@
 # from tts.tts_piper import Mouth_piper as Mouth
-from tts.tts_elevenlabs import Mouth_elevenlabs as Mouth
+# from tts.tts_elevenlabs import Mouth_elevenlabs as Mouth
+from tts.tts_parler import Mouth_parler as Mouth
 # from tts.tts_xtts import Mouth_xtts as Mouth
 
 # from llm.llm_llama import Chatbot_llama as Chatbot
@@ -12,6 +13,7 @@ from stt.stt_hf import Ear_hf as Ear
 
 import torch
 from preprompts import call_pre_prompt, llama_sales
+from tts_parler_descriptions import Male_Voice, Female_Voice
 import torchaudio
 import torchaudio.functional as F
 import numpy as np
@@ -30,7 +32,7 @@ if __name__ == "__main__":
 
     john = Chatbot(sys_prompt=call_pre_prompt)
 
-    mouth = Mouth()
+    mouth = Mouth(tts_description=Male_Voice)
     mouth.say_text('Good morning!')
 
     print("type: exit, quit or stop to end the chat")
