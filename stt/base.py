@@ -1,9 +1,9 @@
-
 import torch
 from utils import record_user, record_interruption
 from vad import VoiceActivityDetection
 import re
 from time import monotonic
+import numpy as np
 
 
 
@@ -16,10 +16,18 @@ class BaseEar:
         self.vad = VoiceActivityDetection()
 
     @torch.no_grad()
-    def transcribe(self, input):
+    def transcribe(self, input: np.ndarray) -> str:
+        '''
+        :param input: fp32 numpy array of the audio
+        :return: transcription
+        '''
         raise NotImplementedError("This method should be implemented by the subclass")
 
-    def listen(self):
+    def listen(self) -> str:
+        '''
+        :return: transcription
+        records audio using record_user and returns its transcription
+        '''
         audio = record_user(self.silence_seconds, self.vad)
         text = self.transcribe(audio)
         return text
@@ -32,7 +40,14 @@ class BaseEar:
         return text, end - start
 
 
-    def interrupt_listen(self, record_seconds=100):
+    def interrupt_listen(self, record_seconds=100) -> bool:
+        '''
+        :param record_seconds: Max seconds to record for
+        :return: boolean indicating the if an interruption occured
+        Records audio with interruption. Transcribes audio if
+        voice activity detected and returns True if transcription indicates
+        interruption.
+        '''
         while record_seconds > 0:
             interruption_audio = record_interruption(self.vad, record_seconds)
             # duration of interruption audio

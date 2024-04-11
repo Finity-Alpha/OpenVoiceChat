@@ -4,35 +4,50 @@ import re
 from time import monotonic
 import queue
 import threading
+from typing import Callable
+import numpy as np
 
 
 def remove_words_in_brackets_and_spaces(text):
-    # Pattern to match optional spaces, content inside square brackets, and optional spaces again
-    # This will handle spaces before and after the brackets
+    '''
+    :param text: input text
+    :return: input text with the extra spaces and words in brackets removed. (e.g. [USER])
+    '''
     pattern = r'\s*\[.*?\]\s*'
-    # Remove the matching content and replace it with a single space to avoid multiple spaces
     cleaned_text = re.sub(pattern, ' ', text)
-    # Optionally, you might want to trim leading or trailing spaces
     cleaned_text = cleaned_text.strip()
     return cleaned_text
 
 
 class BaseMouth:
-    def __init__(self, sample_rate):
+    def __init__(self, sample_rate: int):
         self.sample_rate = sample_rate
         self.sentence_stop_pattern = r'[.?](?=\s+\S)'
         self.interrupted = False
 
     @torch.no_grad()
-    def run_tts(self, text):
+    def run_tts(self, text: str) -> np.ndarray:
+        '''
+        :param text: The text to synthesize speech for
+        :return: audio numpy array for sounddevice
+        '''
         raise NotImplementedError('This method should be implemented by the subclass')
 
-    def say_text(self, text):
+    def say_text(self, text: str):
+        '''
+        :param text: The text to synthesize speech for
+        calls run_tts and plays the audio using sounddevice.
+        '''
         output = self.run_tts(text)
         sd.play(output, samplerate=self.sample_rate)
         sd.wait()
 
-    def say(self, audio_queue, listen_interruption_func):
+    def say(self, audio_queue: queue.Queue, listen_interruption_func: Callable):
+        '''
+        :param audio_queue: The queue where the audio is stored for it to be played
+        :param listen_interruption_func: callable function from the ear class.
+        Plays the audios in the queue using sounddevice. Stops if interruption occurred.
+        '''
         self.interrupted = False
         while True:
             output = audio_queue.get()
@@ -49,7 +64,13 @@ class BaseMouth:
             else:
                 sd.wait()
 
-    def say_multiple(self, text, listen_interruption_func):
+    def say_multiple(self, text: str, listen_interruption_func: Callable):
+        '''
+        :param text: Intput text to synthesize
+        :param listen_interruption_func: callable function from the ear class
+        Splits the text into sentences separated by ['.', '?', '!']. Then plays the sentences one by one
+        using run_tts and say
+        '''
         pattern = r'[.?!]'
         sentences = re.split(pattern, text)
         sentences = [sentence.strip() for sentence in sentences if sentence.strip()]
@@ -65,7 +86,15 @@ class BaseMouth:
         audio_queue.put(None)
         say_thread.join()
 
-    def say_multiple_stream(self, text_queue, listen_interruption_func, interrupt_queue):
+    def say_multiple_stream(self, text_queue: queue.Queue,
+                            listen_interruption_func: Callable, interrupt_queue: queue.Queue):
+        '''
+        :param text_queue: The queue where the llm adds the predicted tokens
+        :param listen_interruption_func: callable function from the ear class
+        :param interrupt_queue: The queue where True is put when interruption occurred.
+        Receives text from the text_queue. As soon as a sentence is made run_tts is called to
+        synthesize its speech.
+        '''
         response = ''
         all_response = ''
         audio_queue = queue.Queue()
