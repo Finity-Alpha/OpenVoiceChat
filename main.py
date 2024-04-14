@@ -12,8 +12,8 @@ from stt.stt_hf import Ear_hf as Ear
 # from stt.stt_vosk import Ear_vosk as Ear
 
 import torch
-from preprompts import call_pre_prompt, llama_sales
-from tts_parler_descriptions import Male_Voice, Female_Voice
+from prompts import call_pre_prompt, llama_sales
+from prompts import Male_Voice, Female_Voice
 import torchaudio
 import torchaudio.functional as F
 import numpy as np

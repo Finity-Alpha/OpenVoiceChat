@@ -1,8 +1,10 @@
 import torch
 from parler_tts import ParlerTTSForConditionalGeneration
 from transformers import AutoTokenizer
-import soundfile as sf
+from transformers.modeling_outputs import BaseModelOutput
 from tts.base import BaseMouth
+import sounddevice as sd
+
 
 '''
 It generates high-quality speech with features that can be controlled using a 
@@ -17,16 +19,40 @@ etc ....
 '''
 
 class Mouth_parler(BaseMouth):
-    def __init__(self, model_id='parler-tts/parler_tts_mini_v0.1', tts_description='A female speaker with a slightly low-pitched voice delivers her words quite expressively, in a very confined sounding environment with clear audio quality.', device='cuda:0' if torch.cuda.is_available() else 'cpu'):
+    def __init__(self, model_id='parler-tts/parler_tts_mini_v0.1',
+                 tts_description=None,
+                 device='cuda:0' if torch.cuda.is_available() else 'cpu',
+                 temperature=1.0):
+        if tts_description is None:
+            tts_description = ('A female speaker with a slightly low-pitched voice delivers her words quite '
+                               'expressively, in a very confined sounding environment with clear audio quality.')
         self.model = ParlerTTSForConditionalGeneration.from_pretrained(model_id).to(device)
         self.tokenizer = AutoTokenizer.from_pretrained(model_id)
         self.device = device
         self.tts_description = tts_description
+        input_ids = self.tokenizer(tts_description, return_tensors="pt").input_ids.to(device)
+        self.desc_tensor = BaseModelOutput(last_hidden_state=self.model.text_encoder(input_ids=input_ids).last_hidden_state)
+        self.temperature = temperature
         super().__init__(sample_rate=self.model.config.sampling_rate)
 
     def run_tts(self, text):
-        input_ids = self.tokenizer(self.tts_description, return_tensors="pt").input_ids.to(self.device)
         prompt_input_ids = self.tokenizer(text, return_tensors="pt").input_ids.to(self.device)
-        generation = self.model.generate(input_ids=input_ids, prompt_input_ids=prompt_input_ids)
+        generation = self.model.generate(encoder_outputs=self.desc_tensor,
+                                         prompt_input_ids=prompt_input_ids,
+                                         temperature=self.temperature
+                                         )
         audio_arr = generation.cpu().numpy().squeeze()
         return audio_arr
+
+
+if __name__ == '__main__':
+
+    mouth = Mouth_parler(temperature=1)
+
+    text = ("If there's one thing that makes me nervous about the future of self-driving cars, it's that they'll "
+            "replace human drivers.\nI think there's a huge opportunity to make human-driven cars safer and more "
+            "efficient. There's no reason why we can't combine the benefits of self-driving cars with the ease of use "
+            "of human-driven cars.")
+    print(text)
+    mouth.say_multiple(text, lambda x: False)
+    sd.wait()
