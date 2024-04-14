@@ -1,14 +1,7 @@
-import base64
-
 from fastapi import FastAPI, WebSocket
-from fastapi.responses import HTMLResponse
 import uvicorn
 import numpy as np
-import io
-import soundfile as sf
-import sounddevice as sd
 import wave
-from pydub import AudioSegment
 import soundfile as sf
 
 
@@ -16,7 +9,7 @@ app = FastAPI()
 
 
 @app.websocket("/ws")
-async def websocket_endpoint(websocket: WebSocket):
+async def receive_audio(websocket: WebSocket):
     await websocket.accept()
     all_data = b''
     while True:
@@ -27,7 +20,7 @@ async def websocket_endpoint(websocket: WebSocket):
 
 
 @app.websocket("/ws/audio")
-async def audio_websocket(websocket: WebSocket):
+async def send_audio(websocket: WebSocket):
     await websocket.accept()
     wav_file = wave.open('abs.wav', 'rb')
     audio_data = wav_file.readframes(wav_file.getnframes())
