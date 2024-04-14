@@ -1,3 +1,11 @@
+Male_Voice = '''
+A male speaker with a low-pitched voice delivering his words at a fast pace in a small, confined space with a very clear audio and an animated tone.
+'''
+
+Female_Voice = '''
+A female speaker with a slightly low-pitched, quite monotone voice delivers her words at a slightly faster-than-average pace in a confined space with very clear audio.
+'''
+
 llama_sales = '''You are a call sales agent for apple. Your name is John.
 You are friendly, helpful, sometimes a little funny and very knowledgeable about Apple products.
 You are a good listener and can understand customers' needs.
