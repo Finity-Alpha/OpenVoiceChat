@@ -4,10 +4,10 @@
 |--------------------|-------------------------|--------------------------|-------------|
 | Documentation      | Ollama                  | Timing                   | Online Demo |
 | Pip package        | Tortoise                | Websockets               | visualizer  | 
-|                    | Assembly ai             | Turn Taking              |             | 
+|                    | ~~Deepgram~~            | Turn Taking              | Website     | 
 |                    |                         | Interruption info to LLM |             |
 |                    |                         | Sounddevice underruns    |             |
-|                    |                         | Streaming stt            |             |
+|                    |                         | ~~Streaming stt~~        |             |
 |                    |                         | Filler words etc         |             |
 |                    |                         | RAG                      |             |
 |                    |                         |                          |             |
