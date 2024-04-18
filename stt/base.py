@@ -53,7 +53,12 @@ class BaseEar:
         transcription_thread.start()
         audio_thread.join()
         transcription_thread.join()
-        text = transcription_queue.get()
+        text = ''
+        while True:
+            _ = transcription_queue.get()
+            if _ is None:
+                break
+            text += _
         return text
 
     def listen_timing(self):
