@@ -58,7 +58,7 @@ class BaseEar:
             _ = transcription_queue.get()
             if _ is None:
                 break
-            text += _
+            text += _ + ' '
         return text
 
     def listen_timing(self):
