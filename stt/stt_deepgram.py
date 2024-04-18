@@ -22,35 +22,31 @@ class Ear_deepgram(BaseEar):
         extra_headers = {
            'Authorization': 'token ' + self.api_key
         }
-        stop = False
         async def f():
-            async with websockets.connect('wss://api.deepgram.com/v1/listen?encoding=linear16&sample_rate=16000&channels=1',
+            async with websockets.connect('wss://api.deepgram.com/v1/listen?encoding=linear16&sample_rate=16000&channels=1&model=nova-2',
                                           extra_headers=extra_headers) as ws:
                 async def sender(ws):  # sends audio to websocket
                     try:
                         while True:
                             data = audio_queue.get()
                             if data is None:
+                                await ws.send(json.dumps({"type": "CloseStream"}))
                                 break
                             await ws.send(data)
                     except Exception as e:
                         print('Error while sending: ', str(e))
                         raise
-                    global stop
-                    stop = True
 
                 async def receiver(ws):
-                    global stop
-                    all_transcript = ''
                     async for msg in ws:
                         msg = json.loads(msg)
+                        if 'channel' not in msg:
+                            transcription_queue.put(None)
+                            break
                         transcript = msg['channel']['alternatives'][0]['transcript']
-                        all_transcript += transcript
 
                         if transcript:
-                            transcription_queue.put(all_transcript)
-                        if stop:
-                            break
+                            transcription_queue.put(transcript)
 
                 await asyncio.gather(sender(ws), receiver(ws))
         asyncio.run(f())
