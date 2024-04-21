@@ -30,6 +30,9 @@ Some ideas are [here](notes/Ideas.md).
 
 [TODO](notes/TODO.md).
 
+Start with the [bounties](https://docs.google.com/spreadsheets/d/1d2MZTa9FKM4IHLrBs_nMuA2yuLaSY4USzdGH6vRdPbU/edit?usp=sharing) 
+if you want to contribute.
+
 [Installation](INSTALL.md).
 
 ```shell 
