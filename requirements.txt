@@ -4,8 +4,6 @@ pygame
 pyaudio
 phonemizer
 librosa
-tortoise-tts
-TTS
 piper-tts
 piper-phonemize
 vosk
@@ -13,3 +11,9 @@ python-dotenv
 openai
 pydub
 -e git+https://github.com/huggingface/parler-tts.git#egg=parler-tts
+
+pypdf
+langchain
+langchain_openai
+langchain_community
+redisvl
