@@ -23,7 +23,7 @@ class BaseMouth:
     def __init__(self, sample_rate: int):
         self.sample_rate = sample_rate
         self.sentence_stop_pattern = r'[.?](?=\s+\S)'
-        self.interrupted = False
+        self.interrupted = ''
 
     @torch.no_grad()
     def run_tts(self, text: str) -> np.ndarray:
@@ -48,7 +48,7 @@ class BaseMouth:
         :param listen_interruption_func: callable function from the ear class.
         Plays the audios in the queue using sounddevice. Stops if interruption occurred.
         '''
-        self.interrupted = False
+        self.interrupted = ''
         while True:
             output = audio_queue.get()
             if output is None:
@@ -59,7 +59,7 @@ class BaseMouth:
             interruption = listen_interruption_func(duration)
             if interruption:
                 sd.stop()
-                self.interrupted = True
+                self.interrupted = interruption
                 break
             else:
                 sd.wait()
@@ -108,7 +108,8 @@ class BaseMouth:
                     output = self.run_tts(response)
                     audio_queue.put(output)
                 if self.interrupted:
-                    interrupt_queue.put(True)
+                    interrupt_queue.put(self.interrupted)
+                    all_response += ' ...'
                 text_queue.put(all_response)
                 break
             response += text
@@ -121,9 +122,11 @@ class BaseMouth:
                 output = self.run_tts(sentence)
                 audio_queue.put(output)
                 if self.interrupted:
-                    text_queue.put(all_response)
-                    interrupt_queue.put(True)
+                    text_queue.put(all_response + ' ...')
+                    interrupt_queue.put(self.interrupted)
                     break
         audio_queue.put(None)
         say_thread.join()
+        if self.interrupted:
+            interrupt_queue.put(self.interrupted)
 

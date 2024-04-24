@@ -3,13 +3,13 @@ from tts.tts_elevenlabs import Mouth_elevenlabs as Mouth
 # from tts.tts_parler import Mouth_parler as Mouth
 # from tts.tts_xtts import Mouth_xtts as Mouth
 
-# from llm.llm_llama import Chatbot_llama as Chatbot
-from llm.llm_gpt import Chatbot_gpt as Chatbot
+from llm.llm_llama import Chatbot_llama as Chatbot
+# from llm.llm_gpt import Chatbot_gpt as Chatbot
 
 # from llm import Chatbot_hf as Chatbot
 
 from stt.stt_hf import Ear_hf as Ear
-from stt.stt_deepgram import Ear_deepgram as Ear
+# from stt.stt_deepgram import Ear_deepgram as Ear
 # from stt.stt_vosk import Ear_vosk as Ear
 
 import torch
@@ -37,8 +37,9 @@ if __name__ == "__main__":
 
     print("type: exit, quit or stop to end the chat")
     print("Chat started:")
+    pre_interruption_text = ''
     while True:
-        user_input = ear.listen_stream()
+        user_input = pre_interruption_text + ear.listen()
         if user_input.lower() in ["exit", "quit", "stop"]:
             break
         print(user_input)
@@ -48,13 +49,15 @@ if __name__ == "__main__":
         llm_thread = threading.Thread(target=john.generate_response_stream,
                                       args=(user_input, llm_output_queue, interrupt_queue))
         tts_thread = threading.Thread(target=mouth.say_multiple_stream,
-                                      args=(llm_output_queue, lambda x: False, interrupt_queue))
+                                      args=(llm_output_queue, ear.interrupt_listen, interrupt_queue))
 
         llm_thread.start()
         tts_thread.start()
 
         tts_thread.join()
         llm_thread.join()
+        if not interrupt_queue.empty():
+            pre_interruption_text = interrupt_queue.get()
 
         res = llm_output_queue.get()
         print(res)

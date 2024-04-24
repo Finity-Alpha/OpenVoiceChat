@@ -1,4 +1,4 @@
-from preprompts import call_pre_prompt
+from prompts import call_pre_prompt
 from llama_cpp import Llama
 from llm.base import BaseChatbot
 
