@@ -39,7 +39,7 @@ if __name__ == "__main__":
     print("Chat started:")
     pre_interruption_text = ''
     while True:
-        user_input = pre_interruption_text + ear.listen()
+        user_input = pre_interruption_text + ' ' + ear.listen()
         if user_input.lower() in ["exit", "quit", "stop"]:
             break
         print(user_input)
