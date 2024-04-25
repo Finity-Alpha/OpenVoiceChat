@@ -1,0 +1,3 @@
+faiss-cpu
+langchain-chroma
+qdrant-client
