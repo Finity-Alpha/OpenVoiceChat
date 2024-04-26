@@ -41,4 +41,22 @@ python main.py
 
 [Discord](https://discord.gg/M5S2JksapH)
 
+## Installing Required Packages
+### TO install only the base packages
+```shell
+pip install -e git+https://github.com/SalehAhmad1/OpenVoiceChat.git#egg=OpenVoiceChat
+```
 
+### TO install base and functionality specific packages
+```shell
+pip install -e git+https://github.com/SalehAhmad1/OpenVoiceChat.git#egg=OpenVoiceChat[piper]
+```
+
+Similary "piper" can be replaced by any of the following
+- piper
+- vosk
+- llama
+- open_ai
+- tortoise
+- xtts
+- parler_tts
