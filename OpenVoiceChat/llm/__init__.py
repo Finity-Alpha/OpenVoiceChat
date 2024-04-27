@@ -1,6 +1,4 @@
-import base as base
-import llm_gpt as llm_gpt
-import llm_llama as llm_llama
-import llm_hf as llm_hf
-
-__all__ = ['base', 'llm_gpt', 'llm_llama', 'llm_hf']
+from .base import *
+from .llm_gpt import *
+from .llm_llama import *
+from .llm_hf import *
