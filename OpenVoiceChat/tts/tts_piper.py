@@ -2,11 +2,7 @@ import sounddevice as sd
 import piper
 import numpy as np
 import torch
-from tts.base import BaseMouth
-
-
-# Get device
-
+from base import BaseMouth
 
 class Mouth_piper(BaseMouth):
     def __init__(self, device='cpu', model_path='models/en_US-ryan-high.onnx',

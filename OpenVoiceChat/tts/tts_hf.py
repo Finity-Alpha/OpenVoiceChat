@@ -1,7 +1,7 @@
 from transformers import pipeline
 import sounddevice as sd
 import torch
-from tts.base import BaseMouth
+from base import BaseMouth
 
 print()
 print()

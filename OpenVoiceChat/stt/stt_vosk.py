@@ -4,8 +4,7 @@ import json
 import torchaudio
 import torchaudio.functional as F
 import torch
-from stt.base import BaseEar
-
+from base import BaseEar
 
 class Ear_vosk(BaseEar):
     def __init__(self, model_path='models/vosk-model-en-us-0.22', device='cpu', silence_seconds=2):

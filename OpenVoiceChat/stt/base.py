@@ -1,12 +1,11 @@
 import torch
 from ..utils import record_user, record_interruption, record_user_stream
-from vad import VoiceActivityDetection
+from ..vad import VoiceActivityDetection
 import re
 from time import monotonic
 import numpy as np
 from threading import Thread
 from queue import Queue
-
 
 class BaseEar:
     def __init__(self, silence_seconds=3, not_interrupt_words=None):
