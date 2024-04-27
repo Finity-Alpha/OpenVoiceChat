@@ -6,16 +6,16 @@ setup(
     packages=find_packages(),
     install_requires=[
         'sounddevice',
-        # 'transformers',
-        # 'torch',
-        # 'torchaudio',
-        # 'pygame',
-        # 'pyaudio',
-        # 'librosa',
-        # 'pydub',
-        # 'python-dotenv',
-        # 'phonemizer',
-        # 'websockets'
+        'transformers',
+        'torch',
+        'torchaudio',
+        'pygame',
+        'pyaudio',
+        'librosa',
+        'pydub',
+        'python-dotenv',
+        'phonemizer',
+        'websockets'
     ],
     extras_require={
         'piper': ['piper-tts','piper-phonemize'],
