@@ -6,4 +6,4 @@ notes/_*
 venv/
 build/
 data/
-.env
+env/

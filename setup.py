@@ -1,9 +1,9 @@
 from setuptools import setup, find_packages
 
 setup(
-    name='OpenVoiceChat',
+    name='openvoicechat',
     version='2.0',
-    packages=find_packages(),
+    packages=['OpenVoiceChat'],
     install_requires=[
         'sounddevice',
         'transformers',
