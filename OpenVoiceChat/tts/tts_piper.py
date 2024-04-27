@@ -2,7 +2,7 @@ import sounddevice as sd
 import piper
 import numpy as np
 import torch
-from base import BaseMouth
+from .base import BaseMouth
 
 class Mouth_piper(BaseMouth):
     def __init__(self, device='cpu', model_path='models/en_US-ryan-high.onnx',

@@ -1,7 +1,7 @@
 from TTS.api import TTS
 import sounddevice as sd
 import torch
-from base import BaseMouth
+from .base import BaseMouth
 
 class Mouth_xtts(BaseMouth):
     def __init__(self, model_id='tts_models/en/jenny/jenny', device='cpu'):

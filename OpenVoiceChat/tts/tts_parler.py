@@ -2,7 +2,7 @@ import torch
 from parler_tts import ParlerTTSForConditionalGeneration
 from transformers import AutoTokenizer
 from transformers.modeling_outputs import BaseModelOutput
-from base import BaseMouth
+from .base import BaseMouth
 import sounddevice as sd
 
 
