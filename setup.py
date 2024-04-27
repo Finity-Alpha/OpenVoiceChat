@@ -26,5 +26,6 @@ setup(
         'xtts': ['TTS'],
         'parler_tts': ['parler-tts @ git+https://github.com/huggingface/parler-tts.git'],
     },
-    dependency_links=['https://github.com/huggingface/parler-tts.git']
+    dependency_links=['https://github.com/huggingface/parler-tts.git'],
+    include_package_data=True
 )
