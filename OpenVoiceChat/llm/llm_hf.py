@@ -4,7 +4,7 @@ import torch.nn.functional as F
 import warnings
 import sys
 from transformers import AutoTokenizer, AutoModelForCausalLM, AutoModelForSeq2SeqLM
-from ..preprompts import sales_pre_prompt
+from .preprompts import sales_pre_prompt
 
 warnings.filterwarnings("ignore")
 
