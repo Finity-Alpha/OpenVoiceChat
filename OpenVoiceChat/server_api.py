@@ -3,7 +3,7 @@ from werkzeug.utils import secure_filename
 import os
 from flask import Flask, jsonify, request, send_file, g, render_template
 from main import Ear, Chatbot, Mouth
-from preprompts import call_pre_prompt, advisor_pre_prompt, sales_pre_prompt
+from .preprompts import call_pre_prompt, advisor_pre_prompt, sales_pre_prompt
 import torch
 import librosa
 import soundfile as sf

@@ -1,6 +1,6 @@
 import torch
 import numpy as np
-from utils import record_user
+from .utils import record_user
 
 class VoiceActivityDetection:
     def __init__(self, sampling_rate=16000):

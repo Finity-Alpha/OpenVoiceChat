@@ -1,9 +1,7 @@
 import torch
 from seamless_communication.models.inference import Translator as Translator_m4t
-from utils import record
+from .utils import record
 import sounddevice as sd
-
-
 
 class Translator:
     def __init__(self, device, lang='urd'):
