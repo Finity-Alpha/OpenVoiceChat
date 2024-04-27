@@ -7,3 +7,4 @@ venv/
 build/
 data/
 env/
+src/
