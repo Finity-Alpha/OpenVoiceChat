@@ -1,4 +1,6 @@
 import os
+print(f'base: {os.getcwd()}')
+
 dir = os.path.dirname(os.path.abspath(__file__))
 print(f'dir: {dir}')
 
