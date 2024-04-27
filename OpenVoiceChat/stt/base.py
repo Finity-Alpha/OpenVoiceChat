@@ -1,5 +1,5 @@
 import torch
-from utils import record_user, record_interruption, record_user_stream
+from ..utils import record_user, record_interruption, record_user_stream
 from vad import VoiceActivityDetection
 import re
 from time import monotonic
