@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 setup(
     name='openvoicechat',
     version='2.0',
-    packages=find_packages(),
+    packages=['OpenVoiceChat'],
     install_requires=[
         'sounddevice',
         'transformers',
@@ -27,5 +27,5 @@ setup(
         'parler_tts': ['parler-tts @ git+https://github.com/huggingface/parler-tts.git'],
     },
     dependency_links=['https://github.com/huggingface/parler-tts.git'],
-    include_package_data=True
+    include_package_data=True,
 )
