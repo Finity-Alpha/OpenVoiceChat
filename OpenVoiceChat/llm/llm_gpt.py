@@ -1,8 +1,6 @@
 from openai import OpenAI
 from dotenv import load_dotenv
-import os
-print(os.getcwd())
-from base import BaseChatbot
+from .base import BaseChatbot
 import os
 
 class Chatbot_gpt(BaseChatbot):

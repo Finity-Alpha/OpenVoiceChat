@@ -1,6 +1,6 @@
 # from preprompts import call_pre_prompt
 from llama_cpp import Llama
-from llm.base import BaseChatbot
+from .base import BaseChatbot
 
 
 class Chatbot_llama(BaseChatbot):
