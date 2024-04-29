@@ -13,16 +13,9 @@ class VectorStoreQdrant(VectorStore):
         return vectorizer
 
     
-    def ingest_docs(self,docs :list):
-        self.db.add_documents(docs)
-        return
-    
     def ingest_text(self, text: str):
         self.db.add_texts([text])
         return
-    
-    def top_k_docs(self,query: str,num=2):
-        return self.db.similarity_search(query,num)
     
     def top_k_texts(self,query: str,num=2):
         rt = self.db.similarity_search(query,num)
