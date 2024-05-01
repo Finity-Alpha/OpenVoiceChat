@@ -2,7 +2,7 @@ import numpy as np
 import pyaudio
 import audioop
 
-CHUNK = int(1024*2)
+CHUNK = int(1024 * 2)
 FORMAT = pyaudio.paInt16
 CHANNELS = 1
 RATE = 16000
@@ -95,3 +95,26 @@ def record_user(silence_seconds, vad):
     frames = frames / (1 << 15)
 
     return frames.astype(np.float32)
+
+
+def record_user_stream(silence_seconds, vad, audio_queue):
+    frames = []
+
+    started = False
+    one_second_iters = int(RATE / CHUNK)
+    stream = make_stream()
+    print("* recording")
+
+    print("*listening to speech*")
+    while True:
+        data = stream.read(CHUNK)
+        frames.append(data)
+        audio_queue.put(data)
+        contains_speech = vad.contains_speech(frames[int(-one_second_iters * silence_seconds):])
+        if not started and contains_speech:
+            started = True
+        if started and contains_speech is False:
+            break
+    audio_queue.put(None)
+    stream.close()
+    print("* done recording")

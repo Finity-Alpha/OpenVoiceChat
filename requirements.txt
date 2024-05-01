@@ -12,3 +12,4 @@ vosk
 python-dotenv
 openai
 pydub
+-e git+https://github.com/huggingface/parler-tts.git#egg=parler-tts

@@ -69,3 +69,16 @@ They aim for a speech to speech model for chat.
 
 Also have a hosted version [company](https://www.vocode.dev/).
 Codebase is bad again. Not clear if they support interruptions.
+
+### [Bolna AI](https://github.com/bolna-ai/bolna)
+
+Very very similar to ovc. Codebase a little complicated. 
+Business model is good. Good features, has twillo support,
+uses tts, stt, llm services. Also supports local models.
+Also very fast. 
+
+
+### Tincans(https://tincans.ai/)
+
+Making Speech language models. Very impressive.
+We should also train adapters for stt -> llm and llm -> tts models.
