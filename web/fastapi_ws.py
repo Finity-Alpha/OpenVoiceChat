@@ -18,6 +18,14 @@ async def receive_audio(websocket: WebSocket):
         audio_array = np.frombuffer(all_data, dtype=np.float32)
         sf.write("audio_data.wav", audio_array, 44100)
 
+## NOTES:
+# The above function receives the audio data from the websocket
+# If we can make a stream out of this data, we can easily
+# integrate it with the existing codebase
+# data = stream.read(CHUNK)
+# data = websocket.read()
+
+
 
 @app.websocket("/ws/audio")
 async def send_audio(websocket: WebSocket):

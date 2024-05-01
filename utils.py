@@ -17,6 +17,7 @@ def make_stream():
                   frames_per_buffer=CHUNK)
 
 
+
 # def record_audio(record_seconds=100):
 #     # yield audio frames
 #
