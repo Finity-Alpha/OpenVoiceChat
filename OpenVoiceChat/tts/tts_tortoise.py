@@ -1,6 +1,4 @@
 import torch
-from tortoise.api_fast import TextToSpeech
-from tortoise.utils.audio import load_voice
 import sounddevice as sd
 import queue
 import threading
@@ -20,6 +18,8 @@ def play_audio_paralell(audio_queue, sample_rate, listen_interruption_func):
 
 class Mouth:
     def __init__(self, device='cpu'):
+        from tortoise.api_fast import TextToSpeech
+        from tortoise.utils.audio import load_voice
         self.model = TextToSpeech(use_deepspeed=False, kv_cache=True, half=True)
         self.sample_rate = 24000
         self.voice_samples, self.conditioning_latents = load_voice('tom')

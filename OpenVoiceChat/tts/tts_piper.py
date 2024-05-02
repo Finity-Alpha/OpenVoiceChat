@@ -1,5 +1,4 @@
 import sounddevice as sd
-import piper
 import numpy as np
 import torch
 from .base import BaseMouth
@@ -7,6 +6,7 @@ from .base import BaseMouth
 class Mouth_piper(BaseMouth):
     def __init__(self, device='cpu', model_path='models/en_US-ryan-high.onnx',
                  config_path='models/en_en_US_ryan_high_en_US-ryan-high.onnx.json'):
+        import piper
         self.model = piper.PiperVoice.load(model_path=model_path,
                                            config_path=config_path,
                                            use_cuda=True if device == 'cuda' else False)
@@ -17,7 +17,6 @@ class Mouth_piper(BaseMouth):
         for i in self.model.synthesize_stream_raw(text):
             audio += i
         return np.frombuffer(audio, dtype=np.int16)
-
 
 
 if __name__ == '__main__':
