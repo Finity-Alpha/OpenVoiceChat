@@ -60,3 +60,4 @@ Similary "piper" can be replaced by any of the following
 - tortoise
 - xtts
 - parler_tts
+- transformers
