@@ -44,12 +44,12 @@ python main.py
 ## Installing Required Packages
 ### TO install only the base packages
 ```shell
-pip install -e git+https://github.com/SalehAhmad1/OpenVoiceChat.git#egg=OpenVoiceChat
+pip install -e git+https://github.com/fakhirali/OpenVoiceChat.git#egg=OpenVoiceChat
 ```
 
 ### TO install base and functionality specific packages
 ```shell
-pip install -e git+https://github.com/SalehAhmad1/OpenVoiceChat.git#egg=OpenVoiceChat[piper]
+pip install -e git+https://github.com/fakhirali/OpenVoiceChat.git#egg=OpenVoiceChat[piper]
 ```
 
 Similary "piper" can be replaced by any of the following
