@@ -2,11 +2,10 @@ from setuptools import setup, find_packages
 
 setup(
     name='openvoicechat',
-    version='2.0',
+    version='0.1',
     packages=find_packages(),
     install_requires=[
         'sounddevice',
-        'transformers',
         'torch',
         'torchaudio',
         'pygame',
@@ -18,6 +17,7 @@ setup(
         'websockets'
     ],
     extras_require={
+        'transformers' : ['transformers'],
         'piper': ['piper-tts','piper-phonemize'],
         'vosk': ['vosk'],
         'llama': ['llama-cpp-python'],
