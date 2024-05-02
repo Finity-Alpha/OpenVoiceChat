@@ -11,7 +11,6 @@ import asyncio
 print()
 print()
 
-
 class Ear_deepgram(BaseEar):
     def __init__(self, silence_seconds=2):
         super().__init__(silence_seconds)

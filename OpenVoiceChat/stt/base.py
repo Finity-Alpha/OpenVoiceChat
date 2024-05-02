@@ -1,4 +1,9 @@
 import torch
+import os
+import sys
+dir = os.path.dirname(os.path.abspath(__file__))
+new_path = os.sep.join(dir.split('/')[:-1])
+sys.path.append(new_path)
 from utils import record_user, record_interruption, record_user_stream
 from vad import VoiceActivityDetection
 import re
@@ -6,7 +11,6 @@ from time import monotonic
 import numpy as np
 from threading import Thread
 from queue import Queue
-
 
 class BaseEar:
     def __init__(self, silence_seconds=3, not_interrupt_words=None):

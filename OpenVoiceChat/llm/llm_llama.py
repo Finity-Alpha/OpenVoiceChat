@@ -1,11 +1,10 @@
-from prompts import call_pre_prompt
-from llama_cpp import Llama
-from llm.base import BaseChatbot
-
+# from preprompts import call_pre_prompt
+from .base import BaseChatbot
 
 class Chatbot_llama(BaseChatbot):
     def __init__(self, model_path='models/llama-2-7b.Q4_K_M.gguf', device='cuda', sys_prompt='',
                  break_words=None, name='[JOHN]'):
+        from llama_cpp import Llama
         if break_words is None:
             break_words = ['[USER]', '[END]']
         self.model = Llama(model_path=model_path, n_ctx=4096,

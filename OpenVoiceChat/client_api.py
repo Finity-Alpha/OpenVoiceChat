@@ -1,8 +1,7 @@
-from utils import record
+from .utils import record
 import soundfile as sf
 import requests
 from playsound import playsound
-
 
 url = 'https://f7d2-154-192-45-8.ngrok-free.app'
 file_path = 'media/test.wav'

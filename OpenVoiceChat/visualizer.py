@@ -1,7 +1,6 @@
 import pygame
 import threading
 
-
 def keep_alive():
     while True:
         pygame.event.pump()

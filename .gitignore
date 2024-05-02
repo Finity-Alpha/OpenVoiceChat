@@ -1,9 +1,6 @@
-*ipynb
-__pycache__/
-.ipynb_checkpoints/
-models/
-notes/_*
-venv/
-build/
-data/
 .env
+_*
+*.ipynb
+models/
+data/
+.ipynb_checkpoints/
