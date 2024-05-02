@@ -1,15 +1,14 @@
-from transformers import pipeline
 import sounddevice as sd
 import torch
-from tts.base import BaseMouth
+from .base import BaseMouth
 
 print()
 print()
-
 
 class Mouth_hf(BaseMouth):
     def __init__(self, model_id='kakao-enterprise/vits-vctk', device='cpu',
                  forward_params=None):
+        from transformers import pipeline
         self.pipe = pipeline('text-to-speech', model=model_id, device=device)
         self.device = device
         self.forward_params = forward_params
@@ -23,7 +22,6 @@ class Mouth_hf(BaseMouth):
         output = self.pipe(text, forward_params=self.forward_params)
         self.sample_rate = output['sampling_rate']
         return output['audio'][0]
-
 
 if __name__ == '__main__':
     device = 'cuda' if torch.cuda.is_available() else 'cpu'

@@ -3,8 +3,6 @@ from seamless_communication.models.inference import Translator as Translator_m4t
 from utils import record
 import sounddevice as sd
 
-
-
 class Translator:
     def __init__(self, device, lang='urd'):
         self.model = Translator_m4t("seamlessM4T_medium", vocoder_name_or_card="vocoder_36langs",

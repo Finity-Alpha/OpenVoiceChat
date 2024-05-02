@@ -1,14 +1,10 @@
-from TTS.api import TTS
 import sounddevice as sd
 import torch
-from tts.base import BaseMouth
-
-
-# Get device
-
+from .base import BaseMouth
 
 class Mouth_xtts(BaseMouth):
     def __init__(self, model_id='tts_models/en/jenny/jenny', device='cpu'):
+        from TTS.api import TTS
         self.model = TTS(model_id)
         self.device = device
         self.model.to(device)

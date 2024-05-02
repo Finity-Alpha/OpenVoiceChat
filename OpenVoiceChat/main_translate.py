@@ -1,4 +1,4 @@
-from llm import Chatbot
+from .llm import Chatbot
 from translation import Translator
 import torch
 
