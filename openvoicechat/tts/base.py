@@ -132,10 +132,10 @@ class BaseMouth:
                 break
             if text is None:
                 break
+        audio_queue.put((None, ''))
         say_thread.join()
         if self.interrupted:
             all_response = self._handle_interruption(all_response, interrupt_queue)
         text_queue.queue.clear()
         text_queue.put('. '.join(all_response))
-        audio_queue.put((None, ''))
 
