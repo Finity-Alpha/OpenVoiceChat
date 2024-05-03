@@ -10,8 +10,6 @@ import sounddevice as sd
 import requests
 import os
 
-print()
-print()
 
 class Mouth_elevenlabs(BaseMouth):
     def __init__(self, model_id='eleven_turbo_v2', voice_id='IKne3meq5aSn9XLyUdCD'):

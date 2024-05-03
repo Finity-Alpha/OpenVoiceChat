@@ -2,8 +2,6 @@ import sounddevice as sd
 import torch
 from .base import BaseMouth
 
-print()
-print()
 
 class Mouth_hf(BaseMouth):
     def __init__(self, model_id='kakao-enterprise/vits-vctk', device='cpu',

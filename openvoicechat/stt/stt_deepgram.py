@@ -8,8 +8,6 @@ import websockets
 import json
 import asyncio
 
-print()
-print()
 
 class Ear_deepgram(BaseEar):
     def __init__(self, silence_seconds=2):
