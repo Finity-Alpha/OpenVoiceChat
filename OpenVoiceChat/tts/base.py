@@ -86,7 +86,13 @@ class BaseMouth:
         audio_queue.put((None, ''))
         say_thread.join()
 
-
+    def _handle_interruption(self, responses_list, interrupt_queue):
+        interrupt_transcription, interrupt_text = self.interrupted
+        idx = responses_list.index(interrupt_text)
+        assert idx != -1, "Interrupted text not found in responses list. This should not happen. Raise an issue."
+        responses_list = responses_list[:idx] + ['...']
+        interrupt_queue.put(interrupt_transcription)
+        return responses_list
 
     def say_multiple_stream(self, text_queue: queue.Queue,
                             listen_interruption_func: Callable, interrupt_queue: queue.Queue):
@@ -105,41 +111,31 @@ class BaseMouth:
         while True:
             text = text_queue.get()
             if text is None:
-                response = remove_words_in_brackets_and_spaces(response).strip()
-                if response.strip() != '':
-                    output = self.run_tts(response)
-                    audio_queue.put((output, response))
-                    all_response.append(response)
-                if self.interrupted:
-                    interrupt_transcription, interrupt_text = self.interrupted
-                    interrupt_queue.put(interrupt_transcription)
-                    idx = 0 if all_response.index(interrupt_text)-1 < 0 else all_response.index(interrupt_text)-1
-                    all_response = all_response[:idx] + ['...']
+                sentence = remove_words_in_brackets_and_spaces(response).strip()
+            else:
+                response += text
+                if bool(re.search(self.sentence_stop_pattern, response)):
+                    sentences = re.split(self.sentence_stop_pattern, response, maxsplit=1)
+                    sentence = sentences[0]
+                    response = sentences[1]
+                else:
+                    continue
+            if sentence.strip() == '':
                 break
-            response += text
-            if bool(re.search(self.sentence_stop_pattern, response)):
-                sentences = re.split(self.sentence_stop_pattern, response, maxsplit=1)
-                sentence = sentences[0]
-                response = sentences[1]
-                sentence = remove_words_in_brackets_and_spaces(sentence).strip()
-                output = self.run_tts(sentence)
-                audio_queue.put((output, sentence))
-                all_response.append(sentence)
-                if self.interrupted:
-                    interrupt_transcription, interrupt_text = self.interrupted
-                    idx = 0 if all_response.index(interrupt_text) - 1 < 0 else all_response.index(interrupt_text) - 1
-                    all_response = all_response[:idx] + ['...']
-                    text_queue.put('. '.join(all_response))
-                    interrupt_queue.put(interrupt_transcription)
-                    break
-        audio_queue.put((None, ''))
+            sentence = remove_words_in_brackets_and_spaces(sentence).strip()
+            output = self.run_tts(sentence)
+            audio_queue.put((output, sentence))
+            all_response.append(sentence)
+            if self.interrupted:
+                all_response = self._handle_interruption(all_response, interrupt_queue)
+                self.interrupted = ''
+                break
+            if text is None:
+                break
         say_thread.join()
         if self.interrupted:
-            interrupt_transcription, interrupt_text = self.interrupted
-            idx = all_response.index(interrupt_text)
-            all_response = all_response[:idx] + ['...']
-            text_queue.put('. '.join(all_response))
-            interrupt_queue.put(interrupt_transcription)
-        else:
-            text_queue.put('. '.join(all_response))
+            all_response = self._handle_interruption(all_response, interrupt_queue)
+        text_queue.queue.clear()
+        text_queue.put('. '.join(all_response))
+        audio_queue.put((None, ''))
 

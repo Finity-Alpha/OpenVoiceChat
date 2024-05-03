@@ -1,5 +1,5 @@
-# from tts.tts_piper import Mouth_piper as Mouth
-from tts.tts_elevenlabs import Mouth_elevenlabs as Mouth
+from tts.tts_piper import Mouth_piper as Mouth
+# from tts.tts_elevenlabs import Mouth_elevenlabs as Mouth
 # from tts.tts_parler import Mouth_parler as Mouth
 # from tts.tts_xtts import Mouth_xtts as Mouth
 
@@ -25,7 +25,7 @@ if __name__ == "__main__":
 
     print('loading models...')
 
-    ear = Ear(silence_seconds=2)
+    ear = Ear(silence_seconds=2, device=device)
     audio, sr = torchaudio.load('media/my_voice.wav')
     audio = F.resample(audio, sr, 16_000)[0]
     # ear.transcribe(np.array(audio))
@@ -60,6 +60,6 @@ if __name__ == "__main__":
             pre_interruption_text = interrupt_queue.get()
 
         res = llm_output_queue.get()
-        print(res)
+        print('res ', res)
         if '[END]' in res:
             break
