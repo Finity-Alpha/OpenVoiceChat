@@ -59,5 +59,4 @@ Similary "piper" can be replaced by any of the following
 - open_ai
 - tortoise
 - xtts
-- parler_tts
 - transformers

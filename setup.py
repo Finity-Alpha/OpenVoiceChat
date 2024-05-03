@@ -24,7 +24,6 @@ setup(
         'open_ai': ['openai'],
         'tortoise': ['tortoise-tts'],
         'xtts': ['TTS'],
-        'parler_tts': ['parler-tts @ git+https://github.com/huggingface/parler-tts.git'],
     },
-    dependency_links=['https://github.com/huggingface/parler-tts.git'],
+    dependency_links=[],
 )

@@ -5,3 +5,4 @@ models/
 data/
 .ipynb_checkpoints/
 venv/
+dist/
