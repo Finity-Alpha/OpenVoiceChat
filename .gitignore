@@ -4,3 +4,4 @@ _*
 models/
 data/
 .ipynb_checkpoints/
+venv/
