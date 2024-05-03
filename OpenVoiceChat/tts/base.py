@@ -23,7 +23,7 @@ class BaseMouth:
     def __init__(self, sample_rate: int):
         self.sample_rate = sample_rate
         self.sentence_stop_pattern = r'[.?](?=\s+\S)'
-        self.interrupted = False
+        self.interrupted = ''
 
     @torch.no_grad()
     def run_tts(self, text: str) -> np.ndarray:
@@ -48,9 +48,9 @@ class BaseMouth:
         :param listen_interruption_func: callable function from the ear class.
         Plays the audios in the queue using sounddevice. Stops if interruption occurred.
         '''
-        self.interrupted = False
+        self.interrupted = ''
         while True:
-            output = audio_queue.get()
+            output, text = audio_queue.get()
             if output is None:
                 break
             # get the duration of audio
@@ -59,7 +59,7 @@ class BaseMouth:
             interruption = listen_interruption_func(duration)
             if interruption:
                 sd.stop()
-                self.interrupted = True
+                self.interrupted = (interruption, text)
                 break
             else:
                 sd.wait()
@@ -80,11 +80,19 @@ class BaseMouth:
         say_thread.start()
         for sentence in sentences:
             output = self.run_tts(sentence)
-            audio_queue.put(output)
+            audio_queue.put((output, sentence))
             if self.interrupted:
                 break
-        audio_queue.put(None)
+        audio_queue.put((None, ''))
         say_thread.join()
+
+    def _handle_interruption(self, responses_list, interrupt_queue):
+        interrupt_transcription, interrupt_text = self.interrupted
+        idx = responses_list.index(interrupt_text)
+        assert idx != -1, "Interrupted text not found in responses list. This should not happen. Raise an issue."
+        responses_list = responses_list[:idx] + ['...']
+        interrupt_queue.put(interrupt_transcription)
+        return responses_list
 
     def say_multiple_stream(self, text_queue: queue.Queue,
                             listen_interruption_func: Callable, interrupt_queue: queue.Queue):
@@ -96,34 +104,38 @@ class BaseMouth:
         synthesize its speech.
         '''
         response = ''
-        all_response = ''
+        all_response = []
         audio_queue = queue.Queue()
         say_thread = threading.Thread(target=self.say, args=(audio_queue, listen_interruption_func))
         say_thread.start()
         while True:
             text = text_queue.get()
             if text is None:
-                response = remove_words_in_brackets_and_spaces(response).strip()
-                if response.strip() != '':
-                    output = self.run_tts(response)
-                    audio_queue.put(output)
-                if self.interrupted:
-                    interrupt_queue.put(True)
-                text_queue.put(all_response)
+                sentence = remove_words_in_brackets_and_spaces(response).strip()
+            else:
+                response += text
+                if bool(re.search(self.sentence_stop_pattern, response)):
+                    sentences = re.split(self.sentence_stop_pattern, response, maxsplit=1)
+                    sentence = sentences[0]
+                    response = sentences[1]
+                else:
+                    continue
+            if sentence.strip() == '':
                 break
-            response += text
-            all_response += text
-            if bool(re.search(self.sentence_stop_pattern, response)):
-                sentences = re.split(self.sentence_stop_pattern, response, maxsplit=1)
-                sentence = sentences[0]
-                response = sentences[1]
-                sentence = remove_words_in_brackets_and_spaces(sentence).strip()
-                output = self.run_tts(sentence)
-                audio_queue.put(output)
-                if self.interrupted:
-                    text_queue.put(all_response)
-                    interrupt_queue.put(True)
-                    break
-        audio_queue.put(None)
+            sentence = remove_words_in_brackets_and_spaces(sentence).strip()
+            output = self.run_tts(sentence)
+            audio_queue.put((output, sentence))
+            all_response.append(sentence)
+            if self.interrupted:
+                all_response = self._handle_interruption(all_response, interrupt_queue)
+                self.interrupted = ''
+                break
+            if text is None:
+                break
         say_thread.join()
+        if self.interrupted:
+            all_response = self._handle_interruption(all_response, interrupt_queue)
+        text_queue.queue.clear()
+        text_queue.put('. '.join(all_response))
+        audio_queue.put((None, ''))
 
