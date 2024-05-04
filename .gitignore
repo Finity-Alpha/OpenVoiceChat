@@ -1,8 +1,9 @@
 .env
-_*
 *.ipynb
 models/
 data/
 .ipynb_checkpoints/
 venv/
 dist/
+_*.md
+*.egg-info/

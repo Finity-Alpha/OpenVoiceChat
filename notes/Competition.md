@@ -51,6 +51,11 @@ function calling.
 
 Similar to Retell AI, they also have an endpointing model.
 
+### [Synthflow](https://synthflow.ai/)
+
+They have specific applications for industries.
+Seems like the same stuff.
+
 ## Open Source
 
 ### [Bud-e](https://github.com/LAION-AI/natural_voice_assistant)
