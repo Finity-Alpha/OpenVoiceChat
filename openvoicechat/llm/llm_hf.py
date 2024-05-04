@@ -3,14 +3,13 @@ import numpy as np
 import torch.nn.functional as F
 import warnings
 import sys
-from transformers import AutoTokenizer, AutoModelForCausalLM, AutoModelForSeq2SeqLM
-from preprompts import sales_pre_prompt
+from prompts import sales_pre_prompt
 
 warnings.filterwarnings("ignore")
 
-
 class Chatbot:
     def __init__(self, model_name='stabilityai/stablelm-3b-4e1t', device='cuda'):
+        from transformers import AutoTokenizer, AutoModelForCausalLM, AutoModelForSeq2SeqLM
         self.model = AutoModelForCausalLM.from_pretrained(model_name, torch_dtype=torch.bfloat16, trust_remote_code=True)
         self.tokenizer = AutoTokenizer.from_pretrained(model_name)
 

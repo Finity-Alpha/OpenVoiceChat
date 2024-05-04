@@ -39,7 +39,7 @@ class BaseChatbot:
         '''
         :param input_text: The user input
         :param output_queue: The text output queue where the result is accumulated.
-        :param interrupt_queue: The interrupt queue which stores true if interruption occurred. Used to stop generating.
+        :param interrupt_queue: The interrupt queue which stores the transcription if interruption occurred. Used to stop generating.
         :return: The chatbot's response after running self.post_process
         '''
         out = self.run(input_text)

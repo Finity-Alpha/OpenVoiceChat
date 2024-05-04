@@ -1,11 +1,10 @@
-from openai import OpenAI
-from dotenv import load_dotenv
-from llm.base import BaseChatbot
+from .base import BaseChatbot
 import os
 
 class Chatbot_gpt(BaseChatbot):
     def __init__(self, sys_prompt='', Model='gpt-3.5-turbo'):
-
+        from openai import OpenAI
+        from dotenv import load_dotenv
         load_dotenv()
         OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
         self.MODEL = Model

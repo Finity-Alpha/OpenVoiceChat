@@ -78,7 +78,7 @@ uses tts, stt, llm services. Also supports local models.
 Also very fast. 
 
 
-### Tincans(https://tincans.ai/)
+### [Tincans](https://tincans.ai/)
 
 Making Speech language models. Very impressive.
 We should also train adapters for stt -> llm and llm -> tts models.

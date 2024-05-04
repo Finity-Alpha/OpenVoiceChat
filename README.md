@@ -41,4 +41,22 @@ python main.py
 
 [Discord](https://discord.gg/M5S2JksapH)
 
+## Installing Required Packages
+### To install only the base packages
+```shell
+pip install openvoicechat
+```
 
+### To install base and functionality specific packages
+```shell
+pip install openvoicechat[piper,xtts]
+```
+
+similarly "piper" can be replaced by any of the following
+- piper
+- vosk
+- llama
+- open_ai
+- tortoise
+- xtts
+- transformers

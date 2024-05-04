@@ -1,4 +1,9 @@
 import torch
+import os
+import sys
+dir = os.path.dirname(os.path.abspath(__file__))
+new_path = os.sep.join(dir.split('/')[:-1])
+sys.path.append(new_path)
 from utils import record_user, record_interruption, record_user_stream
 from vad import VoiceActivityDetection
 import re
@@ -6,7 +11,6 @@ from time import monotonic
 import numpy as np
 from threading import Thread
 from queue import Queue
-
 
 class BaseEar:
     def __init__(self, silence_seconds=3, not_interrupt_words=None):
@@ -72,7 +76,7 @@ class BaseEar:
         end = monotonic()
         return text, end - start
 
-    def interrupt_listen(self, record_seconds=100) -> bool:
+    def interrupt_listen(self, record_seconds=100) -> str:
         '''
         :param record_seconds: Max seconds to record for
         :return: boolean indicating the if an interruption occured
@@ -84,7 +88,7 @@ class BaseEar:
             interruption_audio = record_interruption(self.vad, record_seconds)
             # duration of interruption audio
             if interruption_audio is None:
-                return False
+                return ''
             else:
                 duration = len(interruption_audio) / 16_000
                 text = self.transcribe(interruption_audio)
@@ -92,8 +96,7 @@ class BaseEar:
                 text = re.sub(r'[^\w\s]', '', text)
                 text = text.lower()
                 text = text.strip()
-                print(text)
                 if text in self.not_interrupt_words:
                     record_seconds -= duration
                 else:
-                    return True
+                    return text
