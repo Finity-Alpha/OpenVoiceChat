@@ -95,7 +95,9 @@ class BaseMouth:
         return responses_list
 
     def say_multiple_stream(self, text_queue: queue.Queue,
-                            listen_interruption_func: Callable, interrupt_queue: queue.Queue):
+                            listen_interruption_func: Callable,
+                            interrupt_queue: queue.Queue,
+                            audio_queue: queue.Queue = None):
         '''
         :param text_queue: The queue where the llm adds the predicted tokens
         :param listen_interruption_func: callable function from the ear class
@@ -105,7 +107,8 @@ class BaseMouth:
         '''
         response = ''
         all_response = []
-        audio_queue = queue.Queue()
+        if audio_queue is None:
+            audio_queue = queue.Queue()
         say_thread = threading.Thread(target=self.say, args=(audio_queue, listen_interruption_func))
         say_thread.start()
         while True:
