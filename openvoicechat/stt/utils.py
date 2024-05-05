@@ -1,3 +1,5 @@
+# This is where all the recordings take place
+
 import numpy as np
 import pyaudio
 import audioop
