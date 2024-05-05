@@ -2,13 +2,13 @@ from .base import BaseChatbot
 import os
 
 class Chatbot_gpt(BaseChatbot):
-    def __init__(self, sys_prompt='', Model='gpt-3.5-turbo'):
+    def __init__(self, sys_prompt='',
+                 Model='gpt-3.5-turbo',
+                 api_key=''):
         from openai import OpenAI
         from dotenv import load_dotenv
-        load_dotenv()
-        OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
         self.MODEL = Model
-        self.client = OpenAI(api_key=OPENAI_API_KEY)
+        self.client = OpenAI(api_key=api_key)
         self.messages = []
         self.messages.append({"role": "system", "content": sys_prompt})
 

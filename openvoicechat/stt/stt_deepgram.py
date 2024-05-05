@@ -10,17 +10,17 @@ import asyncio
 
 
 class Ear_deepgram(BaseEar):
-    def __init__(self, silence_seconds=2):
+    def __init__(self, silence_seconds=2, api_key=''):
         super().__init__(silence_seconds)
-        load_dotenv()
-        self.api_key = os.getenv('DEEPGRAM_API_KEY')
+        self.api_key = api_key
 
     def transcribe_stream(self, audio_queue, transcription_queue):
         extra_headers = {
            'Authorization': 'token ' + self.api_key
         }
         async def f():
-            async with websockets.connect('wss://api.deepgram.com/v1/listen?encoding=linear16&sample_rate=16000&channels=1&model=nova-2',
+            async with websockets.connect('wss://api.deepgram.com/v1/listen?encoding=linear16&sample_rate=16000'
+                                          '&channels=1&model=nova-2',
                                           extra_headers=extra_headers) as ws:
                 async def sender(ws):  # sends audio to websocket
                     try:

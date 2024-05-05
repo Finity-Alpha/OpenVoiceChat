@@ -1,5 +1,4 @@
 import sounddevice as sd
-import torch
 import re
 from time import monotonic
 import queue
@@ -25,7 +24,6 @@ class BaseMouth:
         self.sentence_stop_pattern = r'[.?](?=\s+\S)'
         self.interrupted = ''
 
-    @torch.no_grad()
     def run_tts(self, text: str) -> np.ndarray:
         '''
         :param text: The text to synthesize speech for
