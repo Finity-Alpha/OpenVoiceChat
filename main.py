@@ -2,10 +2,9 @@ from openvoicechat.tts.tts_piper import Mouth_piper as Mouth
 from openvoicechat.llm.llm_gpt import Chatbot_gpt as Chatbot
 from openvoicechat.stt.stt_hf import Ear_hf as Ear
 import torch
-from openvoicechat.prompts import llama_sales
+from openvoicechat.llm.prompts import llama_sales
 import torchaudio
 import torchaudio.functional as F
-import numpy as np
 import threading
 import queue
 

@@ -3,7 +3,6 @@ import numpy as np
 import torch.nn.functional as F
 import warnings
 import sys
-from prompts import sales_pre_prompt
 
 warnings.filterwarnings("ignore")
 
@@ -53,6 +52,8 @@ class Chatbot:
 
 
 if __name__ == "__main__":
+    from prompts import sales_pre_prompt
+
     preprompt = sales_pre_prompt
     john = Chatbot()
     break_word = '[USER]'

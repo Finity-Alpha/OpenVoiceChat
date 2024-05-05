@@ -3,7 +3,7 @@
 ### How are interruptions handled?
 
 The [base ear class](/openvoicechat/stt/base.py) has a interrupt_listen function.
-The function calls the record_interruption function from [utils.py](/openvoicechat/utils.py).
+The function calls the record_interruption function from [utils.py](/openvoicechat/stt/utils.py).
 The record_interruption function records audio and runs [silero-vad](/openvoicechat/vad.py) on the last 2 seconds
 if speech is detected then the audio is returned to the interrupt_listen function.
 Inside the interrupt_listen function the audio is transcribed and if the transcription 
@@ -14,7 +14,7 @@ the interruption flag to True.
 
 ### Low Latency stuff
 
-The record_user function in [utils.py](/openvoicechat/utils.py) records until 2 seconds of non VAD audio is detected.
+The record_user function in [utils.py](/openvoicechat/stt/utils.py) records until 2 seconds of non VAD audio is detected.
 Then the audio is transcribed and sent to the llm. The llm streams the response token by token. 
 Once a sentence is completed the llm sends it to the [mouth class](/openvoicechat/tts/base.py) for tts. The tts gets played and 
 each successive sentence's tts output is queued up.
