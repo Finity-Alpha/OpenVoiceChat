@@ -4,8 +4,6 @@ from openvoicechat.stt.stt_hf import Ear_hf as Ear
 from openvoicechat.utils import run_chat
 import torch
 from openvoicechat.llm.prompts import llama_sales
-import torchaudio
-import torchaudio.functional as F
 
 if __name__ == "__main__":
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
