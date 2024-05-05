@@ -2,11 +2,10 @@ from openvoicechat.tts.tts_piper import Mouth_piper as Mouth
 from openvoicechat.llm.llm_gpt import Chatbot_gpt as Chatbot
 from openvoicechat.stt.stt_hf import Ear_hf as Ear
 from openvoicechat.utils import run_chat
-import torch
 from openvoicechat.llm.prompts import llama_sales
 
 if __name__ == "__main__":
-    device = 'cuda' if torch.cuda.is_available() else 'cpu'
+    device = 'cuda'
 
     print('loading models... ', device)
 
