@@ -102,6 +102,7 @@ class BaseMouth:
         :param text_queue: The queue where the llm adds the predicted tokens
         :param listen_interruption_func: callable function from the ear class
         :param interrupt_queue: The queue where True is put when interruption occurred.
+        :param audio_queue: The queue where the audio to be played is placed
         Receives text from the text_queue. As soon as a sentence is made run_tts is called to
         synthesize its speech.
         '''
