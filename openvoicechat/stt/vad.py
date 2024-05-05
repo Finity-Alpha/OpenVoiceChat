@@ -2,11 +2,12 @@ import torch
 import numpy as np
 from .utils import record_user
 
+
 class VoiceActivityDetection:
     def __init__(self, sampling_rate=16000):
         self.model, utils = torch.hub.load(repo_or_dir='snakers4/silero-vad',
-                                                model='silero_vad',
-                                                force_reload=False)
+                                           model='silero_vad',
+                                           force_reload=False)
 
         (self.get_speech_timestamps,
          self.save_audio,
@@ -31,6 +32,3 @@ class VoiceActivityDetection:
 if __name__ == "__main__":
     vad = VoiceActivityDetection()
     audio = record_user(3, vad)
-
-
-

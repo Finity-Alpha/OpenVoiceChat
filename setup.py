@@ -20,14 +20,12 @@ setup(
         'librosa',
         'pydub',
         'python-dotenv',
-        'phonemizer',
         'websockets'
     ],
     extras_require={
         'transformers' : ['transformers'],
         'piper': ['piper-tts','piper-phonemize'],
         'vosk': ['vosk'],
-        'llama': ['llama-cpp-python'],
         'open_ai': ['openai'],
         'tortoise': ['tortoise-tts'],
         'xtts': ['TTS'],

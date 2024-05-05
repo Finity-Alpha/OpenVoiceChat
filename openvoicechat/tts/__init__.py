@@ -1,4 +1,4 @@
-from .base import *
+from .base import BaseMouth as BaseMouth
 from .tts_elevenlabs import Mouth_elevenlabs as Mouth_elevenlabs
 from .tts_hf import Mouth_hf as Mouth_hf
 from .tts_parler import Mouth_parler as Mouth_parler
