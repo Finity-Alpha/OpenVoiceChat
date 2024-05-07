@@ -20,9 +20,7 @@ Supports all kinds of stt, tts and llm [models](notes/Models.md).
 
 Supports interruptions.
 
-Well [abstracted](/tts) apis, easy to use and [extend](notes/Adding_models.md).
-
-Runs locally on a [consumer GPU](https://www.nvidia.com/en-us/geforce/graphics-cards/30-series/rtx-3080-3080ti/).
+Well [abstracted](/openvoicechat/tts) apis, easy to use and [extend](notes/Adding_models.md).
 
 The goal is to be the open source alternative to [closed commercial implementations](notes/Competition.md)
 
@@ -41,4 +39,21 @@ python main.py
 
 [Discord](https://discord.gg/M5S2JksapH)
 
+## Installing Required Packages
+### To install only the base packages
+```shell
+pip install openvoicechat
+```
 
+### To install base and functionality specific packages
+```shell
+pip install openvoicechat[piper,xtts]
+```
+
+similarly "piper" and "xtts" can be replaced by any of the following
+- piper
+- vosk
+- open_ai
+- tortoise
+- xtts
+- transformers

@@ -1,9 +1,9 @@
-*ipynb
-__pycache__/
-.ipynb_checkpoints/
-models/
-notes/_*
-venv/
-build/
-data/
 .env
+*.ipynb
+models/
+data/
+.ipynb_checkpoints/
+venv/
+dist/
+_*.md
+*.egg-info/
