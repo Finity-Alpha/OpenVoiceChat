@@ -14,15 +14,16 @@ import os
 class Mouth_elevenlabs(BaseMouth):
     def __init__(self, model_id='eleven_turbo_v2',
                  voice_id='IKne3meq5aSn9XLyUdCD',
-                 api_key=''):
+                 api_key='',
+                 optimize_stream_latency=4):
         self.model_id = model_id
         self.voice_id = voice_id
-        load_dotenv()
         self.api_key = api_key
+        self.optimize_stream_latency = optimize_stream_latency
         super().__init__(sample_rate=44100)
 
     def run_tts(self, text):
-        url = f"https://api.elevenlabs.io/v1/text-to-speech/{self.voice_id}?optimize_streaming_latency=4"
+        url = f"https://api.elevenlabs.io/v1/text-to-speech/{self.voice_id}?optimize_streaming_latency={self.optimize_stream_latency}"
         headers = {
             "Accept": "audio/mpeg",
             "Content-Type": "application/json",
@@ -39,7 +40,12 @@ class Mouth_elevenlabs(BaseMouth):
         }
 
         response = requests.post(url, json=data, headers=headers)
-        audio_segment = AudioSegment.from_file(io.BytesIO(response.content), format="mp3")
+        try:
+            audio_segment = AudioSegment.from_file(io.BytesIO(response.content), format="mp3")
+        except Exception as e:
+            print(response.content)
+            print(f"Error: {e}")
+            return None
 
         samples = np.array(audio_segment.get_array_of_samples())
 
@@ -47,8 +53,8 @@ class Mouth_elevenlabs(BaseMouth):
 
 
 if __name__ == '__main__':
-
-    mouth = Mouth_elevenlabs()
+    load_dotenv()
+    mouth = Mouth_elevenlabs(api_key=os.getenv('ELEVENLABS_API_KEY'))
 
     text = ("If there's one thing that makes me nervous about the future of self-driving cars, it's that they'll "
             "replace human drivers.\nI think there's a huge opportunity to make human-driven cars safer and more "
