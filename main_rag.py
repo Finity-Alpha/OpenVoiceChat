@@ -1,4 +1,4 @@
-from .base import BaseChatbot
+from openvoicechat.llm.base import BaseChatbot
 import os
 from langchain_chroma import Chroma
 from langchain.text_splitter import RecursiveCharacterTextSplitter
@@ -11,6 +11,13 @@ from langchain_community.embeddings.sentence_transformer import (
     SentenceTransformerEmbeddings,
 )
 import pypdf
+from openvoicechat.tts.tts_piper import Mouth_piper as Mouth
+from openvoicechat.stt.stt_hf import Ear_hf as Ear
+from openvoicechat.utils import run_chat
+from openvoicechat.llm.prompts import llama_sales
+from dotenv import load_dotenv
+import os
+
 class Chatbot_rag(BaseChatbot):
     def __init__(self, sys_prompt='',
                  Model='gpt-3.5-turbo',
@@ -21,7 +28,7 @@ class Chatbot_rag(BaseChatbot):
         )
         self.embedding_function = SentenceTransformerEmbeddings(model_name="all-MiniLM-L6-v2")
         self.db = Chroma.from_texts(texts=[''],embedding=self.embedding_function)
-        self.llm = llm = OpenAI(openai_api_key=api_key)
+        self.llm = OpenAI(openai_api_key=api_key)
         self.use_pdf('uploads/data.pdf')
         self.start_llm()
 
@@ -71,17 +78,20 @@ class Chatbot_rag(BaseChatbot):
     def post_process(self, response):
         return response
 
-
 if __name__ == "__main__":
-    preprompt = 'You are a helpful assistant.'
-    john = Chatbot_rag(sys_prompt=preprompt)
-    print("type: exit, quit or stop to end the chat")
-    print("Chat started:")
-    while True:
-        user_input = input(" ")
-        if user_input.lower() in ["exit", "quit", "stop"]:
-            break
+    device = 'cuda'
 
-        response = john.generate_response(user_input)
+    print('loading models... ', device)
 
-        print(response)
+    ear = Ear(silence_seconds=2, device=device)
+
+    load_dotenv()
+    api_key = os.getenv('OPENAI_API_KEY')
+
+    chatbot = Chatbot_rag(sys_prompt=llama_sales,
+                      api_key=api_key)
+    mouth = Mouth(device=device)
+    mouth.say_text('Good morning!')
+    run_chat(mouth, ear, chatbot, verbose=True)
+
+

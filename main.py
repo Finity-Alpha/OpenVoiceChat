@@ -1,6 +1,5 @@
 from openvoicechat.tts.tts_piper import Mouth_piper as Mouth
-# from openvoicechat.llm.llm_gpt import Chatbot_gpt as Chatbot
-from openvoicechat.llm.llm_rag import Chatbot_rag as Chatbot
+from openvoicechat.llm.llm_gpt import Chatbot_gpt as Chatbot
 from openvoicechat.stt.stt_hf import Ear_hf as Ear
 from openvoicechat.utils import run_chat
 from openvoicechat.llm.prompts import llama_sales
