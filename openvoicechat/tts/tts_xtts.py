@@ -2,17 +2,19 @@ import sounddevice as sd
 import torch
 from .base import BaseMouth
 
+
 class Mouth_xtts(BaseMouth):
-    def __init__(self, model_id='tts_models/en/jenny/jenny', device='cpu'):
+    def __init__(self, model_id='tts_models/en/jenny/jenny', device='cpu', player=sd):
         from TTS.api import TTS
         self.model = TTS(model_id)
         self.device = device
         self.model.to(device)
-        super().__init__(sample_rate=self.model.synthesizer.output_sample_rate)
+        super().__init__(sample_rate=self.model.synthesizer.output_sample_rate, player=player)
 
     def run_tts(self, text):
         output = self.model.tts(text=text, split_sentences=False)
         return output
+
 
 if __name__ == '__main__':
     device = 'cuda' if torch.cuda.is_available() else 'cpu'

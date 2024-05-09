@@ -5,12 +5,12 @@ from .base import BaseMouth
 
 class Mouth_hf(BaseMouth):
     def __init__(self, model_id='kakao-enterprise/vits-vctk', device='cpu',
-                 forward_params=None):
+                 forward_params=None, player=sd):
         from transformers import pipeline
         self.pipe = pipeline('text-to-speech', model=model_id, device=device)
         self.device = device
         self.forward_params = forward_params
-        super().__init__(sample_rate=self.pipe.sampling_rate)
+        super().__init__(sample_rate=self.pipe.sampling_rate, player=player)
 
     @torch.no_grad()
     def run_tts(self, text):

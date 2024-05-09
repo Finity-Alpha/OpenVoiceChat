@@ -12,12 +12,14 @@ import os
 
 
 class Mouth_elevenlabs(BaseMouth):
-    def __init__(self, model_id='eleven_turbo_v2', voice_id='IKne3meq5aSn9XLyUdCD'):
+    def __init__(self, model_id='eleven_turbo_v2',
+                 voice_id='IKne3meq5aSn9XLyUdCD',
+                 player=sd):
         self.model_id = model_id
         self.voice_id = voice_id
         load_dotenv()
         self.api_key = os.getenv('ELEVENLABS_API_KEY')
-        super().__init__(sample_rate=44100)
+        super().__init__(sample_rate=44100, player=player)
 
     def run_tts(self, text):
         url = f"https://api.elevenlabs.io/v1/text-to-speech/{self.voice_id}?optimize_streaming_latency=4"
