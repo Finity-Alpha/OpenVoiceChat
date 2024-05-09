@@ -1,8 +1,6 @@
 import numpy as np
 import json
-import torchaudio
-import torchaudio.functional as F
-import torch
+
 from .base import BaseEar
 
 class Ear_vosk(BaseEar):
@@ -15,8 +13,6 @@ class Ear_vosk(BaseEar):
 
     def transcribe(self, audio):
         # if audio is a tensor convert it to numpy array
-        if isinstance(audio, torch.Tensor):
-            audio = audio.numpy()
         audio = audio.astype(np.float64) * (1 << 15)
         audio = audio.astype(np.int16).tobytes()
         result_text = ''
@@ -37,6 +33,9 @@ class Ear_vosk(BaseEar):
         return result_text
 
 if __name__ == "__main__":
+    import torchaudio
+    import torchaudio.functional as F
+
     ear = Ear_vosk(model_path='../models/vosk-model-en-us-0.22')
 
     audio, sr = torchaudio.load('../media/abs.wav')

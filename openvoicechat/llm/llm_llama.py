@@ -1,4 +1,3 @@
-# from preprompts import call_pre_prompt
 from .base import BaseChatbot
 
 class Chatbot_llama(BaseChatbot):

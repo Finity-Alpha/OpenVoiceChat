@@ -1,5 +1,3 @@
-import torchaudio
-import torchaudio.functional as F
 import torch
 from .base import BaseEar
 import numpy as np
@@ -20,6 +18,9 @@ class Ear_hf(BaseEar):
 
 
 if __name__ == "__main__":
+    import torchaudio
+    import torchaudio.functional as F
+
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
     ear = Ear_hf(device=device)

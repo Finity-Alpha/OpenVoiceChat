@@ -53,7 +53,6 @@ pip install openvoicechat[piper,xtts]
 similarly "piper" and "xtts" can be replaced by any of the following
 - piper
 - vosk
-- llama
 - open_ai
 - tortoise
 - xtts

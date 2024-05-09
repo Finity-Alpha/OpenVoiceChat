@@ -2,7 +2,6 @@
 
 import numpy as np
 import pyaudio
-import audioop
 
 CHUNK = int(1024 * 2)
 FORMAT = pyaudio.paInt16
@@ -19,18 +18,6 @@ def make_stream():
                   frames_per_buffer=CHUNK)
 
 
-
-# def record_audio(record_seconds=100):
-#     # yield audio frames
-#
-#     RECORD_SECONDS = record_seconds
-#
-#     stream = make_stream()
-#
-#     for i in range(0, int(RATE / CHUNK * RECORD_SECONDS)):
-#         data = stream.read(CHUNK)
-#         yield data
-#
 
 
 def record_interruption_parallel(vad, listen_queue):
