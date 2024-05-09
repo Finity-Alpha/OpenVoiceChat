@@ -5,6 +5,8 @@ import queue
 import threading
 from typing import Callable
 import numpy as np
+import inspect
+import asyncio
 
 
 def remove_words_in_brackets_and_spaces(text):
@@ -39,7 +41,10 @@ class BaseMouth:
         '''
         output = self.run_tts(text)
         self.player.play(output, samplerate=self.sample_rate)
-        self.player.wait()
+        if inspect.iscoroutinefunction(self.player.wait):
+            asyncio.run(self.player.wait())
+        else:
+            self.player.wait()
 
     def say(self, audio_queue: queue.Queue, listen_interruption_func: Callable):
         '''
@@ -61,7 +66,10 @@ class BaseMouth:
                 self.interrupted = (interruption, text)
                 break
             else:
-                self.player.wait()
+                if inspect.iscoroutinefunction(self.player.wait):
+                    asyncio.run(self.player.wait())
+                else:
+                    self.player.wait()
 
     def say_multiple(self, text: str, listen_interruption_func: Callable):
         '''
@@ -141,4 +149,3 @@ class BaseMouth:
             all_response = self._handle_interruption(all_response, interrupt_queue)
         text_queue.queue.clear()
         text_queue.put('. '.join(all_response))
-
