@@ -1,6 +1,7 @@
 import threading
 import queue
 
+
 def run_chat(mouth, ear, chatbot, verbose=True):
     pre_interruption_text = ''
     while True:

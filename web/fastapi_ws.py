@@ -9,16 +9,18 @@ from openvoicechat.utils import run_chat
 from dotenv import load_dotenv
 import os
 import librosa
+import threading
 
 app = FastAPI()
 
 
 class Player_websocket:
-    def __init__(self, websocket):
+    def __init__(self, websocket, loop):
         self.websocket = websocket
         self.playing = False
         self.play_task = None
         self.audio_array_queue = asyncio.Queue()
+        self.loop = loop
 
     async def send_audio_chunks(self, audio_array, sample_rate):
         print('run function')
@@ -36,11 +38,24 @@ class Player_websocket:
     async def _play(self, audio_array, sample_rate):
         self.playing = True
         await asyncio.gather(self.send_audio_chunks(audio_array, sample_rate))
+        #
+        # def run_in_thread():
+        #     # Create a new event loop for the thread
+        #     try:
+        #         # Run the coroutine in this new event loop
+        #         self.loop.run_until_complete(self.send_audio_chunks(audio_array, sample_rate))
+        #     finally:
+        #         self.loop.close()
+        #
+        # # Start the thread
+        # self.thread = threading.Thread(target=run_in_thread)
+        # self.thread.start()
+
         # self.thread = threading.Thread(target=self.send_audio_chunks, args=(audio_array, sample_rate))
         # self.thread.start()
 
     def play(self, audio_array, samplerate):
-        task = asyncio.create_task(self._play(audio_array, samplerate))
+        task = asyncio.run_coroutine_threadsafe(self._play(audio_array, samplerate), self.loop)
         print('task created', task)
         self.play_task = task
 
@@ -50,19 +65,22 @@ class Player_websocket:
             self.play_task.cancel()
 
     async def wait(self):
-        await self.play_task
+        print('waiting')
+        self.play_task.result()
 
 
 load_dotenv()
+
+loop = asyncio.new_event_loop()
 
 
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
     await websocket.accept()
     print('accepted')
-    # consumer_task = asyncio.ensure_future(receive_messages(websocket))
-    # await asyncio.gather(consumer_task)
-    player = Player_websocket(websocket)
+    # make asyncio loop
+
+    player = Player_websocket(websocket, loop)
     mouth = Mouth(device='cuda',
                   model_path='../models/en_US-ryan-high.onnx',
                   config_path='../models/en_en_US_ryan_high_en_US-ryan-high.onnx.json',

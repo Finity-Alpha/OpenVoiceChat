@@ -67,7 +67,9 @@ class BaseMouth:
                 break
             else:
                 if inspect.iscoroutinefunction(self.player.wait):
-                    asyncio.run(self.player.wait())
+                    future = asyncio.run_coroutine_threadsafe(self.player.wait(), self.player.loop)
+                    future.result()
+                    # asyncio.run(self.player.wait(), loop_factory=self.player.loop)
                 else:
                     self.player.wait()
 
