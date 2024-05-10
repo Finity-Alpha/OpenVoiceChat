@@ -56,6 +56,11 @@ Similar to Retell AI, they also have an endpointing model.
 They have specific applications for industries.
 Seems like the same stuff.
 
+### [Daily co](https://www.daily.co/)
+
+They have a good [guide](https://www.daily.co/blog/how-to-talk-to-an-llm-with-your-voice/)
+They use webrtc don't know why.
+
 ## Open Source
 
 ### [Bud-e](https://github.com/LAION-AI/natural_voice_assistant)
