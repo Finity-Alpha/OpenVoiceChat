@@ -16,7 +16,6 @@ socket.onopen = () => {
 // Handle received messages that contain audio data
 socket.onmessage = async (event) => {
     const float32Array = new Float32Array(await event.data.arrayBuffer());
-//    console.log('Received audio data:', float32Array);
     const audioBuffer = audioCtx.createBuffer(1, float32Array.length, 44100);
     audioBuffer.getChannelData(0).set(float32Array);
     playAudio(audioBuffer);
