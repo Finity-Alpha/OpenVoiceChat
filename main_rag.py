@@ -66,7 +66,7 @@ class Chatbot_rag(BaseChatbot):
         Helpful Answer:""" 
         
         if (self.sys_prompt!=''):
-            template += self.sys_prompt
+            template = self.sys_prompt + template
         
 
         
