@@ -6,7 +6,7 @@ import langchain
 from langchain.prompts import PromptTemplate
 from langchain.chains import RetrievalQA
 from langchain_openai import OpenAIEmbeddings
-from langchain_openai import OpenAI
+from langchain_openai.chat_models import ChatOpenAI
 from langchain_community.embeddings.sentence_transformer import (
     SentenceTransformerEmbeddings,
 )
@@ -26,9 +26,10 @@ class Chatbot_rag(BaseChatbot):
         chunk_size = 500,
         chunk_overlap = 50
         )
+        self.sys_prompt = sys_prompt
         self.embedding_function = SentenceTransformerEmbeddings(model_name="all-MiniLM-L6-v2")
         self.db = Chroma.from_texts(texts=[''],embedding=self.embedding_function)
-        self.llm = OpenAI(openai_api_key=api_key)
+        self.llm = ChatOpenAI(model=Model,openai_api_key=api_key)
         self.use_pdf('uploads/data.pdf')
         self.start_llm()
 
@@ -57,11 +58,18 @@ class Chatbot_rag(BaseChatbot):
     
     def start_llm(self):
         self.mretriever = self.db.as_retriever()
-        template = """Give answers using following pieces of context given inside ``` to answer the question at the end. If you don't know the answer, just say that you don't know, don't try to make up an answer.
+
+  
+        template = """You are a helpful assistant Give answers using following pieces of context given inside ``` to answer the question at the end. If you don't know the answer , don't try to make up an answer, but be nice in conversation.
         {context}
         Question: {question}
-        Helpful Answer:"""
-    
+        Helpful Answer:""" 
+        
+        if (self.sys_prompt!=''):
+            template += self.sys_prompt
+        
+
+        
         QA_CHAIN_PROMPT = PromptTemplate.from_template(template) 
         self.qa_chain= RetrievalQA.from_chain_type(
             self.llm,
@@ -93,5 +101,7 @@ if __name__ == "__main__":
     mouth = Mouth(device=device)
     mouth.say_text('Good morning!')
     run_chat(mouth, ear, chatbot, verbose=True)
+    
+
 
 
