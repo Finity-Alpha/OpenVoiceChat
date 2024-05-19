@@ -14,6 +14,8 @@ import threading
 import numpy as np
 import queue
 import time
+import matplotlib.pyplot as plt
+import nest_asyncio
 
 app = FastAPI()
 
@@ -66,22 +68,144 @@ class Player_websocket:
         self.playing = False
 
 
+class Listener:
+    def __init__(self, websocket: WebSocket):
+        self.websocket = websocket
+        self.queue = queue.Queue()
+        self.loop = asyncio.get_event_loop()
+        self.listening = False
+        self.thread = None
+        self.future = None
+
+    async def read_audio_chunks(self):
+        await asyncio.sleep(0.1)
+        print('created task')
+        while self.listening:
+            data = await self.websocket.receive_bytes()
+            print('data yay')
+            # await asyncio.sleep(0.1)
+            data = np.frombuffer(data, dtype=np.float32)
+            data = librosa.resample(y=data, orig_sr=44100, target_sr=16_000)
+            data = data * (1 << 15)
+            data = data.astype(np.int16)
+            data = data.tobytes()
+            self.queue.put(data)
+
+    def thread_function(self):
+        # Set up a new event loop for the thread.
+        # loop = asyncio.new_event_loop()
+        # asyncio.set_event_loop(loop)
+        # loop.run_until_complete(self.read_audio_chunks())
+        # loop.close()
+        print('thread here')
+        coro = self.read_audio_chunks()
+        print(coro)
+        asyncio.run_coroutine_threadsafe(coro, self.loop)
+        # asyncio.run_coroutine_threadsafe(asyncio.sleep(0.1), self.loop)
+        print('should be run')
+        # self.future.result(3)
+
+    def make_stream(self):
+        self.listening = True
+        self.thread = threading.Thread(target=self.thread_function, args=())
+        self.thread.start()
+        return self
+
+    def read(self):
+        assert self.listening, 'Run make_stream'
+        # print('reading')
+        # data = await self.websocket.receive_bytes()
+        # data = np.frombuffer(data, dtype=np.float32)
+        # data = librosa.resample(y=data, orig_sr=44100, target_sr=16_000)
+        # data = data * (1 << 15)
+        # data = data.astype(np.int16)
+        # data = data.tobytes()
+        # queue.put(data)
+        # while self.queue.empty():
+        #     time.sleep(0.1)
+        # return b''
+        try:
+            return self.queue.get(block=False)
+        except queue.Empty:
+            return b''
+        # return self.queue.get(block=False)
+        # return data
+
+    def close(self):
+        self.listening = False
+        # try:
+        #     self.future.result(1)
+        # except asyncio.TimeoutError:
+        #     print('timeout')
+        self.thread.join()
+        self.queue.queue.clear()
+
+
+ear = Ear(device='cuda', silence_seconds=2)
+
+
+
+
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
     await websocket.accept()
-    while True:
-        print('accepted')
-        data = await websocket.receive_bytes()
 
-        player = Player_websocket(websocket)
-        mouth = Mouth(device='cuda',
-                      model_path='../models/en_US-ryan-high.onnx',
-                      config_path='../models/en_en_US_ryan_high_en_US-ryan-high.onnx.json',
-                      player=player)
-        ear = Ear(device='cuda', silence_seconds=2)
-        load_dotenv()
-        chatbot = Chatbot(api_key=os.getenv('OPENAI_API_KEY'), sys_prompt='You are a helpful assistant')
-        run_chat(mouth, ear, chatbot)
+    print('accepted')
+    player = Player_websocket(websocket)
+    listener = Listener(websocket)
+    assert listener.loop is asyncio.get_event_loop()
+    while True:
+        stream = listener.make_stream()
+        await asyncio.sleep(1)
+        # print(id(asyncio.get_running_loop()))
+        # data = await websocket.receive_bytes()
+        # print(len(data), type(data))
+        #
+        # mouth = Mouth(device='cuda',
+        #               model_path='../models/en_US-ryan-high.onnx',
+        #               config_path='../models/en_en_US_ryan_high_en_US-ryan-high.onnx.json',
+        #               player=player)
+        # load_dotenv()
+        # chatbot = Chatbot(api_key=os.getenv('OPENAI_API_KEY'), sys_prompt='You are a helpful assistant')
+        frames = []
+        # loop = asyncio.get_event_loop()
+        # nest_asyncio.apply()
+        # q = queue.Queue()
+        # print(asyncio.all_tasks())
+        print('listening')
+        maximum = 3 * 5
+        i = 0
+        while i < maximum:
+            # coro = asyncio.create_task(asyncio.sleep(0.1))
+            await asyncio.sleep(0.1)
+            # future = asyncio.ensure_future(asyncio.create_task(asyncio.sleep(0.05)))
+            # listener.loop.run_until_complete(coro)
+
+
+            # future = asyncio.run_coroutine_threadsafe(asyncio.sleep(0.05), listener.loop)
+            # future.result(timeout=1000)
+
+            # data = await stream.read()
+            # task = loop.create_task(stream.read())
+            # asyncio.create_task(coro())
+            # asyncio.run_coroutine_threadsafe(stream.read(q), loop)
+            # while q.empty():
+            #     time.sleep(0.1)
+            data = stream.read()
+            #
+            if len(data) == 0:
+                continue
+            frames.append(data)
+            # frames.append(b'0')
+            i += 1
+        stream.close()
+        frames = np.frombuffer(b''.join(frames), dtype=np.int16)
+        frames = frames / (1 << 15)
+
+        frames = frames.astype(np.float32)
+        print(ear.transcribe(frames))
+
+        # run_chat(mouth, ear, chatbot)
 
 
 if __name__ == "__main__":

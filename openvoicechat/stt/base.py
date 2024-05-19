@@ -8,12 +8,15 @@ from threading import Thread
 from queue import Queue
 
 class BaseEar:
-    def __init__(self, silence_seconds=3, not_interrupt_words=None):
+    def __init__(self, silence_seconds=3,
+                 not_interrupt_words=None,
+                 listener=None):
         if not_interrupt_words is None:
             not_interrupt_words = ['you', 'yes', 'yeah', 'hmm']  # you because whisper says "you" in silence
         self.silence_seconds = silence_seconds
         self.not_interrupt_words = not_interrupt_words
         self.vad = VoiceActivityDetection()
+        self.listener = listener
 
     @torch.no_grad()
     def transcribe(self, input: np.ndarray) -> str:

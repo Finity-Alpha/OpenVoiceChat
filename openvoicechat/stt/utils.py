@@ -18,8 +18,6 @@ def make_stream():
                   frames_per_buffer=CHUNK)
 
 
-
-
 def record_interruption_parallel(vad, listen_queue):
     #listen for interruption untill the queue is not empty
     frames = []
@@ -40,11 +38,11 @@ def record_interruption_parallel(vad, listen_queue):
     return None
 
 
-def record_interruption(vad, recond_seconds=100):
+def record_interruption(vad, record_seconds=100):
     print("* recording for interruption")
     frames = []
     stream = make_stream()
-    for _ in range(0, int(RATE / CHUNK * recond_seconds)):
+    for _ in range(0, int(RATE / CHUNK * record_seconds)):
         data = stream.read(CHUNK)
         frames.append(data)
         contains_speech = vad.contains_speech(frames[int(RATE / CHUNK) * -2:])
@@ -57,12 +55,15 @@ def record_interruption(vad, recond_seconds=100):
     return None
 
 
-def record_user(silence_seconds, vad):
+def record_user(silence_seconds, vad, streamer=None):
     frames = []
 
     started = False
     one_second_iters = int(RATE / CHUNK)
-    stream = make_stream()
+    if streamer is None:
+        stream = make_stream()
+    else:
+        stream = streamer.make_stream()
     print("* recording")
 
     while True:

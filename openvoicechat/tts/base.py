@@ -41,10 +41,7 @@ class BaseMouth:
         '''
         output = self.run_tts(text)
         self.player.play(output, samplerate=self.sample_rate)
-        if inspect.iscoroutinefunction(self.player.wait):
-            asyncio.run(self.player.wait())
-        else:
-            self.player.wait()
+        self.player.wait()
 
     def say(self, audio_queue: queue.Queue, listen_interruption_func: Callable):
         '''
