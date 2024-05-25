@@ -116,6 +116,7 @@ class BaseMouth:
                 sentence = remove_words_in_brackets_and_spaces(response).strip()
             else:
                 response += text
+                # yahan say end llm
                 if bool(re.search(self.sentence_stop_pattern, response)):
                     sentences = re.split(self.sentence_stop_pattern, response, maxsplit=1)
                     sentence = sentences[0]
@@ -125,7 +126,9 @@ class BaseMouth:
             if sentence.strip() == '':
                 break
             sentence = remove_words_in_brackets_and_spaces(sentence).strip()
+            # time tts
             output = self.run_tts(sentence)
+            # and end tts
             audio_queue.put((output, sentence))
             all_response.append(sentence)
             if self.interrupted:
