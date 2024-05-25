@@ -38,7 +38,7 @@ class BaseEar:
         :return: transcription
         records audio using record_user and returns its transcription
         '''
-        audio = record_user(self.silence_seconds, self.vad)
+        audio = record_user(self.silence_seconds, self.vad, self.listener)
         text = self.transcribe(audio)
         return text
 

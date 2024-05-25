@@ -81,6 +81,7 @@ class Listener:
         await asyncio.sleep(0.1)
         print('created task')
         while self.listening:
+            # await asyncio.sleep(0.1)
             data = await self.websocket.receive_bytes()
             print('data yay')
             # await asyncio.sleep(0.1)
@@ -113,17 +114,6 @@ class Listener:
 
     def read(self):
         assert self.listening, 'Run make_stream'
-        # print('reading')
-        # data = await self.websocket.receive_bytes()
-        # data = np.frombuffer(data, dtype=np.float32)
-        # data = librosa.resample(y=data, orig_sr=44100, target_sr=16_000)
-        # data = data * (1 << 15)
-        # data = data.astype(np.int16)
-        # data = data.tobytes()
-        # queue.put(data)
-        # while self.queue.empty():
-        #     time.sleep(0.1)
-        # return b''
         try:
             return self.queue.get(block=False)
         except queue.Empty:
@@ -157,40 +147,13 @@ async def websocket_endpoint(websocket: WebSocket):
     while True:
         stream = listener.make_stream()
         await asyncio.sleep(1)
-        # print(id(asyncio.get_running_loop()))
-        # data = await websocket.receive_bytes()
-        # print(len(data), type(data))
-        #
-        # mouth = Mouth(device='cuda',
-        #               model_path='../models/en_US-ryan-high.onnx',
-        #               config_path='../models/en_en_US_ryan_high_en_US-ryan-high.onnx.json',
-        #               player=player)
-        # load_dotenv()
-        # chatbot = Chatbot(api_key=os.getenv('OPENAI_API_KEY'), sys_prompt='You are a helpful assistant')
         frames = []
-        # loop = asyncio.get_event_loop()
-        # nest_asyncio.apply()
-        # q = queue.Queue()
-        # print(asyncio.all_tasks())
         print('listening')
         maximum = 3 * 5
         i = 0
         while i < maximum:
-            # coro = asyncio.create_task(asyncio.sleep(0.1))
-            await asyncio.sleep(0.1)
-            # future = asyncio.ensure_future(asyncio.create_task(asyncio.sleep(0.05)))
-            # listener.loop.run_until_complete(coro)
-
-
-            # future = asyncio.run_coroutine_threadsafe(asyncio.sleep(0.05), listener.loop)
-            # future.result(timeout=1000)
-
-            # data = await stream.read()
-            # task = loop.create_task(stream.read())
-            # asyncio.create_task(coro())
-            # asyncio.run_coroutine_threadsafe(stream.read(q), loop)
-            # while q.empty():
-            #     time.sleep(0.1)
+            # await asyncio.sleep(0.1)
+            # time.sleep(0.1)
             data = stream.read()
             #
             if len(data) == 0:

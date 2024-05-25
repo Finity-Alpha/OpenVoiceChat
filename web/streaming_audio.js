@@ -1,4 +1,5 @@
-const socket = new WebSocket('ws://localhost:8000/ws');
+const socket = new WebSocket('ws://192.168.18.16:8000/ws');
+//I have changed this 
 
 let audioCtx;
 

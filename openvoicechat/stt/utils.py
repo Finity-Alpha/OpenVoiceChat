@@ -38,10 +38,13 @@ def record_interruption_parallel(vad, listen_queue):
     return None
 
 
-def record_interruption(vad, record_seconds=100):
+def record_interruption(vad, record_seconds=100, streamer=None):
     print("* recording for interruption")
     frames = []
-    stream = make_stream()
+    if streamer is None:
+        stream = make_stream()
+    else:
+        stream = streamer.make_stream()
     for _ in range(0, int(RATE / CHUNK * record_seconds)):
         data = stream.read(CHUNK)
         frames.append(data)
