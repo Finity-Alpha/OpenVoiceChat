@@ -17,8 +17,13 @@ import time
 import matplotlib.pyplot as plt
 import nest_asyncio
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
+from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
+
 
 app = FastAPI()
+
+app.mount("/static", StaticFiles(directory="static"))
 
 
 class Player_ws:
@@ -66,50 +71,10 @@ class Listener_ws:
         return self
 
 
-#     def listen(self):
-#         while True:
-#             data = self.input_queue.get()
-#             text = ear.transcribe(data)
-#             self.input_queue.task_done()
-#             return text
-# # output_queue = queue.Queue()
-# input_queue = queue.Queue()
-
-
-def transcribe(ear, listener):
-    listener.listening = True
-    frames = []
-    print('listening')
-    maximum = 3 * 5
-    i = 0
-    while i < maximum:
-        data = listener.read()
-        #
-        # if len(data) == 0:
-        #     continue
-        frames.append(data)
-        # frames.append(b'0')
-        i += 1
-    frames = np.frombuffer(b''.join(frames), dtype=np.int16)
-    frames = frames / (1 << 15)
-
-    frames = frames.astype(np.float32)
-    print(ear.transcribe(frames))
-    # data = listener.read()
-    # text = ear.transcribe(data)
-    # return text
-
-
-def play_text(mouth, player, text):
-    # mouth = Mouth()
-    audio_array = mouth.run_tts(text)
-    sample_rate = mouth.sample_rate
-    player.play(audio_array, sample_rate)
-
-
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
     await websocket.accept()
+    print('connected')
     input_queue = queue.Queue()
     output_queue = queue.Queue()
     listener = Listener_ws(input_queue)
@@ -117,7 +82,7 @@ async def websocket_endpoint(websocket: WebSocket):
     mouth = Mouth(model_path='../models/en_US-ryan-high.onnx',
                   config_path='../models/en_en_US_ryan_high_en_US-ryan-high.onnx.json',
                   device='cuda', player=player)
-    ear = Ear(device='cuda', silence_seconds=2, listener=listener)
+    ear = Ear(device='cuda', silence_seconds=1, listener=listener)
     load_dotenv()
     api_key = os.getenv('OPENAI_API_KEY')
     chatbot = Chatbot(sys_prompt=llama_sales,
@@ -142,6 +107,8 @@ async def websocket_endpoint(websocket: WebSocket):
     finally:
         await websocket.close()
 
-
+@app.get("/")
+def read_root():
+    return FileResponse('static/stream_audio.html')
 if __name__ == "__main__":
     uvicorn.run(app, host='0.0.0.0', port=8000)

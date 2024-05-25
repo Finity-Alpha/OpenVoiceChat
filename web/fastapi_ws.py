@@ -16,6 +16,7 @@ import queue
 import time
 import matplotlib.pyplot as plt
 import nest_asyncio
+from fastapi.responses import FileResponse
 
 app = FastAPI()
 
@@ -134,8 +135,6 @@ class Listener:
 ear = Ear(device='cuda', silence_seconds=2)
 
 
-
-
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
     await websocket.accept()
@@ -170,6 +169,8 @@ async def websocket_endpoint(websocket: WebSocket):
 
         # run_chat(mouth, ear, chatbot)
 
-
+@app.get("/")
+def read_root():
+    return FileResponse('static/stream_audio.html')
 if __name__ == "__main__":
     uvicorn.run(app, host='0.0.0.0', port=8000)

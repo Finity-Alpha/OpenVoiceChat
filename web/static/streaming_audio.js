@@ -1,4 +1,6 @@
-const socket = new WebSocket('ws://192.168.18.16:8000/ws');
+//TODO: client side buffering of incoming audio
+
+const socket = new WebSocket(window.location.href+ 'ws');
 //I have changed this 
 
 let audioCtx;
@@ -41,7 +43,7 @@ function setupAudioProcessors(stream) {
         const audioData = event.inputBuffer.getChannelData(0);
         const buffer = new Float32Array(audioData);  // Convert audio to Float32Array
         // log the bytes
-        console.log(buffer);
+//        console.log(buffer);
         socket.send(buffer);  // Send audio data to the server
     };
 
