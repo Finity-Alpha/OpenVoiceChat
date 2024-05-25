@@ -4,7 +4,7 @@ const socket = new WebSocket(window.location.href+ 'ws');
 //I have changed this 
 
 let audioCtx;
-
+let audioQueue = [];
 // Start recording when the WebSocket connection is open
 socket.onopen = () => {
     console.log('WebSocket connection opened');
@@ -17,13 +17,23 @@ socket.onopen = () => {
 };
 
 // Handle received messages that contain audio data
+//socket.onmessage = async (event) => {
+//    const float32Array = new Float32Array(await event.data.arrayBuffer());
+//    const audioBuffer = audioCtx.createBuffer(1, float32Array.length, 44100);
+//    audioBuffer.getChannelData(0).set(float32Array);
+//    playAudio(audioBuffer);
+//};
+
+// Handle received messages that contain audio data
 socket.onmessage = async (event) => {
     const float32Array = new Float32Array(await event.data.arrayBuffer());
     const audioBuffer = audioCtx.createBuffer(1, float32Array.length, 44100);
     audioBuffer.getChannelData(0).set(float32Array);
-    playAudio(audioBuffer);
+    audioQueue.push(audioBuffer);  // Add the audio buffer to the queue
+    if (audioQueue.length === 1) {  // If this is the first audio buffer, start playing
+        playAudioFromQueue();
+    }
 };
-
 // Handle WebSocket connection error
 socket.onerror = (error) => {
     console.error('WebSocket error:', error);
@@ -49,6 +59,32 @@ function setupAudioProcessors(stream) {
 
     audioSource.connect(audioProcessor);
     audioProcessor.connect(audioCtx.destination);  // Connect processor to output (necessary for Chrome)
+}
+// Handle received messages that contain audio data
+socket.onmessage = async (event) => {
+    const float32Array = new Float32Array(await event.data.arrayBuffer());
+    const audioBuffer = audioCtx.createBuffer(1, float32Array.length, 44100);
+    audioBuffer.getChannelData(0).set(float32Array);
+    audioQueue.push(audioBuffer);  // Add the audio buffer to the queue
+    if (audioQueue.length === 1) {  // If this is the first audio buffer, start playing
+        playAudioFromQueue();
+    }
+};
+let isPlaying = false;  // Flag to indicate whether an audio is currently playing
+
+function playAudioFromQueue() {
+    if (audioQueue.length > 0 && !isPlaying) {
+        isPlaying = true;  // Set the flag to true when an audio starts playing
+        const audioBuffer = audioQueue.shift();  // Remove the first audio buffer from the queue
+        const sourceNode = audioCtx.createBufferSource();
+        sourceNode.buffer = audioBuffer;
+        sourceNode.connect(audioCtx.destination);
+        sourceNode.start();
+        sourceNode.onended = () => {
+            isPlaying = false;  // Set the flag to false when the audio finishes playing
+            playAudioFromQueue();  // When the audio buffer finishes playing, start the next one
+        };
+    }
 }
 
 function playAudio(audioBuffer) {
