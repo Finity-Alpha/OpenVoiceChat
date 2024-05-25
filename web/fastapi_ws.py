@@ -16,158 +16,97 @@ import queue
 import time
 import matplotlib.pyplot as plt
 import nest_asyncio
+from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
+
 
 app = FastAPI()
 
+app.mount("/static", StaticFiles(directory="static"))
 
-class Player_websocket:
-    def __init__(self, websocket):
-        self.thread = None
-        self.websocket = websocket
+
+class Player_ws:
+    def __init__(self, q):
+        self.output_queue = q
         self.playing = False
-        self.play_task = None
-        self.audio_array_queue = queue.Queue()
-
-    async def send_audio_chunks(self, sample_rate):
-        # resample using librosa
-        while self.playing:
-            try:
-                # Wait for audio data to be available in the queue
-                data = self.audio_array_queue.get(block=False)  # Adjust timeout as needed
-                audio_array = librosa.resample(y=data, orig_sr=sample_rate, target_sr=44100)
-                audio_array = audio_array.tobytes()
-                await self.websocket.send_bytes(audio_array)
-            except queue.Empty:
-                break
-
-    def thread_function(self, sample_rate):
-        # Set up a new event loop for the thread.
-        loop = asyncio.new_event_loop()
-        asyncio.set_event_loop(loop)
-        try:
-            loop.run_until_complete(self.send_audio_chunks(sample_rate))
-        finally:
-            loop.close()
 
     def play(self, audio_array, samplerate):
         audio_array = audio_array / (1 << 15)
         audio_array = audio_array.astype(np.float32)
-        self.audio_array_queue.put(audio_array)
-        self.playing = True
-        # self.thread = threading.Thread(target=self.send_audio_chunks, args=(samplerate,))
-        self.thread = threading.Thread(target=self.thread_function, args=(samplerate,))
-        self.thread.start()
+        audio_array = librosa.resample(y=audio_array, orig_sr=samplerate, target_sr=44100)
+        audio_array = audio_array.tobytes()
+        self.output_queue.put(audio_array)
 
     def stop(self):
         self.playing = False
-        if self.thread:
-            self.thread.join()
+        self.output_queue.queue.clear()
+        self.output_queue.put('stop'.encode())
 
     def wait(self):
-        self.thread.join()
+        while not self.output_queue.empty():
+            time.sleep(0.05)
         self.playing = False
 
 
-class Listener:
-    def __init__(self, websocket: WebSocket):
-        self.websocket = websocket
-        self.queue = queue.Queue()
-        self.loop = asyncio.get_event_loop()
+class Listener_ws:
+    def __init__(self, q):
+        self.input_queue = q
         self.listening = False
-        self.thread = None
-        self.future = None
 
-    async def read_audio_chunks(self):
-        await asyncio.sleep(0.1)
-        print('created task')
-        while self.listening:
-            # await asyncio.sleep(0.1)
-            data = await self.websocket.receive_bytes()
-            print('data yay')
-            # await asyncio.sleep(0.1)
-            data = np.frombuffer(data, dtype=np.float32)
-            data = librosa.resample(y=data, orig_sr=44100, target_sr=16_000)
-            data = data * (1 << 15)
-            data = data.astype(np.int16)
-            data = data.tobytes()
-            self.queue.put(data)
+    def read(self, x):
+        data = self.input_queue.get()
+        data = np.frombuffer(data, dtype=np.float32)
+        data = librosa.resample(y=data, orig_sr=44100, target_sr=16_000)
+        data = data * (1 << 15)
+        data = data.astype(np.int16)
+        data = data.tobytes()
+        return data
 
-    def thread_function(self):
-        # Set up a new event loop for the thread.
-        # loop = asyncio.new_event_loop()
-        # asyncio.set_event_loop(loop)
-        # loop.run_until_complete(self.read_audio_chunks())
-        # loop.close()
-        print('thread here')
-        coro = self.read_audio_chunks()
-        print(coro)
-        asyncio.run_coroutine_threadsafe(coro, self.loop)
-        # asyncio.run_coroutine_threadsafe(asyncio.sleep(0.1), self.loop)
-        print('should be run')
-        # self.future.result(3)
+    def close(self):
+        pass
 
     def make_stream(self):
         self.listening = True
-        self.thread = threading.Thread(target=self.thread_function, args=())
-        self.thread.start()
+        self.input_queue.queue.clear()
         return self
-
-    def read(self):
-        assert self.listening, 'Run make_stream'
-        try:
-            return self.queue.get(block=False)
-        except queue.Empty:
-            return b''
-        # return self.queue.get(block=False)
-        # return data
-
-    def close(self):
-        self.listening = False
-        # try:
-        #     self.future.result(1)
-        # except asyncio.TimeoutError:
-        #     print('timeout')
-        self.thread.join()
-        self.queue.queue.clear()
-
-
-ear = Ear(device='cuda', silence_seconds=2)
 
 
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
     await websocket.accept()
+    print('connected')
+    input_queue = queue.Queue()
+    output_queue = queue.Queue()
+    listener = Listener_ws(input_queue)
+    player = Player_ws(output_queue)
+    mouth = Mouth(model_path='../models/en_US-ryan-high.onnx',
+                  config_path='../models/en_en_US_ryan_high_en_US-ryan-high.onnx.json',
+                  device='cuda', player=player)
+    ear = Ear(device='cuda', silence_seconds=1, listener=listener)
+    load_dotenv()
+    api_key = os.getenv('OPENAI_API_KEY')
+    chatbot = Chatbot(sys_prompt=llama_sales,
+                      api_key=api_key)
+    # run transcribe in thread
+    # threading.Thread(target=transcribe, args=(ear, listener)).start()
+    # threading.Thread(target=play_text, args=(mouth, player, 'Hello, my name is John.')).start()
+    threading.Thread(target=run_chat, args=(mouth, ear, chatbot, True)).start()
 
-    print('accepted')
-    player = Player_websocket(websocket)
-    listener = Listener(websocket)
-    assert listener.loop is asyncio.get_event_loop()
-    while True:
-        stream = listener.make_stream()
-        await asyncio.sleep(1)
-        frames = []
-        print('listening')
-        maximum = 3 * 5
-        i = 0
-        while i < maximum:
-            # await asyncio.sleep(0.1)
-            # time.sleep(0.1)
-            data = stream.read()
-            #
-            if len(data) == 0:
-                continue
-            frames.append(data)
-            # frames.append(b'0')
-            i += 1
-        stream.close()
-        frames = np.frombuffer(b''.join(frames), dtype=np.int16)
-        frames = frames / (1 << 15)
-
-        frames = frames.astype(np.float32)
-        print(ear.transcribe(frames))
-
-        # run_chat(mouth, ear, chatbot)
+    try:
+        while True:
+            data = await websocket.receive_bytes()
+            if listener.listening:
+                input_queue.put(data)
+            if not output_queue.empty():
+                response_data = output_queue.get_nowait()
+            else:
+                response_data = np.zeros(1024, dtype=np.float32).tobytes()
+            await websocket.send_bytes(response_data)
+    except WebSocketDisconnect:
+        print("WebSocket disconnected")
+    finally:
+        await websocket.close()
 
 @app.get("/")
 def read_root():

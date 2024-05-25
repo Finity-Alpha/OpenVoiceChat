@@ -60,33 +60,69 @@ function setupAudioProcessors(stream) {
     audioSource.connect(audioProcessor);
     audioProcessor.connect(audioCtx.destination);  // Connect processor to output (necessary for Chrome)
 }
-// Handle received messages that contain audio data
+let currentSourceNode = null;
 socket.onmessage = async (event) => {
-    const float32Array = new Float32Array(await event.data.arrayBuffer());
-    const audioBuffer = audioCtx.createBuffer(1, float32Array.length, 44100);
-    audioBuffer.getChannelData(0).set(float32Array);
-    audioQueue.push(audioBuffer);  // Add the audio buffer to the queue
-    if (audioQueue.length === 1) {  // If this is the first audio buffer, start playing
-        playAudioFromQueue();
+    const receivedData = new TextDecoder().decode(await event.data.arrayBuffer());
+    if (receivedData === 'stop') {
+        // Handle the 'stop' command
+        console.log('Received stop command');
+        if (currentSourceNode) {
+            currentSourceNode.stop();  // Stop the currently playing audio
+            currentSourceNode = null;
+        }
+        isPlaying = false;  // Stop playing audio
+        audioQueue = [];  // Clear the audio queue
+    } else {
+        const float32Array = new Float32Array(await event.data.arrayBuffer());
+        const audioBuffer = audioCtx.createBuffer(1, float32Array.length, 44100);
+        audioBuffer.getChannelData(0).set(float32Array);
+        audioQueue.push(audioBuffer);  // Add the audio buffer to the queue
+        if (audioQueue.length === 1 && !isPlaying) {  // If this is the first audio buffer and no audio is currently playing, start playing
+            playAudioFromQueue();
+        }
     }
 };
+// Handle received messages that contain audio data
+//socket.onmessage = async (event) => {
+//
+//    const float32Array = new Float32Array(await event.data.arrayBuffer());
+//    const audioBuffer = audioCtx.createBuffer(1, float32Array.length, 44100);
+//    audioBuffer.getChannelData(0).set(float32Array);
+//    audioQueue.push(audioBuffer);  // Add the audio buffer to the queue
+//    if (audioQueue.length === 1) {  // If this is the first audio buffer, start playing
+//        playAudioFromQueue();
+//    }
+//};
 let isPlaying = false;  // Flag to indicate whether an audio is currently playing
-
 function playAudioFromQueue() {
     if (audioQueue.length > 0 && !isPlaying) {
         isPlaying = true;  // Set the flag to true when an audio starts playing
         const audioBuffer = audioQueue.shift();  // Remove the first audio buffer from the queue
-        const sourceNode = audioCtx.createBufferSource();
-        sourceNode.buffer = audioBuffer;
-        sourceNode.connect(audioCtx.destination);
-        sourceNode.start();
-        sourceNode.onended = () => {
+        currentSourceNode = audioCtx.createBufferSource();
+        currentSourceNode.buffer = audioBuffer;
+        currentSourceNode.connect(audioCtx.destination);
+        currentSourceNode.start();
+        currentSourceNode.onended = () => {
             isPlaying = false;  // Set the flag to false when the audio finishes playing
             playAudioFromQueue();  // When the audio buffer finishes playing, start the next one
         };
     }
 }
-
+//function playAudioFromQueue() {
+//    if (audioQueue.length > 0 && !isPlaying) {
+//        isPlaying = true;  // Set the flag to true when an audio starts playing
+//        const audioBuffer = audioQueue.shift();  // Remove the first audio buffer from the queue
+//        const sourceNode = audioCtx.createBufferSource();
+//        sourceNode.buffer = audioBuffer;
+//        sourceNode.connect(audioCtx.destination);
+//        sourceNode.start();
+//        sourceNode.onended = () => {
+//            isPlaying = false;  // Set the flag to false when the audio finishes playing
+//            playAudioFromQueue();  // When the audio buffer finishes playing, start the next one
+//        };
+//    }
+//}
+//
 function playAudio(audioBuffer) {
     const sourceNode = audioCtx.createBufferSource();
     sourceNode.buffer = audioBuffer;
