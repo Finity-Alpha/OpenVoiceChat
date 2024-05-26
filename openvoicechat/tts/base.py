@@ -5,6 +5,8 @@ import queue
 import threading
 from typing import Callable
 import numpy as np
+import inspect
+import asyncio
 
 
 def remove_words_in_brackets_and_spaces(text):
@@ -19,10 +21,11 @@ def remove_words_in_brackets_and_spaces(text):
 
 
 class BaseMouth:
-    def __init__(self, sample_rate: int):
+    def __init__(self, sample_rate: int, player=sd):
         self.sample_rate = sample_rate
         self.sentence_stop_pattern = r'[.?](?=\s+\S)'
         self.interrupted = ''
+        self.player = player
 
     def run_tts(self, text: str) -> np.ndarray:
         '''
@@ -37,8 +40,8 @@ class BaseMouth:
         calls run_tts and plays the audio using sounddevice.
         '''
         output = self.run_tts(text)
-        sd.play(output, samplerate=self.sample_rate)
-        sd.wait()
+        self.player.play(output, samplerate=self.sample_rate)
+        self.player.wait()
 
     def say(self, audio_queue: queue.Queue, listen_interruption_func: Callable):
         '''
@@ -53,14 +56,14 @@ class BaseMouth:
                 break
             # get the duration of audio
             duration = len(output) / self.sample_rate
-            sd.play(output, samplerate=self.sample_rate)
+            self.player.play(output, samplerate=self.sample_rate)
             interruption = listen_interruption_func(duration)
             if interruption:
-                sd.stop()
+                self.player.stop()
                 self.interrupted = (interruption, text)
                 break
             else:
-                sd.wait()
+                self.player.wait()
 
     def say_multiple(self, text: str, listen_interruption_func: Callable):
         '''
@@ -140,4 +143,3 @@ class BaseMouth:
             all_response = self._handle_interruption(all_response, interrupt_queue)
         text_queue.queue.clear()
         text_queue.put('. '.join(all_response))
-

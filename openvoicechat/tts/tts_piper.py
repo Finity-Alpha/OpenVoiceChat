@@ -5,12 +5,13 @@ from .base import BaseMouth
 
 class Mouth_piper(BaseMouth):
     def __init__(self, device='cpu', model_path='models/en_US-ryan-high.onnx',
-                 config_path='models/en_en_US_ryan_high_en_US-ryan-high.onnx.json'):
+                 config_path='models/en_en_US_ryan_high_en_US-ryan-high.onnx.json',
+                 player=sd):
         import piper
         self.model = piper.PiperVoice.load(model_path=model_path,
                                            config_path=config_path,
                                            use_cuda=True if device == 'cuda' else False)
-        super().__init__(sample_rate=self.model.config.sample_rate)
+        super().__init__(sample_rate=self.model.config.sample_rate, player=player)
 
     def run_tts(self, text):
         audio = b''

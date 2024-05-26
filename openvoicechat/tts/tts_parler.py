@@ -21,7 +21,7 @@ class Mouth_parler(BaseMouth):
     def __init__(self, model_id='parler-tts/parler_tts_mini_v0.1',
                  tts_description=None,
                  device='cuda:0' if torch.cuda.is_available() else 'cpu',
-                 temperature=1.0):
+                 temperature=1.0, player=sd):
         from parler_tts import ParlerTTSForConditionalGeneration
         if tts_description is None:
             tts_description = ('A female speaker with a slightly low-pitched voice delivers her words quite '
@@ -33,7 +33,7 @@ class Mouth_parler(BaseMouth):
         input_ids = self.tokenizer(tts_description, return_tensors="pt").input_ids.to(device)
         self.desc_tensor = BaseModelOutput(last_hidden_state=self.model.text_encoder(input_ids=input_ids).last_hidden_state)
         self.temperature = temperature
-        super().__init__(sample_rate=self.model.config.sampling_rate)
+        super().__init__(sample_rate=self.model.config.sampling_rate, player=player)
 
     def run_tts(self, text):
         prompt_input_ids = self.tokenizer(text, return_tensors="pt").input_ids.to(self.device)

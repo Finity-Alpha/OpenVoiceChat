@@ -8,12 +8,15 @@ from threading import Thread
 from queue import Queue
 
 class BaseEar:
-    def __init__(self, silence_seconds=3, not_interrupt_words=None):
+    def __init__(self, silence_seconds=3,
+                 not_interrupt_words=None,
+                 listener=None):
         if not_interrupt_words is None:
             not_interrupt_words = ['you', 'yes', 'yeah', 'hmm']  # you because whisper says "you" in silence
         self.silence_seconds = silence_seconds
         self.not_interrupt_words = not_interrupt_words
         self.vad = VoiceActivityDetection()
+        self.listener = listener
 
     @torch.no_grad()
     def transcribe(self, input: np.ndarray) -> str:
@@ -35,7 +38,7 @@ class BaseEar:
         :return: transcription
         records audio using record_user and returns its transcription
         '''
-        audio = record_user(self.silence_seconds, self.vad)
+        audio = record_user(self.silence_seconds, self.vad, self.listener)
         text = self.transcribe(audio)
         return text
 
@@ -80,7 +83,7 @@ class BaseEar:
         interruption.
         '''
         while record_seconds > 0:
-            interruption_audio = record_interruption(self.vad, record_seconds)
+            interruption_audio = record_interruption(self.vad, record_seconds, streamer=self.listener)
             # duration of interruption audio
             if interruption_audio is None:
                 return ''
