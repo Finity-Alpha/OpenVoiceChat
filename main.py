@@ -20,4 +20,4 @@ if __name__ == "__main__":
                       api_key=api_key)
     mouth = Mouth(device=device)
     mouth.say_text('Good morning!')
-    run_chat(mouth, ear, chatbot, verbose=True)
+    run_chat(mouth, ear, chatbot, verbose=True, stopping_criteria=lambda x: '[END]' in x)

@@ -5,7 +5,21 @@ import numpy as np
 
 
 
-def run_chat(mouth, ear, chatbot, verbose=True):
+def run_chat(mouth, ear, chatbot, verbose=True,
+             stopping_criteria=lambda x: False):
+    """
+    Runs a chat session between a user and a bot.
+
+    Parameters: mouth (object): An object responsible for the bot's speech output. ear (object): An object
+    responsible for listening to the user's input. chatbot (object): An object responsible for generating the bot's
+    responses. verbose (bool, optional): If True, prints the user's input and the bot's responses. Defaults to True.
+    stopping_criteria (function, optional): A function that determines when the chat should stop. It takes the bot's
+    response as input and returns a boolean. Defaults to a function that always returns False.
+
+    The function works by continuously listening to the user's input and generating the bot's responses in separate
+    threads. If the user interrupts the bot's speech, the remaining part of the bot's response is saved and prepended
+    to the user's next input. The chat stops when the stopping_criteria function returns True for a bot's response.
+    """
     pre_interruption_text = ''
     while True:
         user_input = pre_interruption_text + ' ' + ear.listen()
@@ -28,6 +42,8 @@ def run_chat(mouth, ear, chatbot, verbose=True):
             pre_interruption_text = interrupt_queue.get()
 
         res = llm_output_queue.get()
+        if stopping_criteria(res):
+            break
         if verbose:
             print('BOT: ', res)
 

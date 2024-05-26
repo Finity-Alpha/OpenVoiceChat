@@ -109,6 +109,7 @@ class BaseMouth:
         '''
         response = ''
         all_response = []
+        interrupt_text_list = []
         if audio_queue is None:
             audio_queue = queue.Queue()
         say_thread = threading.Thread(target=self.say, args=(audio_queue, listen_interruption_func))
@@ -116,7 +117,7 @@ class BaseMouth:
         while True:
             text = text_queue.get()
             if text is None:
-                sentence = remove_words_in_brackets_and_spaces(response).strip()
+                sentence = response
             else:
                 response += text
                 if bool(re.search(self.sentence_stop_pattern, response)):
@@ -127,12 +128,13 @@ class BaseMouth:
                     continue
             if sentence.strip() == '':
                 break
-            sentence = remove_words_in_brackets_and_spaces(sentence).strip()
-            output = self.run_tts(sentence)
-            audio_queue.put((output, sentence))
+            clean_sentence = remove_words_in_brackets_and_spaces(sentence).strip()
+            output = self.run_tts(clean_sentence)
+            audio_queue.put((output, clean_sentence))
             all_response.append(sentence)
+            interrupt_text_list.append(clean_sentence)
             if self.interrupted:
-                all_response = self._handle_interruption(all_response, interrupt_queue)
+                all_response = self._handle_interruption(interrupt_text_list, interrupt_queue)
                 self.interrupted = ''
                 break
             if text is None:
@@ -140,6 +142,6 @@ class BaseMouth:
         audio_queue.put((None, ''))
         say_thread.join()
         if self.interrupted:
-            all_response = self._handle_interruption(all_response, interrupt_queue)
+            all_response = self._handle_interruption(interrupt_text_list, interrupt_queue)
         text_queue.queue.clear()
         text_queue.put('. '.join(all_response))
