@@ -2,6 +2,7 @@ let socket = null;
 let logElement = document.getElementById('logs');
 //const socket = new WebSocket(window.location.href+ 'ws');
 document.getElementById('startButton').addEventListener('click', function() {
+    logElement.innerText = 'starting.. could take a minute';
     // Create a new WebSocket connection
     const socket = new WebSocket(window.location.href+ 'ws');
     let audioCtx;
@@ -57,7 +58,9 @@ document.getElementById('startButton').addEventListener('click', function() {
             }
             isPlaying = false;  // Stop playing audio
             audioQueue = [];  // Clear the audio queue
-        } else {
+        } else if(receivedData === 'none'){
+            console.log('No audio data');
+        }else {
             const float32Array = new Float32Array(await event.data.arrayBuffer());
             const audioBuffer = audioCtx.createBuffer(1, float32Array.length, 44100);
             audioBuffer.getChannelData(0).set(float32Array);

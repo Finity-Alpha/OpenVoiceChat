@@ -9,6 +9,7 @@ CHANNELS = 1
 RATE = 16000
 
 
+
 def make_stream():
     p = pyaudio.PyAudio()
     return p.open(format=FORMAT,
@@ -45,8 +46,12 @@ def record_interruption(vad, record_seconds=100, streamer=None):
         stream = make_stream()
     else:
         stream = streamer.make_stream()
+        CHUNK = streamer.CHUNK
+        RATE = streamer.RATE
+
     for _ in range(0, int(RATE / CHUNK * record_seconds)):
         data = stream.read(CHUNK)
+        assert len(data) == CHUNK * 2, 'chunk size does not match 2 bytes per sample'
         frames.append(data)
         contains_speech = vad.contains_speech(frames[int(RATE / CHUNK) * -2:])
         if contains_speech:
@@ -62,15 +67,18 @@ def record_user(silence_seconds, vad, streamer=None):
     frames = []
 
     started = False
-    one_second_iters = int(RATE / CHUNK)
     if streamer is None:
         stream = make_stream()
     else:
         stream = streamer.make_stream()
+        CHUNK = streamer.CHUNK
+        RATE = streamer.RATE
+    one_second_iters = int(RATE / CHUNK)
     print("* recording")
 
     while True:
         data = stream.read(CHUNK)
+        assert len(data) == CHUNK * 2, 'chunk size does not match 2 bytes per sample'
         frames.append(data)
         contains_speech = vad.contains_speech(frames[int(-one_second_iters * silence_seconds):])
         if not started and contains_speech:

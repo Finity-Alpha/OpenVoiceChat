@@ -83,7 +83,7 @@ class BaseEar:
         interruption.
         '''
         while record_seconds > 0:
-            interruption_audio = record_interruption(self.vad, record_seconds)
+            interruption_audio = record_interruption(self.vad, record_seconds, streamer=self.listener)
             # duration of interruption audio
             if interruption_audio is None:
                 return ''

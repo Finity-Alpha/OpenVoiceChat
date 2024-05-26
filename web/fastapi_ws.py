@@ -1,9 +1,7 @@
 from fastapi import FastAPI, WebSocket
 import uvicorn
-import asyncio
 from openvoicechat.tts.tts_piper import Mouth_piper as Mouth
 from openvoicechat.llm.llm_gpt import Chatbot_gpt as Chatbot
-# from openvoicechat.llm.llm_llama import Chatbot_llama as Chatbot
 from openvoicechat.stt.stt_hf import Ear_hf as Ear
 from openvoicechat.llm.prompts import llama_sales
 from openvoicechat.utils import run_chat
@@ -14,8 +12,6 @@ import threading
 import numpy as np
 import queue
 import time
-import matplotlib.pyplot as plt
-import nest_asyncio
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
@@ -53,6 +49,8 @@ class Listener_ws:
     def __init__(self, q):
         self.input_queue = q
         self.listening = False
+        self.CHUNK = 5945
+        self.RATE = 16_000
 
     def read(self, x):
         data = self.input_queue.get()
@@ -97,14 +95,20 @@ async def websocket_endpoint(websocket: WebSocket):
         while True:
             data = await websocket.receive_bytes()
             if listener.listening:
+                # print(len(data))
                 input_queue.put(data)
             if not output_queue.empty():
                 response_data = output_queue.get_nowait()
             else:
-                response_data = np.zeros(1024, dtype=np.float32).tobytes()
+                response_data = 'none'.encode()
             await websocket.send_bytes(response_data)
     except WebSocketDisconnect:
         print("WebSocket disconnected")
+        del mouth
+        del ear
+        #clear cuda cache
+        import torch
+        torch.cuda.empty_cache()
     finally:
         await websocket.close()
 
