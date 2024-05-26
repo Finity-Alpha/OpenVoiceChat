@@ -50,7 +50,7 @@ pip install openvoicechat
 pip install openvoicechat[piper,openai,transformers]
 ```
 
-similarly "piper" and "xtts" can be replaced by any of the following
+similarly "piper" and "openai" can be replaced by any of the following
 - piper
 - vosk
 - openai
