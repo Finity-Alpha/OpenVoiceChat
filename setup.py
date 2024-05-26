@@ -10,7 +10,7 @@ setup(
                      'opensource, highly extensible and easy to use alternative to the proprietary solutions.',
     url='http://www.fakhirali.pk/OpenVoiceChat/',
     name='openvoicechat',
-    version='0.1.4',
+    version='0.1.5',
     packages=find_packages(),
     install_requires=[
         'sounddevice',
@@ -19,13 +19,14 @@ setup(
         'librosa',
         'pydub',
         'python-dotenv',
-        'websockets'
+        'websockets',
+        'fastapi'
     ],
     extras_require={
         'transformers': ['transformers'],
         'piper': ['piper-tts', 'piper-phonemize'],
         'vosk': ['vosk'],
-        'open_ai': ['openai'],
+        'openai': ['openai'],
         'tortoise': ['tortoise-tts'],
         'xtts': ['TTS'],
     },

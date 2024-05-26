@@ -47,13 +47,13 @@ pip install openvoicechat
 
 ### To install base and functionality specific packages
 ```shell
-pip install openvoicechat[piper,xtts]
+pip install openvoicechat[piper,openai,transformers]
 ```
 
 similarly "piper" and "xtts" can be replaced by any of the following
 - piper
 - vosk
-- open_ai
+- openai
 - tortoise
 - xtts
 - transformers
