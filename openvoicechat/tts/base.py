@@ -63,12 +63,7 @@ class BaseMouth:
                 self.interrupted = (interruption, text)
                 break
             else:
-                if inspect.iscoroutinefunction(self.player.wait):
-                    future = asyncio.run_coroutine_threadsafe(self.player.wait(), self.player.loop)
-                    future.result()
-                    # asyncio.run(self.player.wait(), loop_factory=self.player.loop)
-                else:
-                    self.player.wait()
+                self.player.wait()
 
     def say_multiple(self, text: str, listen_interruption_func: Callable):
         '''

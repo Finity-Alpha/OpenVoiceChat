@@ -40,8 +40,13 @@ class Player_ws:
         self.output_queue.put('stop'.encode())
 
     def wait(self):
-        while not self.output_queue.empty():
-            time.sleep(0.05)
+        time_to_wait = 0
+        # while not self.output_queue.empty():
+        #     time.sleep(0.1)
+        #     peek at the first element
+            # time_to_wait = len(self.output_queue.queue[0]) / (44100 * 4)
+        # print(time_to_wait)
+        # time.sleep(time_to_wait)
         self.playing = False
 
 
@@ -81,7 +86,7 @@ async def websocket_endpoint(websocket: WebSocket):
     mouth = Mouth(model_path='../models/en_US-ryan-high.onnx',
                   config_path='../models/en_en_US_ryan_high_en_US-ryan-high.onnx.json',
                   device='cuda', player=player)
-    ear = Ear(device='cuda', silence_seconds=1, listener=listener)
+    ear = Ear(device='cuda', silence_seconds=2, listener=listener)
     load_dotenv()
     api_key = os.getenv('OPENAI_API_KEY')
     chatbot = Chatbot(sys_prompt=llama_sales,
@@ -90,6 +95,7 @@ async def websocket_endpoint(websocket: WebSocket):
     # threading.Thread(target=transcribe, args=(ear, listener)).start()
     # threading.Thread(target=play_text, args=(mouth, player, 'Hello, my name is John.')).start()
     threading.Thread(target=run_chat, args=(mouth, ear, chatbot, True)).start()
+
 
     try:
         while True:
