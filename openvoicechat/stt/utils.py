@@ -44,6 +44,8 @@ def record_interruption(vad, record_seconds=100, streamer=None):
     frames = []
     if streamer is None:
         stream = make_stream()
+        global CHUNK
+        global RATE
     else:
         stream = streamer.make_stream()
         CHUNK = streamer.CHUNK
@@ -69,6 +71,8 @@ def record_user(silence_seconds, vad, streamer=None):
     started = False
     if streamer is None:
         stream = make_stream()
+        global CHUNK
+        global RATE
     else:
         stream = streamer.make_stream()
         CHUNK = streamer.CHUNK
