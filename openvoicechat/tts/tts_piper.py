@@ -1,7 +1,10 @@
 import sounddevice as sd
 import numpy as np
 import torch
-from .base import BaseMouth
+if __name__ == '__main__':
+    from base import BaseMouth
+else:
+    from .base import BaseMouth
 
 class Mouth_piper(BaseMouth):
     def __init__(self, device='cpu', model_path='models/en_US-ryan-high.onnx',
@@ -22,8 +25,8 @@ class Mouth_piper(BaseMouth):
 
 if __name__ == '__main__':
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
-    mouth = Mouth_piper(device=device, model_path='../models/en_US-ryan-high.onnx',
-                        config_path='../models/en_en_US_ryan_high_en_US-ryan-high.onnx.json')
+    mouth = Mouth_piper(device=device, model_path='../../models/en_US-ryan-high.onnx',
+                        config_path='../../models/en_en_US_ryan_high_en_US-ryan-high.onnx.json')
 
     text = ("If there's one thing that makes me nervous about the future of self-driving cars, it's that they'll "
             "replace human drivers.\nI think there's a huge opportunity to make human-driven cars safer and more "

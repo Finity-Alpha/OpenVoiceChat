@@ -1,5 +1,5 @@
 import uvicorn
-from openvoicechat.tts.tts_piper import Mouth_piper as Mouth
+from openvoicechat.tts.tts_xtts import Mouth_xtts as Mouth
 from openvoicechat.llm.llm_gpt import Chatbot_gpt as Chatbot
 from openvoicechat.stt.stt_hf import Ear_hf as Ear
 from openvoicechat.llm.prompts import llama_sales
@@ -26,10 +26,8 @@ async def websocket_endpoint(websocket: WebSocket):
     output_queue = queue.Queue()
     listener = Listener_ws(input_queue)
     player = Player_ws(output_queue)
-    mouth = Mouth(model_path='../models/en_US-ryan-high.onnx',
-                  config_path='../models/en_en_US_ryan_high_en_US-ryan-high.onnx.json',
-                  device='cuda', player=player)
-    ear = Ear(device='cuda', silence_seconds=2, listener=listener)
+    mouth = Mouth(device='cpu', player=player)
+    ear = Ear(device='cpu', silence_seconds=1, listener=listener)
     load_dotenv()
     api_key = os.getenv('OPENAI_API_KEY')
     chatbot = Chatbot(sys_prompt=llama_sales,

@@ -1,6 +1,10 @@
 import sounddevice as sd
 import torch
-from .base import BaseMouth
+import numpy as np
+if __name__ == '__main__':
+    from base import BaseMouth
+else:
+    from .base import BaseMouth
 
 
 class Mouth_xtts(BaseMouth):
@@ -13,7 +17,7 @@ class Mouth_xtts(BaseMouth):
 
     def run_tts(self, text):
         output = self.model.tts(text=text, split_sentences=False)
-        return output
+        return np.array(output)
 
 
 if __name__ == '__main__':
