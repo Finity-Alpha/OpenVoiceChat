@@ -51,7 +51,7 @@ pip install openvoicechat[piper,openai,transformers]
 ```
 
 similarly "piper" and "openai" can be replaced by any of the following
-- piper
+- piper (does not work on windows)
 - vosk
 - openai
 - tortoise
