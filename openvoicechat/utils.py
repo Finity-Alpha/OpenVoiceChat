@@ -54,7 +54,8 @@ class Player_ws:
         self.playing = False
 
     def play(self, audio_array, samplerate):
-        audio_array = audio_array / (1 << 15)
+        if audio_array.dtype == np.int16:
+            audio_array = audio_array / (1 << 15)
         audio_array = audio_array.astype(np.float32)
         audio_array = librosa.resample(y=audio_array, orig_sr=samplerate, target_sr=44100)
         audio_array = audio_array.tobytes()
