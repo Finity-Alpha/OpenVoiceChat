@@ -1,5 +1,5 @@
 import uvicorn
-from openvoicechat.tts.tts_xtts import Mouth_xtts as Mouth
+from openvoicechat.tts.tts_hf import Mouth_hf as Mouth
 from openvoicechat.llm.llm_gpt import Chatbot_gpt as Chatbot
 from openvoicechat.stt.stt_hf import Ear_hf as Ear
 from openvoicechat.llm.prompts import llama_sales
@@ -26,7 +26,7 @@ async def websocket_endpoint(websocket: WebSocket):
     output_queue = queue.Queue()
     listener = Listener_ws(input_queue)
     player = Player_ws(output_queue)
-    mouth = Mouth(device='cpu', player=player)
+    mouth = Mouth(device='cpu', player=player, forward_params={"speaker_id": 10})
     ear = Ear(device='cpu', silence_seconds=1, listener=listener)
     load_dotenv()
     api_key = os.getenv('OPENAI_API_KEY')
@@ -37,9 +37,9 @@ async def websocket_endpoint(websocket: WebSocket):
     try:
         while True:
             data = await websocket.receive_bytes()
+            input_queue.put(data)
             if listener.listening:
-                # print(len(data))
-                input_queue.put(data)
+                print(len(data))
             if not output_queue.empty():
                 response_data = output_queue.get_nowait()
             else:
