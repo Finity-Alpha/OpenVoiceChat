@@ -37,9 +37,8 @@ async def websocket_endpoint(websocket: WebSocket):
     try:
         while True:
             data = await websocket.receive_bytes()
-            input_queue.put(data)
             if listener.listening:
-                print(len(data))
+                input_queue.put(data)
             if not output_queue.empty():
                 response_data = output_queue.get_nowait()
             else:
