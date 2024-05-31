@@ -6,14 +6,19 @@ from time import monotonic
 import numpy as np
 from threading import Thread
 from queue import Queue
-
+import pandas as pd
+import time
 class BaseEar:
-    def __init__(self, silence_seconds=3, not_interrupt_words=None):
+    def __init__(self, silence_seconds=3,
+                 not_interrupt_words=None,
+                 listener=None):
         if not_interrupt_words is None:
             not_interrupt_words = ['you', 'yes', 'yeah', 'hmm']  # you because whisper says "you" in silence
         self.silence_seconds = silence_seconds
         self.not_interrupt_words = not_interrupt_words
         self.vad = VoiceActivityDetection()
+        self.listener = listener
+        self.counter=0
 
     @torch.no_grad()
     def transcribe(self, input: np.ndarray) -> str:
@@ -35,9 +40,21 @@ class BaseEar:
         :return: transcription
         records audio using record_user and returns its transcription
         '''
-        # first transcribe
-        audio = record_user(self.silence_seconds, self.vad)
+        audio = record_user(self.silence_seconds, self.vad, self.listener)
+        df=pd.read_csv(r'D:\OpenVoiceChat-master\timing.csv')
+        
+        start_time = time.time()
         text = self.transcribe(audio)
+        stop_time = time.time()
+        time_diff = stop_time - start_time
+        if len(df)==0:
+            df.loc[0, 'stt'] = time_diff
+            df.at[0, 'Response'] = 'Response num: '+str(self.counter)
+        else:
+            df.loc[len(df), 'stt'] = time_diff
+            df.at[len(df), 'Response'] = 'Response num: '+str(self.counter)
+        df.to_csv(r'D:\OpenVoiceChat-master\timing.csv', index=False)
+        self.counter+=1
         return text
 
     def listen_stream(self) -> str:
@@ -81,7 +98,7 @@ class BaseEar:
         interruption.
         '''
         while record_seconds > 0:
-            interruption_audio = record_interruption(self.vad, record_seconds)
+            interruption_audio = record_interruption(self.vad, record_seconds, streamer=self.listener)
             # duration of interruption audio
             if interruption_audio is None:
                 return ''
