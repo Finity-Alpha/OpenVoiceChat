@@ -1,12 +1,14 @@
 import torch
 from .utils import record_user, record_interruption, record_user_stream
+from openvoicechat.utils import CSV_FILE_PATH
 from .vad import VoiceActivityDetection
 import re
 from time import monotonic
 import numpy as np
 from threading import Thread
 from queue import Queue
-
+import pandas as pd
+import time
 class BaseEar:
     def __init__(self, silence_seconds=3,
                  not_interrupt_words=None,
@@ -17,6 +19,7 @@ class BaseEar:
         self.not_interrupt_words = not_interrupt_words
         self.vad = VoiceActivityDetection()
         self.listener = listener
+        self.counter=0
 
     @torch.no_grad()
     def transcribe(self, input: np.ndarray) -> str:
@@ -39,7 +42,19 @@ class BaseEar:
         records audio using record_user and returns its transcription
         '''
         audio = record_user(self.silence_seconds, self.vad, self.listener)
+        df=pd.read_csv(CSV_FILE_PATH)
+        
+        start_time = time.monotonic()
         text = self.transcribe(audio)
+        stop_time = time.monotonic()
+        time_diff = stop_time - start_time
+        new_row = {'Model':'STT','Time Taken': time_diff}
+        new_row_df = pd.DataFrame([new_row])
+
+        # Concatenate the existing DataFrame with the new row DataFrame
+        df = pd.concat([df, new_row_df], ignore_index=True)
+        df.to_csv(CSV_FILE_PATH, index=False)
+        self.counter+=1
         return text
 
     def listen_stream(self) -> str:

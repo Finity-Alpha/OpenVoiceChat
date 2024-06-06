@@ -2,13 +2,14 @@ import sounddevice as sd
 import re
 from time import monotonic
 import queue
+from openvoicechat.utils import CSV_FILE_PATH
 import threading
 from typing import Callable
 import numpy as np
 import inspect
 import asyncio
-
-
+import time
+import pandas as pd
 def remove_words_in_brackets_and_spaces(text):
     '''
     :param text: input text
@@ -112,9 +113,12 @@ class BaseMouth:
         interrupt_text_list = []
         if audio_queue is None:
             audio_queue = queue.Queue()
+        sentence_comp=False
         say_thread = threading.Thread(target=self.say, args=(audio_queue, listen_interruption_func))
         say_thread.start()
         while True:
+            if sentence_comp==False:
+                llm_start=time.monotonic()
             text = text_queue.get()
             if text is None:
                 sentence = response
@@ -124,16 +128,34 @@ class BaseMouth:
                     sentences = re.split(self.sentence_stop_pattern, response, maxsplit=1)
                     sentence = sentences[0]
                     response = sentences[1]
+                    if(sentence_comp==False):
+                        llm_end=time.monotonic()
+                        time_diff=llm_end-llm_start
+                        df=pd.read_csv(CSV_FILE_PATH)
+                        new_row = {'Model':'LLM','Time Taken': time_diff}
+                        new_row_df = pd.DataFrame([new_row])
+                        df = pd.concat([df, new_row_df], ignore_index=True)                        
+                        df.to_csv(CSV_FILE_PATH, index=False)
+                        sentence_comp=True
                 else:
                     continue
             if sentence.strip() == '':
                 break
             clean_sentence = remove_words_in_brackets_and_spaces(sentence).strip()
+            start_time = time.monotonic()
             output = self.run_tts(clean_sentence)
+            stop_time = time.monotonic()
+            time_diff = stop_time - start_time
+            df=pd.read_csv(CSV_FILE_PATH)
+            new_row = {'Model':'TTS','Time Taken': time_diff}
+            new_row_df = pd.DataFrame([new_row])
+            df = pd.concat([df, new_row_df], ignore_index=True)   
+            df.to_csv(CSV_FILE_PATH, index=False)            
             audio_queue.put((output, clean_sentence))
             all_response.append(sentence)
             interrupt_text_list.append(clean_sentence)
             if self.interrupted:
+                
                 all_response = self._handle_interruption(interrupt_text_list, interrupt_queue)
                 self.interrupted = ''
                 break
@@ -142,6 +164,8 @@ class BaseMouth:
         audio_queue.put((None, ''))
         say_thread.join()
         if self.interrupted:
+            sentence_comp=False
             all_response = self._handle_interruption(interrupt_text_list, interrupt_queue)
         text_queue.queue.clear()
         text_queue.put('. '.join(all_response))
+        sentence_comp=False
