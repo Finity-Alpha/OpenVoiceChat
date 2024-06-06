@@ -7,8 +7,7 @@ from typing import Callable
 import numpy as np
 import inspect
 import asyncio
-import time
-import pandas as pd
+
 
 def remove_words_in_brackets_and_spaces(text):
     '''
@@ -27,9 +26,6 @@ class BaseMouth:
         self.sentence_stop_pattern = r'[.?](?=\s+\S)'
         self.interrupted = ''
         self.player = player
-
-        self.sentence_comp=0
-
 
     def run_tts(self, text: str) -> np.ndarray:
         '''
@@ -119,8 +115,6 @@ class BaseMouth:
         say_thread = threading.Thread(target=self.say, args=(audio_queue, listen_interruption_func))
         say_thread.start()
         while True:
-            if self.sentence_comp==0:
-                llm_start=time.time()
             text = text_queue.get()
             if text is None:
                 sentence = response
@@ -130,32 +124,12 @@ class BaseMouth:
                     sentences = re.split(self.sentence_stop_pattern, response, maxsplit=1)
                     sentence = sentences[0]
                     response = sentences[1]
-                    if(self.sentence_comp==0):
-                        llm_end=time.time()
-                        time_diff=llm_end-llm_start
-                        df=pd.read_csv(r'D:\OpenVoiceChat-master\timing.csv')
-                        if len(df)==0 or len(df)==1:
-                            df.loc[0, 'llm'] = time_diff
-                        else:
-                            df.loc[len(df), 'llm'] = time_diff
-                        df.to_csv(r'D:\OpenVoiceChat-master\timing.csv', index=False)
-                        self.sentence_comp=1
                 else:
                     continue
             if sentence.strip() == '':
                 break
             clean_sentence = remove_words_in_brackets_and_spaces(sentence).strip()
-
-            start_time = time.time()
             output = self.run_tts(clean_sentence)
-            stop_time = time.time()
-            time_diff = stop_time - start_time
-            df=pd.read_csv(r'D:\OpenVoiceChat-master\timing.csv')
-            if len(df)==0 or len(df)==1:
-                df.loc[0, 'tts'] = time_diff
-            else:
-                df.loc[len(df), 'tts'] = time_diff
-            df.to_csv(r'D:\OpenVoiceChat-master\timing.csv', index=False)            
             audio_queue.put((output, clean_sentence))
             all_response.append(sentence)
             interrupt_text_list.append(clean_sentence)
@@ -168,9 +142,6 @@ class BaseMouth:
         audio_queue.put((None, ''))
         say_thread.join()
         if self.interrupted:
-            self.sentence_comp=0
             all_response = self._handle_interruption(interrupt_text_list, interrupt_queue)
         text_queue.queue.clear()
         text_queue.put('. '.join(all_response))
-        self.sentence_comp=0
-
