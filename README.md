@@ -1,7 +1,7 @@
 
 <div align="center">
 
-![logo](media/logo.gif)
+![logo](media/main_logo.png)
 
 <h3>
 
@@ -47,13 +47,13 @@ pip install openvoicechat
 
 ### To install base and functionality specific packages
 ```shell
-pip install openvoicechat[piper,xtts]
+pip install openvoicechat[piper,openai,transformers]
 ```
 
-similarly "piper" and "xtts" can be replaced by any of the following
-- piper
+similarly "piper" and "openai" can be replaced by any of the following
+- piper (does not work on windows)
 - vosk
-- open_ai
+- openai
 - tortoise
 - xtts
 - transformers

@@ -13,10 +13,12 @@ if __name__ == "__main__":
     print('loading models... ', device)
 
 
+
     columns = ['Response','stt', 'tts', 'llm']
     df = pd.DataFrame(columns=columns)
     file_path = 'timing.csv'
     df.to_csv(file_path, index=False)
+
     ear = Ear(silence_seconds=2)
 
     load_dotenv()
@@ -24,6 +26,7 @@ if __name__ == "__main__":
 
     chatbot = Chatbot(sys_prompt=llama_sales,
                       api_key=api_key)
+
 
     g_api_key = os.getenv('ELEVENLABS_API_KEY')
     mouth = Mouth()

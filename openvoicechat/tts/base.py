@@ -9,6 +9,7 @@ import inspect
 import asyncio
 import time
 import pandas as pd
+
 def remove_words_in_brackets_and_spaces(text):
     '''
     :param text: input text
@@ -26,7 +27,9 @@ class BaseMouth:
         self.sentence_stop_pattern = r'[.?](?=\s+\S)'
         self.interrupted = ''
         self.player = player
+
         self.sentence_comp=0
+
 
     def run_tts(self, text: str) -> np.ndarray:
         '''
@@ -142,6 +145,7 @@ class BaseMouth:
             if sentence.strip() == '':
                 break
             clean_sentence = remove_words_in_brackets_and_spaces(sentence).strip()
+
             start_time = time.time()
             output = self.run_tts(clean_sentence)
             stop_time = time.time()
@@ -156,7 +160,6 @@ class BaseMouth:
             all_response.append(sentence)
             interrupt_text_list.append(clean_sentence)
             if self.interrupted:
-                
                 all_response = self._handle_interruption(interrupt_text_list, interrupt_queue)
                 self.interrupted = ''
                 break
@@ -170,3 +173,4 @@ class BaseMouth:
         text_queue.queue.clear()
         text_queue.put('. '.join(all_response))
         self.sentence_comp=0
+

@@ -20,6 +20,7 @@ class BaseEar:
         self.listener = listener
         self.counter=0
 
+
     @torch.no_grad()
     def transcribe(self, input: np.ndarray) -> str:
         '''
