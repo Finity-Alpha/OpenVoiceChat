@@ -4,7 +4,7 @@ import librosa
 import numpy as np
 
 
-
+CSV_FILE_PATH='/home/centrox/Documents/fakhirovc/OpenVoiceChat/timing.csv'
 def run_chat(mouth, ear, chatbot, verbose=True,
              stopping_criteria=lambda x: False):
     """

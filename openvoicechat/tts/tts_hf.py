@@ -4,7 +4,7 @@ from .base import BaseMouth
 
 
 class Mouth_hf(BaseMouth):
-    def __init__(self, model_id='kakao-enterprise/vits-vctk', device='cpu',
+    def __init__(self, model_id='microsoft/speecht5_tts', device='cpu',
                  forward_params=None, player=sd):
         from transformers import pipeline
         self.pipe = pipeline('text-to-speech', model=model_id, device=device)
