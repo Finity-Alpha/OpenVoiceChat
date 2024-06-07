@@ -19,7 +19,7 @@ class BaseEar:
         self.not_interrupt_words = not_interrupt_words
         self.vad = VoiceActivityDetection()
         self.listener = listener
-        self.counter=0
+
 
     @torch.no_grad()
     def transcribe(self, input: np.ndarray) -> str:
@@ -54,7 +54,7 @@ class BaseEar:
         # Concatenate the existing DataFrame with the new row DataFrame
         df = pd.concat([df, new_row_df], ignore_index=True)
         df.to_csv(CSV_FILE_PATH, index=False)
-        self.counter+=1
+
         return text
 
     def listen_stream(self) -> str:

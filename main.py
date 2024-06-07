@@ -56,4 +56,4 @@ if __name__ == "__main__":
     # mouth = Mouth(device=device,
     #               forward_params={"speaker_id": 10})
     # mouth.say_text('Good morning!')
-    run_chat(mouth, ear, chatbot, verbose=True)
+    run_chat(mouth, ear, chatbot, verbose=True,stopping_criteria=lambda x: '[END]' in x)

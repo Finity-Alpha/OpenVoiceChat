@@ -111,14 +111,16 @@ class BaseMouth:
         response = ''
         all_response = []
         interrupt_text_list = []
+      
         if audio_queue is None:
+
             audio_queue = queue.Queue()
-        sentence_comp=False
+        sentence_comp=False  
+        llm_start=time.monotonic()            
         say_thread = threading.Thread(target=self.say, args=(audio_queue, listen_interruption_func))
         say_thread.start()
         while True:
-            if sentence_comp==False:
-                llm_start=time.monotonic()
+
             text = text_queue.get()
             if text is None:
                 sentence = response
@@ -164,8 +166,7 @@ class BaseMouth:
         audio_queue.put((None, ''))
         say_thread.join()
         if self.interrupted:
-            sentence_comp=False
             all_response = self._handle_interruption(interrupt_text_list, interrupt_queue)
         text_queue.queue.clear()
         text_queue.put('. '.join(all_response))
-        sentence_comp=False
+
