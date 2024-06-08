@@ -5,11 +5,13 @@ from openvoicechat.utils import run_chat
 from openvoicechat.llm.prompts import llama_sales
 from dotenv import load_dotenv
 
+
 if __name__ == "__main__":
     device = 'cpu'
 
     print('loading models... ', device)
-    ear = Ear(silence_seconds=2)
+    ear = Ear(silence_seconds=2,
+              device=device)
 
     load_dotenv()
 
