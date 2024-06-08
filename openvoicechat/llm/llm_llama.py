@@ -6,16 +6,20 @@ else:
 
 class Chatbot_llama(BaseChatbot):
     def __init__(self, model_path='models/llama-2-7b.Q4_K_M.gguf', device='cuda',
-                 sys_prompt='', chat_format=None):
+                 sys_prompt='', chat_format=None, temperature=0.7):
+
         from llama_cpp import Llama
         self.model = Llama(model_path=model_path, n_ctx=4096,
                            n_gpu_layers=-1 if device == 'cuda' else 0,
                            verbose=False, chat_format=chat_format)
         self.messages = [{'role': 'system', 'content': sys_prompt}]
+        self.temperature = temperature
 
     def run(self, input_text):
         self.messages.append({'role': 'user', 'content': input_text})
-        out = self.model.create_chat_completion(self.messages, stream=True)
+        out = self.model.create_chat_completion(self.messages,
+                                                stream=True,
+                                                temperature=self.temperature)
         response_text = ''
         for o in out:
             if 'content' in o['choices'][0]['delta'].keys():
