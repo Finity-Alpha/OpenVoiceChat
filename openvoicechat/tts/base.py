@@ -116,7 +116,8 @@ class BaseMouth:
         if audio_queue is None:
             audio_queue = queue.Queue()
 
-        first_sentence = False
+        first_sentence = True
+        first_audio = True
         llm_start = monotonic()
 
         say_thread = threading.Thread(target=self.say, args=(audio_queue, listen_interruption_func))
@@ -131,19 +132,19 @@ class BaseMouth:
                     sentences = re.split(self.sentence_stop_pattern, response, maxsplit=1)
                     sentence = sentences[0]
                     response = sentences[1]
-                    if first_sentence is False and TIMING:
+                    if first_sentence and TIMING:
                         llm_end = monotonic()
                         time_diff = llm_end - llm_start
                         new_row = {'Model': 'LLM', 'Time Taken': time_diff}
                         new_row_df = pd.DataFrame([new_row])
                         new_row_df.to_csv('times.csv', mode='a', header=False, index=False)
-                        first_sentence = True
+                        first_sentence = False
                 else:
                     continue
             if sentence.strip() == '':
                 break
             clean_sentence = remove_words_in_brackets_and_spaces(sentence).strip()
-            if TIMING:
+            if TIMING and first_audio:
                 tts_start = monotonic()
                 output = self.run_tts(clean_sentence)
                 tts_end = monotonic()
@@ -151,6 +152,7 @@ class BaseMouth:
                 new_row = {'Model': 'TTS', 'Time Taken': time_diff}
                 new_row_df = pd.DataFrame([new_row])
                 new_row_df.to_csv('times.csv', mode='a', header=False, index=False)
+                first_audio = False
             else:
                 output = self.run_tts(clean_sentence)
             audio_queue.put((output, clean_sentence))
