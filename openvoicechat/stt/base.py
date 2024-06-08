@@ -1,6 +1,5 @@
 import torch
 from .utils import record_user, record_interruption, record_user_stream
-import config 
 from .vad import VoiceActivityDetection
 import re
 from time import monotonic
@@ -8,7 +7,12 @@ import numpy as np
 from threading import Thread
 from queue import Queue
 import pandas as pd
-import time
+import os
+
+TIMING = int(os.environ.get('TIMING', 0))
+
+
+
 class BaseEar:
     def __init__(self, silence_seconds=3,
                  not_interrupt_words=None,
@@ -19,7 +23,6 @@ class BaseEar:
         self.not_interrupt_words = not_interrupt_words
         self.vad = VoiceActivityDetection()
         self.listener = listener
-
 
     @torch.no_grad()
     def transcribe(self, input: np.ndarray) -> str:
@@ -42,16 +45,23 @@ class BaseEar:
         records audio using record_user and returns its transcription
         '''
         audio = record_user(self.silence_seconds, self.vad, self.listener)
-
-        start_time = time.monotonic()
-        text = self.transcribe(audio)
-        stop_time = time.monotonic()
-        time_diff = stop_time - start_time
-        new_row = {'Model':'STT','Time Taken': time_diff}
-        new_row_df = pd.DataFrame([new_row])
+        if TIMING:
+            if not os.path.exists('times.csv'):
+                columns = ['Model', 'Time Taken']
+                df = pd.DataFrame(columns=columns)
+                df.to_csv('times.csv', index=False)
+            start_time = monotonic()
+            text = self.transcribe(audio)
+            stop_time = monotonic()
+            time_diff = stop_time - start_time
+            new_row = {'Model': 'STT', 'Time Taken': time_diff}
+            new_row_df = pd.DataFrame([new_row])
+            new_row_df.to_csv('times.csv', mode='a', header=False, index=False)
+        else:
+            text = self.transcribe(audio)
 
         # Concatenate the existing DataFrame with the new row DataFrame
-        config.df_f = pd.concat([config.df_f, new_row_df], ignore_index=True)
+        # config.df_f = pd.concat([config.df_f, new_row_df], ignore_index=True)
 
         return text
 
@@ -80,12 +90,6 @@ class BaseEar:
             text += _ + ' '
         return text
 
-    def listen_timing(self):
-        audio = record_user(self.silence_seconds, self.vad)
-        start = monotonic()
-        text = self.transcribe(audio)
-        end = monotonic()
-        return text, end - start
 
     def interrupt_listen(self, record_seconds=100) -> str:
         '''

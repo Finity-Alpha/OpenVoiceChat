@@ -4,10 +4,9 @@ from openvoicechat.stt.stt_hf import Ear_hf as Ear
 from openvoicechat.utils import run_chat
 from openvoicechat.llm.prompts import llama_sales
 from dotenv import load_dotenv
-import config 
 import os
 from together import Together
-import pandas as pd
+
 
 class Chatbot_together(BaseChatbot):
     def __init__(self, api_key=None, sys_prompt=None, Model=None):
@@ -33,32 +32,22 @@ class Chatbot_together(BaseChatbot):
     def post_process(self, response):
         self.messages.append({"role": "assistant", "content": response})
         return response
-def assign(df, files):
-    config.df_f = df
-    config.file_paths = files
+
+
 if __name__ == "__main__":
     device = 'cpu'
 
     print('loading models... ', device)
-
-    columns = ['Model','Time Taken']
-    dfs = pd.DataFrame(columns=columns)
-    df=dfs
-    file_path = '/timing.csv'
-    script_directory = os.path.dirname(os.path.realpath(__file__))
-    files=script_directory+file_path
-    assign(df,files)
-    print(config.df_f,config.file_paths)
     ear = Ear(silence_seconds=2)
 
     load_dotenv()
     api_key = os.getenv("TOGETHER_API_KEY")
 
     chatbot = Chatbot_together(sys_prompt=llama_sales,
-                      api_key=api_key, Model="mistralai/Mistral-7B-Instruct-v0.3")
+                               api_key=api_key, Model="mistralai/Mistral-7B-Instruct-v0.3")
 
     mouth = Mouth()
     # mouth = Mouth(device=device,
     #               forward_params={"speaker_id": 10})
     # mouth.say_text('Good morning!')
-    run_chat(mouth, ear, chatbot, verbose=True,stopping_criteria=lambda x: '[END]' in x)
+    run_chat(mouth, ear, chatbot, verbose=True, stopping_criteria=lambda x: '[END]' in x)

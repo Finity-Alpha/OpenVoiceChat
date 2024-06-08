@@ -2,6 +2,11 @@ import threading
 import queue
 import librosa
 import numpy as np
+import os
+
+import pandas as pd
+
+TIMING = int(os.environ.get('TIMING', 0))
 
 
 def run_chat(mouth, ear, chatbot, verbose=True,
@@ -19,6 +24,9 @@ def run_chat(mouth, ear, chatbot, verbose=True,
     threads. If the user interrupts the bot's speech, the remaining part of the bot's response is saved and prepended
     to the user's next input. The chat stops when the stopping_criteria function returns True for a bot's response.
     """
+    if TIMING:
+        pd.DataFrame(columns=['Model', 'Time Taken']).to_csv('times.csv', index=False)
+
     pre_interruption_text = ''
     while True:
         user_input = pre_interruption_text + ' ' + ear.listen()
