@@ -4,6 +4,7 @@ from openvoicechat.stt.stt_hf import Ear_hf as Ear
 from openvoicechat.utils import run_chat
 from openvoicechat.llm.prompts import llama_sales
 from dotenv import load_dotenv
+import config 
 import os
 from together import Together
 import pandas as pd
@@ -32,18 +33,22 @@ class Chatbot_together(BaseChatbot):
     def post_process(self, response):
         self.messages.append({"role": "assistant", "content": response})
         return response
-
-
+def assign(df, files):
+    config.df_f = df
+    config.file_paths = files
 if __name__ == "__main__":
     device = 'cpu'
 
     print('loading models... ', device)
 
     columns = ['Model','Time Taken']
-    df = pd.DataFrame(columns=columns)
-    file_path = 'timing.csv'
-    df.to_csv(file_path, index=False)
-
+    dfs = pd.DataFrame(columns=columns)
+    df=dfs
+    file_path = '/timing.csv'
+    script_directory = os.path.dirname(os.path.realpath(__file__))
+    files=script_directory+file_path
+    assign(df,files)
+    print(config.df_f,config.file_paths)
     ear = Ear(silence_seconds=2)
 
     load_dotenv()

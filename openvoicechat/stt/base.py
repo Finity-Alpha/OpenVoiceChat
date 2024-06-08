@@ -1,6 +1,6 @@
 import torch
 from .utils import record_user, record_interruption, record_user_stream
-from openvoicechat.utils import CSV_FILE_PATH
+import config 
 from .vad import VoiceActivityDetection
 import re
 from time import monotonic
@@ -42,8 +42,7 @@ class BaseEar:
         records audio using record_user and returns its transcription
         '''
         audio = record_user(self.silence_seconds, self.vad, self.listener)
-        df=pd.read_csv(CSV_FILE_PATH)
-        
+
         start_time = time.monotonic()
         text = self.transcribe(audio)
         stop_time = time.monotonic()
@@ -52,8 +51,7 @@ class BaseEar:
         new_row_df = pd.DataFrame([new_row])
 
         # Concatenate the existing DataFrame with the new row DataFrame
-        df = pd.concat([df, new_row_df], ignore_index=True)
-        df.to_csv(CSV_FILE_PATH, index=False)
+        config.df_f = pd.concat([config.df_f, new_row_df], ignore_index=True)
 
         return text
 

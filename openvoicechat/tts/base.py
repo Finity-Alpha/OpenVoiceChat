@@ -2,10 +2,11 @@ import sounddevice as sd
 import re
 from time import monotonic
 import queue
-from openvoicechat.utils import CSV_FILE_PATH
+
 import threading
 from typing import Callable
 import numpy as np
+import config 
 import inspect
 import asyncio
 import time
@@ -133,11 +134,10 @@ class BaseMouth:
                     if(sentence_comp==False):
                         llm_end=time.monotonic()
                         time_diff=llm_end-llm_start
-                        df=pd.read_csv(CSV_FILE_PATH)
+
                         new_row = {'Model':'LLM','Time Taken': time_diff}
                         new_row_df = pd.DataFrame([new_row])
-                        df = pd.concat([df, new_row_df], ignore_index=True)                        
-                        df.to_csv(CSV_FILE_PATH, index=False)
+                        config.df_f = pd.concat([config.df_f, new_row_df], ignore_index=True)                        
                         sentence_comp=True
                 else:
                     continue
@@ -148,11 +148,10 @@ class BaseMouth:
             output = self.run_tts(clean_sentence)
             stop_time = time.monotonic()
             time_diff = stop_time - start_time
-            df=pd.read_csv(CSV_FILE_PATH)
             new_row = {'Model':'TTS','Time Taken': time_diff}
             new_row_df = pd.DataFrame([new_row])
-            df = pd.concat([df, new_row_df], ignore_index=True)   
-            df.to_csv(CSV_FILE_PATH, index=False)            
+            config.df_f = pd.concat([config.df_f, new_row_df], ignore_index=True)   
+            config.df_f.to_csv(config.file_paths, index=False)            
             audio_queue.put((output, clean_sentence))
             all_response.append(sentence)
             interrupt_text_list.append(clean_sentence)
