@@ -7,6 +7,9 @@ class Chatbot_gpt(BaseChatbot):
                  api_key=''):
         from openai import OpenAI
         from dotenv import load_dotenv
+        if api_key == '':
+            load_dotenv()
+            api_key = os.getenv('OPENAI_API_KEY')
         self.MODEL = Model
         self.client = OpenAI(api_key=api_key)
         self.messages = []
