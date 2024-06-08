@@ -59,10 +59,6 @@ class BaseEar:
             new_row_df.to_csv('times.csv', mode='a', header=False, index=False)
         else:
             text = self.transcribe(audio)
-
-        # Concatenate the existing DataFrame with the new row DataFrame
-        # config.df_f = pd.concat([config.df_f, new_row_df], ignore_index=True)
-
         return text
 
     def listen_stream(self) -> str:
