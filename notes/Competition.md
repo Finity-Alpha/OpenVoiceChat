@@ -2,10 +2,6 @@
 
 ## Commercial
 
-### [Bland ai](https://bland.ai)
-
-Is alright. The sound is good, I think it also does interruptions.
-
 ### [Retell AI](https://www.retellai.com/)
 
 Same thing. Everyone is doing it. They give some info about 
