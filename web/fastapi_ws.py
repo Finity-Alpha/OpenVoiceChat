@@ -1,6 +1,6 @@
 import uvicorn
 from openvoicechat.tts.tts_hf import Mouth_hf as Mouth
-from openvoicechat.llm.llm_gpt import Chatbot_gpt as Chatbot
+from openvoicechat.llm.llm_llama import Chatbot_llama as Chatbot
 from openvoicechat.stt.stt_hf import Ear_hf as Ear
 from openvoicechat.llm.prompts import llama_sales
 from openvoicechat.utils import run_chat
@@ -31,7 +31,9 @@ async def websocket_endpoint(websocket: WebSocket):
     load_dotenv()
     api_key = os.getenv('OPENAI_API_KEY')
     chatbot = Chatbot(sys_prompt=llama_sales,
-                      api_key=api_key)
+                      model_path='../models/tinyllama-1.1b-chat-v0.3.Q5_K_M.gguf',
+                      device='cpu',
+                      chat_format='chatml')
     threading.Thread(target=run_chat, args=(mouth, ear, chatbot, True)).start()
 
     try:

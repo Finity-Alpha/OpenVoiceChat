@@ -2,12 +2,15 @@ if __name__ == '__main__':
     from base import BaseChatbot
 else:
     from .base import BaseChatbot
+
+
 class Chatbot_llama(BaseChatbot):
-    def __init__(self, model_path='models/llama-2-7b.Q4_K_M.gguf', device='cuda', sys_prompt=''):
+    def __init__(self, model_path='models/llama-2-7b.Q4_K_M.gguf', device='cuda',
+                 sys_prompt='', chat_format=None):
         from llama_cpp import Llama
         self.model = Llama(model_path=model_path, n_ctx=4096,
                            n_gpu_layers=-1 if device == 'cuda' else 0,
-                           verbose=False, chat_format='llama-2')
+                           verbose=False, chat_format=chat_format)
         self.messages = [{'role': 'system', 'content': sys_prompt}]
 
     def run(self, input_text):
@@ -29,7 +32,10 @@ class Chatbot_llama(BaseChatbot):
 
 if __name__ == "__main__":
     from prompts import llama_sales as preprompt
-    john = Chatbot_llama(model_path='../../models/llama-2-7b-chat.Q4_K_M.gguf', sys_prompt=preprompt)
+
+    john = Chatbot_llama(model_path='../../models/llama-2-7b-chat.Q4_K_M.gguf',
+                         sys_prompt=preprompt,
+                         chat_format='llama-2')
     print("type: exit, quit or stop to end the chat")
     print("Chat started:")
     while True:

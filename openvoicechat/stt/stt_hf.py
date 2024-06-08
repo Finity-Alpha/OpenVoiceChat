@@ -4,7 +4,7 @@ import numpy as np
 
 
 class Ear_hf(BaseEar):
-    def __init__(self, model_id='openai/whisper-base.en', device='cpu',
+    def __init__(self, model_id='openai/whisper-tiny.en', device='cpu',
                  silence_seconds=2, generate_kwargs=None, listener=None):
         super().__init__(silence_seconds, listener=listener)
         from transformers import pipeline
