@@ -4,60 +4,8 @@ const HEIGHT = 400;
 const logElement = document.getElementById('logs');
 const ctx = canvas.getContext("2d");
 
-// options to tweak the look
-const opts = {
-  smoothing: 0.6,
-  fft: 8,
-  minDecibels: -70,
-  scale: 0.2,
-  glow: 10,
-  color1: [203, 36, 128],
-  color2: [41, 200, 192],
-  color3: [24, 137, 218],
-  fillOpacity: 0.6,
-  lineWidth: 1,
-  blend: "screen",
-  shift: 50,
-  width: 60,
-  amp: 1
-};
-
-// Interactive dat.GUI controls
-const gui = new dat.GUI();
-
-// hide them by default
-gui.close(); 
-
-// connect gui to opts
-gui.addColor(opts, "color1");
-gui.addColor(opts, "color2");
-gui.addColor(opts, "color3");
-gui.add(opts, "fillOpacity", 0, 1);
-gui.add(opts, "lineWidth", 0, 10).step(1);
-gui.add(opts, "glow", 0, 100);
-gui.add(opts, "blend", [
-  "normal",
-  "multiply",
-  "screen",
-  "overlay",
-  "lighten",
-  "difference"
-]);
-gui.add(opts, "smoothing", 0, 1);
-gui.add(opts, "minDecibels", -100, 0);
-gui.add(opts, "amp", 0, 5);
-gui.add(opts, "width", 0, 60);
-gui.add(opts, "shift", 0, 200);
-
-let context;
-let analyser;
-let freqs;
-let audioQueue = [];
-let isPlaying = false;
-let currentSourceNode = null;
-
 document.getElementById('startButton').addEventListener('click', function() {
-  logElement.innerText = 'starting.. could take a minute';
+  logElement.innerText = 'starting... could take a minute';
   start();
   // Hide the start button
   this.style.display = 'none';  
@@ -68,7 +16,7 @@ function start() {
   let audioCtx;
 
   socket.onopen = () => {
-    logElement.innerText = 'Connection opened. Wait for it to ask mic and start listening';
+    logElement.innerText = 'Connection opened';
     audioCtx = new AudioContext();
     context = audioCtx;
     analyser = context.createAnalyser();
@@ -77,6 +25,7 @@ function start() {
     navigator.mediaDevices.getUserMedia({ audio: true })
       .then(stream => setupAudioProcessors(stream))
       .catch(error => console.error('Error accessing microphone:', error));
+    logElement.innerText = 'Mic detected. Listening...';
   };
 
   socket.onerror = (error) => {
@@ -114,7 +63,7 @@ function start() {
       isPlaying = false;
       audioQueue = [];
     } else if (receivedData === 'none') {
-      console.log('No audio data');
+//        pass
     } else {
       const float32Array = new Float32Array(await event.data.arrayBuffer());
       const audioBuffer = audioCtx.createBuffer(1, float32Array.length, 44100);
@@ -129,7 +78,7 @@ function start() {
   function playAudioFromQueue() {
     if (audioQueue.length > 0 && !isPlaying) {
       isPlaying = true;
-      logElement.innerText = 'Playing audio';
+      logElement.innerText = 'Speaking...';
       const audioBuffer = audioQueue.shift();
       currentSourceNode = audioCtx.createBufferSource();
       currentSourceNode.buffer = audioBuffer;
@@ -138,12 +87,70 @@ function start() {
       currentSourceNode.start();
       currentSourceNode.onended = () => {
         isPlaying = false;
-        logElement.innerText = 'Audio finished playing. Should be listening now.';
+        logElement.innerText = 'Listening...';
         playAudioFromQueue();
       };
     }
   }
 }
+
+
+// VISUALIZATION
+
+
+// options to tweak the look
+const opts = {
+  smoothing: 0.6,
+  fft: 8,
+  minDecibels: -70,
+  scale: 0.2,
+  glow: 10,
+  color1: [203, 36, 128],
+  color2: [41, 200, 192],
+  color3: [24, 137, 218],
+  fillOpacity: 0.6,
+  lineWidth: 1,
+  blend: "screen",
+  shift: 50,
+  width: 60,
+  amp: 1
+};
+
+// Interactive dat.GUI controls
+//const gui = new dat.GUI();
+//
+// hide them by default
+//gui.close();
+//
+// connect gui to opts
+//gui.addColor(opts, "color1");
+//gui.addColor(opts, "color2");
+//gui.addColor(opts, "color3");
+//gui.add(opts, "fillOpacity", 0, 1);
+//gui.add(opts, "lineWidth", 0, 10).step(1);
+//gui.add(opts, "glow", 0, 100);
+//gui.add(opts, "blend", [
+//  "normal",
+//  "multiply",
+//  "screen",
+//  "overlay",
+//  "lighten",
+//  "difference"
+//]);
+//gui.add(opts, "smoothing", 0, 1);
+//gui.add(opts, "minDecibels", -100, 0);
+//gui.add(opts, "amp", 0, 5);
+//gui.add(opts, "width", 0, 60);
+//gui.add(opts, "shift", 0, 200);
+
+let context;
+let analyser;
+let freqs;
+let audioQueue = [];
+let isPlaying = false;
+let currentSourceNode = null;
+
+
 
 function visualize() {
   // set analyser props in the loop react on dat.gui changes

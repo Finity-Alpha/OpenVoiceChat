@@ -2,7 +2,7 @@ import sys
 import os
 
 # Add the project directory to the sys.path
-sys.path.append('/home/centrox/Documents/OpenVoiceChat')
+# sys.path.append('/home/centrox/Documents/OpenVoiceChat')
 
 import uvicorn
 from openvoicechat.tts.tts_hf import Mouth_hf as Mouth
@@ -20,6 +20,9 @@ from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from openvoicechat.utils import Listener_ws, Player_ws
 from together import Together
+import torch
+
+
 class Chatbot_gpt(BaseChatbot):
     def __init__(self, sys_prompt='', Model='togethercomputer/Llama-2-7B-32K-Instruct'):
         load_dotenv()
@@ -36,21 +39,23 @@ class Chatbot_gpt(BaseChatbot):
             model="mistralai/Mixtral-8x7B-Instruct-v0.1",
             messages=self.messages,
             stream=True,
-)
+        )
         print()
         for chunk in stream:
-            
+
             if chunk.choices[0].delta.content is not None:
                 yield chunk.choices[0].delta.content
 
     def post_process(self, response):
         self.messages.append({"role": "assistant", "content": response})
         return response
+
+
 app = FastAPI()
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
-
+device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
 
 @app.websocket("/ws")
