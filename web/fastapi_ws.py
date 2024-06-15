@@ -62,7 +62,6 @@ async def websocket_endpoint(websocket: WebSocket):
     load_dotenv()
 
     chatbot = Chatbot_together(sys_prompt=llama_sales)
-    mouth.say_text('Hello, I am Llama, your personal assistant. How can I help you today?')
     threading.Thread(target=run_chat, args=(mouth, ear, chatbot, True)).start()
 
     try:
