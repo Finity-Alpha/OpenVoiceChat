@@ -19,9 +19,9 @@ import torch
 class Chatbot_together(BaseChatbot):
     def __init__(self, sys_prompt='', Model='togethercomputer/Llama-2-7B-32K-Instruct'):
         load_dotenv()
-        Togethers = os.getenv("TOGETHER_API_KEY")
+        api_key = os.getenv("TOGETHER_API_KEY")
         self.MODEL = Model
-        self.client = Together(api_key=Togethers)
+        self.client = Together(api_key=api_key)
         self.messages = []
         self.messages.append({"role": "system", "content": sys_prompt})
 
