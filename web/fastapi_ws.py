@@ -1,5 +1,5 @@
 import uvicorn
-from openvoicechat.tts.tts_hf import Mouth_hf as Mouth
+from openvoicechat.tts.tts_elevenlabs import Mouth_elevenlabs as Mouth
 from openvoicechat.llm.base import BaseChatbot
 from openvoicechat.stt.stt_hf import Ear_hf as Ear
 from openvoicechat.llm.prompts import llama_sales
@@ -16,7 +16,7 @@ from together import Together
 import torch
 
 
-class Chatbot_gpt(BaseChatbot):
+class Chatbot_together(BaseChatbot):
     def __init__(self, sys_prompt='', Model='togethercomputer/Llama-2-7B-32K-Instruct'):
         load_dotenv()
         Togethers = os.getenv("TOGETHER_API_KEY")
@@ -57,11 +57,12 @@ async def websocket_endpoint(websocket: WebSocket):
     output_queue = queue.Queue()
     listener = Listener_ws(input_queue)
     player = Player_ws(output_queue)
-    mouth = Mouth(device=device, player=player, forward_params={"speaker_id": 10})
+    mouth = Mouth(player=player)
     ear = Ear(device=device, silence_seconds=1, listener=listener)
     load_dotenv()
 
-    chatbot = Chatbot_gpt(sys_prompt=llama_sales)
+    chatbot = Chatbot_together(sys_prompt=llama_sales)
+    mouth.say_text('Hello, I am Llama, your personal assistant. How can I help you today?')
     threading.Thread(target=run_chat, args=(mouth, ear, chatbot, True)).start()
 
     try:
