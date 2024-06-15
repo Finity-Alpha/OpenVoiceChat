@@ -1,12 +1,5 @@
-import sys
-import os
-
-# Add the project directory to the sys.path
-# sys.path.append('/home/centrox/Documents/OpenVoiceChat')
-
 import uvicorn
 from openvoicechat.tts.tts_hf import Mouth_hf as Mouth
-# from openvoicechat.llm.llm_llama import Chatbot_llama as Chatbot
 from openvoicechat.llm.base import BaseChatbot
 from openvoicechat.stt.stt_hf import Ear_hf as Ear
 from openvoicechat.llm.prompts import llama_sales
@@ -26,7 +19,7 @@ import torch
 class Chatbot_gpt(BaseChatbot):
     def __init__(self, sys_prompt='', Model='togethercomputer/Llama-2-7B-32K-Instruct'):
         load_dotenv()
-        Togethers = os.getenv("togethers")
+        Togethers = os.getenv("TOGETHER_API_KEY")
         self.MODEL = Model
         self.client = Together(api_key=Togethers)
         self.messages = []
@@ -40,9 +33,7 @@ class Chatbot_gpt(BaseChatbot):
             messages=self.messages,
             stream=True,
         )
-        print()
         for chunk in stream:
-
             if chunk.choices[0].delta.content is not None:
                 yield chunk.choices[0].delta.content
 
@@ -66,8 +57,8 @@ async def websocket_endpoint(websocket: WebSocket):
     output_queue = queue.Queue()
     listener = Listener_ws(input_queue)
     player = Player_ws(output_queue)
-    mouth = Mouth(device='cpu', player=player, forward_params={"speaker_id": 10})
-    ear = Ear(device='cpu', silence_seconds=1, listener=listener)
+    mouth = Mouth(device=device, player=player, forward_params={"speaker_id": 10})
+    ear = Ear(device=device, silence_seconds=1, listener=listener)
     load_dotenv()
 
     chatbot = Chatbot_gpt(sys_prompt=llama_sales)
