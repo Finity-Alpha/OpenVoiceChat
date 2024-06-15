@@ -29,7 +29,7 @@ class Chatbot_together(BaseChatbot):
         self.messages.append({"role": "user", "content": input_text})
 
         stream = self.client.chat.completions.create(
-            model="mistralai/Mixtral-8x7B-Instruct-v0.1",
+            model=self.MODEL,
             messages=self.messages,
             stream=True,
         )
