@@ -14,7 +14,6 @@ setup(
     packages=find_packages(),
     install_requires=[
         'sounddevice',
-        'pygame',
         'pyaudio',
         'librosa',
         'pydub',
