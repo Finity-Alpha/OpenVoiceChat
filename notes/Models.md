@@ -11,9 +11,10 @@ huggingface. [Elevenlabs](https://elevenlabs.io/)
 [Any model](https://huggingface.co/models?pipeline_tag=automatic-speech-recognition&sort=trending) from 
 huggingface.
 [Vosk models](https://alphacephei.com/vosk/models).
+[Deepgram](https://deepgram.com/product/speech-to-text)
 
 ## LLM
 
 All models compatible with llama-cpp-python e.g [llama](https://huggingface.co/TheBloke/Llama-2-7B-Chat-GGUF)
 and [mistral](https://huggingface.co/TheBloke/Mistral-7B-Instruct-v0.2-GGUF).
-OpenAI's [GPTs](https://platform.openai.com/docs/guides/text-generation/chat-completions-api)
+OpenAI's [GPTs](https://platform.openai.com/docs/guides/text-generation/chat-completions-api).

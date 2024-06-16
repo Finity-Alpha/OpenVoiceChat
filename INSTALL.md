@@ -7,3 +7,7 @@ Make sure to install it using the correct CMAKE flag(s).
 - [torchaudio](https://pytorch.org/get-started/locally/)
 - portaudio by running `sudo apt-get install portaudio19-dev `
 - [onnxruntime-gpu](https://onnxruntime.ai/docs/install/)
+
+```bash
+pip install -r requirements.txt
+```
