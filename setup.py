@@ -10,7 +10,7 @@ setup(
                      'opensource, highly extensible and easy to use alternative to the proprietary solutions.',
     url='http://www.fakhirali.pk/OpenVoiceChat/',
     name='openvoicechat',
-    version='0.1.5',
+    version='0.1.6',
     packages=find_packages(),
     install_requires=[
         'sounddevice',
