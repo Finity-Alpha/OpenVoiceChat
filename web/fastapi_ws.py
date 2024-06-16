@@ -1,46 +1,17 @@
 import uvicorn
 from openvoicechat.tts.tts_elevenlabs import Mouth_elevenlabs as Mouth
-from openvoicechat.llm.base import BaseChatbot
+from openvoicechat.llm.llm_gpt import Chatbot_gpt
 from openvoicechat.stt.stt_hf import Ear_hf as Ear
 from openvoicechat.llm.prompts import llama_sales
 from openvoicechat.utils import run_chat
 from dotenv import load_dotenv
-import os
 import threading
 import queue
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from openvoicechat.utils import Listener_ws, Player_ws
-from together import Together
 import torch
-
-
-class Chatbot_together(BaseChatbot):
-    def __init__(self, sys_prompt='', Model='togethercomputer/Llama-2-7B-32K-Instruct'):
-        load_dotenv()
-        api_key = os.getenv("TOGETHER_API_KEY")
-        self.MODEL = Model
-        self.client = Together(api_key=api_key)
-        self.messages = []
-        self.messages.append({"role": "system", "content": sys_prompt})
-
-    def run(self, input_text):
-        self.messages.append({"role": "user", "content": input_text})
-
-        stream = self.client.chat.completions.create(
-            model=self.MODEL,
-            messages=self.messages,
-            stream=True,
-        )
-        for chunk in stream:
-            if chunk.choices[0].delta.content is not None:
-                yield chunk.choices[0].delta.content
-
-    def post_process(self, response):
-        self.messages.append({"role": "assistant", "content": response})
-        return response
-
 
 app = FastAPI()
 
@@ -61,10 +32,10 @@ async def websocket_endpoint(websocket: WebSocket):
 
     mouth = Mouth(player=player, voice_id='IKne3meq5aSn9XLyUdCD')
     ear = Ear(device=device, silence_seconds=2,
-              listener=listener, model_id='whisper-small.en')
+              listener=listener)
     load_dotenv()
 
-    chatbot = Chatbot_together(sys_prompt=llama_sales)
+    chatbot = Chatbot_gpt(sys_prompt=llama_sales)
     threading.Thread(target=run_chat, args=(mouth, ear, chatbot, True)).start()
 
     try:
@@ -94,4 +65,5 @@ def read_root():
 
 
 if __name__ == "__main__":
-    uvicorn.run(app, host='0.0.0.0', port=8000)
+    uvicorn.run(app, host='0.0.0.0', port=8000,
+                ssl_keyfile="localhost+2-key.pem", ssl_certfile="localhost+2.pem")
