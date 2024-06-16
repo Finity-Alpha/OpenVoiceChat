@@ -11,7 +11,7 @@ import asyncio
 
 class Ear_deepgram(BaseEar):
     def __init__(self, silence_seconds=2, api_key=''):
-        super().__init__(silence_seconds)
+        super().__init__(silence_seconds, stream=True)
         self.api_key = api_key
 
     def transcribe_stream(self, audio_queue, transcription_queue):

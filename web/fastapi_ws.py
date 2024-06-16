@@ -53,12 +53,15 @@ device = 'cuda' if torch.cuda.is_available() else 'cpu'
 async def websocket_endpoint(websocket: WebSocket):
     await websocket.accept()
     print('connected')
+
     input_queue = queue.Queue()
     output_queue = queue.Queue()
     listener = Listener_ws(input_queue)
     player = Player_ws(output_queue)
-    mouth = Mouth(player=player)
-    ear = Ear(device=device, silence_seconds=1, listener=listener)
+
+    mouth = Mouth(player=player, voice_id='IKne3meq5aSn9XLyUdCD')
+    ear = Ear(device=device, silence_seconds=2,
+              listener=listener, model_id='whisper-small.en')
     load_dotenv()
 
     chatbot = Chatbot_together(sys_prompt=llama_sales)

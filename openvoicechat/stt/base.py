@@ -12,17 +12,18 @@ import os
 TIMING = int(os.environ.get('TIMING', 0))
 
 
-
 class BaseEar:
     def __init__(self, silence_seconds=3,
                  not_interrupt_words=None,
-                 listener=None):
+                 listener=None,
+                 stream=False):
         if not_interrupt_words is None:
             not_interrupt_words = ['you', 'yes', 'yeah', 'hmm']  # you because whisper says "you" in silence
         self.silence_seconds = silence_seconds
         self.not_interrupt_words = not_interrupt_words
         self.vad = VoiceActivityDetection()
         self.listener = listener
+        self.stream = stream
 
     @torch.no_grad()
     def transcribe(self, input: np.ndarray) -> str:
@@ -39,7 +40,7 @@ class BaseEar:
         '''
         raise NotImplementedError("This method should be implemented by the subclass")
 
-    def listen(self) -> str:
+    def _listen(self) -> str:
         '''
         :return: transcription
         records audio using record_user and returns its transcription
@@ -61,11 +62,12 @@ class BaseEar:
             text = self.transcribe(audio)
         return text
 
-    def listen_stream(self) -> str:
+    def _listen_stream(self) -> str:
         '''
         :return: transcription
         records audio using record_user and returns its transcription
         '''
+
         audio_queue = Queue()
         transcription_queue = Queue()
 
@@ -86,6 +88,15 @@ class BaseEar:
             text += _ + ' '
         return text
 
+    def listen(self) -> str:
+        '''
+        :return: transcription
+        records audio using record_user and returns its transcription
+        '''
+        if self.stream:
+            return self._listen_stream()
+        else:
+            return self._listen()
 
     def interrupt_listen(self, record_seconds=100) -> str:
         '''

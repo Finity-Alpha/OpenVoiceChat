@@ -4,6 +4,13 @@ const HEIGHT = 400;
 const logElement = document.getElementById('logs');
 const ctx = canvas.getContext("2d");
 
+let context;
+let analyser;
+let freqs;
+let audioQueue = [];
+let isPlaying = false;
+let currentSourceNode = null;
+
 document.getElementById('startButton').addEventListener('click', function() {
   logElement.innerText = 'starting... could take a minute';
   start();
@@ -142,13 +149,6 @@ const opts = {
 //gui.add(opts, "amp", 0, 5);
 //gui.add(opts, "width", 0, 60);
 //gui.add(opts, "shift", 0, 200);
-
-let context;
-let analyser;
-let freqs;
-let audioQueue = [];
-let isPlaying = false;
-let currentSourceNode = null;
 
 
 

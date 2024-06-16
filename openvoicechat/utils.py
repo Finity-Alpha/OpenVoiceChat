@@ -30,6 +30,7 @@ def run_chat(mouth, ear, chatbot, verbose=True,
     pre_interruption_text = ''
     while True:
         user_input = pre_interruption_text + ' ' + ear.listen()
+
         if verbose:
             print("USER: ", user_input)
 
