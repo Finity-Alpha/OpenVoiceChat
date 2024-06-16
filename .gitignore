@@ -9,3 +9,4 @@ _*.md
 *.egg-info/
 _*.py
 __pycache__
+localhost*
