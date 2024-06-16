@@ -5,7 +5,7 @@ else:
 
 
 class Chatbot_llama(BaseChatbot):
-    def __init__(self, model_path='models/llama-2-7b.Q4_K_M.gguf', device='cuda',
+    def __init__(self, model_path='models/llama-2-7b-chat.Q4_K_M.gguf', device='cuda',
                  sys_prompt='', chat_format=None, temperature=0.7):
 
         from llama_cpp import Llama

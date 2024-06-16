@@ -24,6 +24,11 @@ class BaseEar:
         self.vad = VoiceActivityDetection()
         self.listener = listener
         self.stream = stream
+        if TIMING:
+            if not os.path.exists('times.csv'):
+                columns = ['Model', 'Time Taken']
+                df = pd.DataFrame(columns=columns)
+                df.to_csv('times.csv', index=False)
 
     @torch.no_grad()
     def transcribe(self, input: np.ndarray) -> str:
@@ -47,16 +52,13 @@ class BaseEar:
         '''
         audio = record_user(self.silence_seconds, self.vad, self.listener)
         if TIMING:
-            if not os.path.exists('times.csv'):
-                columns = ['Model', 'Time Taken']
-                df = pd.DataFrame(columns=columns)
-                df.to_csv('times.csv', index=False)
             start_time = monotonic()
+
             text = self.transcribe(audio)
+
             stop_time = monotonic()
             time_diff = stop_time - start_time
-            new_row = {'Model': 'STT', 'Time Taken': time_diff}
-            new_row_df = pd.DataFrame([new_row])
+            new_row_df = pd.DataFrame([{'Model': 'STT', 'Time Taken': time_diff}])
             new_row_df.to_csv('times.csv', mode='a', header=False, index=False)
         else:
             text = self.transcribe(audio)
@@ -78,14 +80,30 @@ class BaseEar:
         transcription_thread.start()
 
         audio_thread.join()
-        transcription_thread.join()
 
-        text = ''
-        while True:
-            _ = transcription_queue.get()
-            if _ is None:
-                break
-            text += _ + ' '
+        if TIMING:
+            start_time = monotonic()
+
+            transcription_thread.join()
+            text = ''
+            while True:
+                _ = transcription_queue.get()
+                if _ is None:
+                    break
+                text += _ + ' '
+
+            stop_time = monotonic()
+            time_diff = stop_time - start_time
+            new_row_df = pd.DataFrame([{'Model': 'STT', 'Time Taken': time_diff}])
+            new_row_df.to_csv('times.csv', mode='a', header=False, index=False)
+        else:
+            transcription_thread.join()
+            text = ''
+            while True:
+                _ = transcription_queue.get()
+                if _ is None:
+                    break
+                text += _ + ' '
         return text
 
     def listen(self) -> str:
