@@ -1,5 +1,8 @@
 import torch
-from .base import BaseEar
+if __name__ == '__main__':
+    from base import BaseEar
+else:
+    from .base import BaseEar
 import numpy as np
 
 
