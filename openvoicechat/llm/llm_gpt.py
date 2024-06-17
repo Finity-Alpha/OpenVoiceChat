@@ -1,4 +1,7 @@
-from .base import BaseChatbot
+if __name__ == '__main__':
+    from base import BaseChatbot
+else:
+    from .base import BaseChatbot
 import os
 
 class Chatbot_gpt(BaseChatbot):

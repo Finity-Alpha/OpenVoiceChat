@@ -1,8 +1,11 @@
 import torch
 from transformers import AutoTokenizer
 from transformers.modeling_outputs import BaseModelOutput
-from .base import BaseMouth
 import sounddevice as sd
+if __name__ == '__main__':
+    from base import BaseMouth
+else:
+    from .base import BaseMouth
 
 
 '''

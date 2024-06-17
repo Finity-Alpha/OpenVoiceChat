@@ -1,7 +1,10 @@
 import numpy as np
 import json
 
-from .base import BaseEar
+if __name__ == '__main__':
+    from base import BaseEar
+else:
+    from .base import BaseEar
 
 class Ear_vosk(BaseEar):
     def __init__(self, model_path='models/vosk-model-en-us-0.22', device='cpu', silence_seconds=2):
