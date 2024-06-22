@@ -36,8 +36,8 @@ def run_chat(mouth, ear, chatbot, verbose=True,
 
         if verbose:
             print("USER: ", user_input)
-            if LOGGING:
-                log_to_file('chat_log.txt', "USER: " + user_input)
+        if LOGGING:
+            log_to_file('chat_log.txt', "USER: " + user_input)
 
         llm_output_queue = queue.Queue()
         interrupt_queue = queue.Queue()
@@ -59,8 +59,8 @@ def run_chat(mouth, ear, chatbot, verbose=True,
             break
         if verbose:
             print('BOT: ', res)
-            if LOGGING:
-                log_to_file('chat_log.txt', "BOT: " + res)
+        if LOGGING:
+            log_to_file('chat_log.txt', "BOT: " + res)
 
 class Player_ws:
     def __init__(self, q):
