@@ -3,10 +3,10 @@ import queue
 import librosa
 import numpy as np
 import os
-
 import pandas as pd
 
 TIMING = int(os.environ.get('TIMING', 0))
+LOGGING = int(os.environ.get('LOGGING', 0))
 
 def log_to_file(file_path, text):
     with open(file_path, 'a') as file:
@@ -36,7 +36,8 @@ def run_chat(mouth, ear, chatbot, verbose=True,
 
         if verbose:
             print("USER: ", user_input)
-            log_to_file('chat_log.txt', "USER: " + user_input)
+            if LOGGING:
+                log_to_file('chat_log.txt', "USER: " + user_input)
 
         llm_output_queue = queue.Queue()
         interrupt_queue = queue.Queue()
@@ -58,7 +59,8 @@ def run_chat(mouth, ear, chatbot, verbose=True,
             break
         if verbose:
             print('BOT: ', res)
-            log_to_file('chat_log.txt', "BOT: " + res)
+            if LOGGING:
+                log_to_file('chat_log.txt', "BOT: " + res)
 
 class Player_ws:
     def __init__(self, q):
