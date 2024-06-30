@@ -32,7 +32,7 @@ class BaseEar:
 
     @torch.no_grad()
     def transcribe(self, input: np.ndarray) -> str:
-        '''I love transcriptions
+        '''
 
         :param input: fp32 numpy array of the audio
         :return: transcription
