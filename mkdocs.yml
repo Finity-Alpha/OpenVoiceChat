@@ -11,6 +11,7 @@ nav:
     - TTS Classes: tts_classes.md
     - LLM Classes: llm_classes.md
     - Utils: utils.md
+  - Custom Models: Adding_models.md
 theme:
     name: 'material'
     palette:

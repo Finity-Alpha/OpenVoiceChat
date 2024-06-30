@@ -45,7 +45,7 @@ Supports practically any stt, tts and llm [model](notes/Models.md).
 
 Supports interruptions.
 
-Well [abstracted](/openvoicechat/tts) apis, easy to use and [extend](notes/Adding_models.md).
+Well [abstracted](/openvoicechat/tts) apis, easy to use and [extend](docs/Adding_models.md).
 
 The goal is to be the open source alternative to [closed commercial implementations](notes/Competition.md)
 
