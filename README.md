@@ -1,7 +1,7 @@
 
 <div align="center">
 
-![logo](media/main_logo.png)
+![logo](docs/main_logo.png)
 
 <h3>
 
