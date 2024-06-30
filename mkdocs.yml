@@ -1,6 +1,6 @@
 site_name: OpenVoiceChat Docs
 nav:
-  - Home: index.md
+  - Home: index.html
   - Getting Started:
     - Installation: getting-started/installation.md
     - Quickstart: getting-started/quickstart.md
