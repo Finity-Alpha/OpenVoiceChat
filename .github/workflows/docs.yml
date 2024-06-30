@@ -1,4 +1,4 @@
-name: ci
+name: deply docs
 on:
   push:
     branches:
