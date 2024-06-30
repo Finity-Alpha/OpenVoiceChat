@@ -1,0 +1,21 @@
+site_name: OpenVoiceChat Docs
+nav:
+  - Home: index.md
+  - Getting Started:
+    - Installation: getting-started/installation.md
+    - Quickstart: getting-started/quickstart.md
+  - Usage:
+    - Commands: usage/commands.md
+    - Permissions: usage/permissions.md
+  - Troubleshooting:
+    - Common Issues: troubleshooting/common-issues.md
+    - FAQ: troubleshooting/faq.md
+  - Support:
+    - Discord: support/discord.md
+    - GitHub: support/github.md
+  - Contributing:
+    - Code of Conduct: contributing/code-of-conduct.md
+    - Contributing Guide: contributing/contributing-guide.md
+  - License: license.md
+theme:
+    name: 'material'
