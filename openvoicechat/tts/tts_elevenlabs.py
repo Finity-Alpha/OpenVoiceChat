@@ -14,11 +14,14 @@ import os
 class Mouth_elevenlabs(BaseMouth):
     def __init__(self, model_id='eleven_turbo_v2',
                  voice_id='IKne3meq5aSn9XLyUdCD',
+                 api_key='',
                  player=sd):
         self.model_id = model_id
         self.voice_id = voice_id
-        load_dotenv()
-        self.api_key = os.getenv('ELEVENLABS_API_KEY')
+        if api_key == '':
+            load_dotenv()
+            api_key = os.getenv('ELEVENLABS_API_KEY')
+        self.api_key = api_key
         super().__init__(sample_rate=44100, player=player)
 
     def run_tts(self, text):
