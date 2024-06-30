@@ -13,7 +13,7 @@ TIMING = int(os.environ.get('TIMING', 0))
 
 
 class BaseEar:
-    def __init__(self, silence_seconds=3,
+    def __init__(self, silence_seconds=2,
                  not_interrupt_words=None,
                  listener=None,
                  stream=False):
@@ -33,6 +33,7 @@ class BaseEar:
     @torch.no_grad()
     def transcribe(self, input: np.ndarray) -> str:
         '''
+
         :param input: fp32 numpy array of the audio
         :return: transcription
         '''
@@ -117,13 +118,14 @@ class BaseEar:
             return self._listen()
 
     def interrupt_listen(self, record_seconds=100) -> str:
-        '''
-        :param record_seconds: Max seconds to record for
-        :return: boolean indicating the if an interruption occured
+        """
         Records audio with interruption. Transcribes audio if
         voice activity detected and returns True if transcription indicates
         interruption.
-        '''
+
+        :param record_seconds: Max seconds to record for
+        :return: boolean indicating the if an interruption occured
+        """
         while record_seconds > 0:
             interruption_audio = record_interruption(self.vad, record_seconds, streamer=self.listener)
             # duration of interruption audio
