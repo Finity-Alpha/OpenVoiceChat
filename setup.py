@@ -19,7 +19,8 @@ setup(
         'pydub',
         'python-dotenv',
         'websockets',
-        'fastapi'
+        'fastapi',
+        'pandas'
     ],
     extras_require={
         'transformers': ['transformers'],
