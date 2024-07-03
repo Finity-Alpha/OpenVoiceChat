@@ -103,12 +103,20 @@ def record_user(silence_seconds, vad, streamer=None):
     return frames.astype(np.float32)
 
 
-def record_user_stream(silence_seconds, vad, audio_queue):
+def record_user_stream(silence_seconds, vad, audio_queue, streamer=None):
     frames = []
 
     started = False
+    if streamer is None:
+        stream = make_stream()
+        global CHUNK
+        global RATE
+    else:
+        stream = streamer.make_stream()
+        CHUNK = streamer.CHUNK
+        RATE = streamer.RATE
+
     one_second_iters = int(RATE / CHUNK)
-    stream = make_stream()
     print("* recording")
 
     print("*listening to speech*")
