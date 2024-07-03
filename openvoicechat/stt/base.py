@@ -1,4 +1,3 @@
-import torch
 from .utils import record_user, record_interruption, record_user_stream
 from .vad import VoiceActivityDetection
 import re
@@ -30,7 +29,6 @@ class BaseEar:
                 df = pd.DataFrame(columns=columns)
                 df.to_csv('times.csv', index=False)
 
-    @torch.no_grad()
     def transcribe(self, input: np.ndarray) -> str:
         '''
 
