@@ -15,14 +15,14 @@ class Mouth_hf(BaseMouth):
         self.forward_params = forward_params
         super().__init__(sample_rate=self.pipe.sampling_rate, player=player)
 
-    @torch.no_grad()
     def run_tts(self, text):
-        # inputs = self.tokenizer(text, return_tensors="pt")
-        # inputs = inputs.to(self.device)
-        # output = self.model(**inputs, speaker_id=self.speaker_id).waveform[0].to('cpu')
-        output = self.pipe(text, forward_params=self.forward_params)
-        self.sample_rate = output['sampling_rate']
-        return output['audio'][0]
+        with torch.no_grad():
+            # inputs = self.tokenizer(text, return_tensors="pt")
+            # inputs = inputs.to(self.device)
+            # output = self.model(**inputs, speaker_id=self.speaker_id).waveform[0].to('cpu')
+            output = self.pipe(text, forward_params=self.forward_params)
+            self.sample_rate = output['sampling_rate']
+            return output['audio'][0]
 
 if __name__ == '__main__':
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
