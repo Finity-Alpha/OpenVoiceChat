@@ -22,7 +22,7 @@ etc ....
 class Mouth_parler(BaseMouth):
     def __init__(self, model_id='parler-tts/parler_tts_mini_v0.1',
                  tts_description=None,
-                 device='cuda:0' if torch.cuda.is_available() else 'cpu',
+                 device='cpu',
                  temperature=1.0, player=sd):
         from parler_tts import ParlerTTSForConditionalGeneration
         from transformers import AutoTokenizer
