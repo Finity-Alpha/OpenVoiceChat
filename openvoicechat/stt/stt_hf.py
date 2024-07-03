@@ -1,5 +1,5 @@
-import torch
 if __name__ == '__main__':
+    import torch
     from base import BaseEar
 else:
     from .base import BaseEar
@@ -15,9 +15,9 @@ class Ear_hf(BaseEar):
         self.device = device
         self.generate_kwargs = generate_kwargs
 
-    @torch.no_grad()
     def transcribe(self, audio):
-        transcription = self.pipe(audio, generate_kwargs=self.generate_kwargs)
+        with torch.no_grad():
+            transcription = self.pipe(audio, generate_kwargs=self.generate_kwargs)
         return transcription['text'].strip()
 
 

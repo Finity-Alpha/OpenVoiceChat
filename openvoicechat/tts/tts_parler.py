@@ -1,9 +1,8 @@
-import torch
-from transformers import AutoTokenizer
-from transformers.modeling_outputs import BaseModelOutput
+
 import sounddevice as sd
 if __name__ == '__main__':
     from base import BaseMouth
+    import torch
 else:
     from .base import BaseMouth
 
@@ -26,6 +25,9 @@ class Mouth_parler(BaseMouth):
                  device='cuda:0' if torch.cuda.is_available() else 'cpu',
                  temperature=1.0, player=sd):
         from parler_tts import ParlerTTSForConditionalGeneration
+        from transformers import AutoTokenizer
+        from transformers.modeling_outputs import BaseModelOutput
+
         if tts_description is None:
             tts_description = ('A female speaker with a slightly low-pitched voice delivers her words quite '
                                'expressively, in a very confined sounding environment with clear audio quality.')

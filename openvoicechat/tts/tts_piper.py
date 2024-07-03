@@ -1,6 +1,5 @@
 import sounddevice as sd
 import numpy as np
-import torch
 if __name__ == '__main__':
     from base import BaseMouth
 else:
@@ -24,6 +23,7 @@ class Mouth_piper(BaseMouth):
 
 
 if __name__ == '__main__':
+    import torch
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
     mouth = Mouth_piper(device=device, model_path='../../models/en_US-ryan-high.onnx',
                         config_path='../../models/en_en_US_ryan_high_en_US-ryan-high.onnx.json')
