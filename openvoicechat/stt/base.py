@@ -99,7 +99,8 @@ class BaseEar:
         audio_queue = Queue()
         transcription_queue = Queue()
 
-        audio_thread = Thread(target=record_user_stream, args=(self.silence_seconds, self.vad, audio_queue))
+        audio_thread = Thread(target=record_user_stream, args=(self.silence_seconds,
+                                                               self.vad, audio_queue, self.listener))
         transcription_thread = Thread(target=self.transcribe_stream, args=(audio_queue, transcription_queue))
 
         audio_thread.start()
