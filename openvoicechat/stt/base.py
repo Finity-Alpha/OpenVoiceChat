@@ -29,10 +29,10 @@ class BaseEar:
                 df = pd.DataFrame(columns=columns)
                 df.to_csv('times.csv', index=False)
 
-    def transcribe(self, input: np.ndarray) -> str:
+    def transcribe(self, input_audio: np.ndarray) -> str:
         '''
 
-        :param input: fp32 numpy array of the audio
+        :param input_audio:
         :return: transcription
         '''
         raise NotImplementedError("This method should be implemented by the subclass")
@@ -44,11 +44,36 @@ class BaseEar:
         '''
         raise NotImplementedError("This method should be implemented by the subclass")
 
+    def _sim_transcribe_stream(self, input_audio: np.ndarray) -> str:
+        """
+        Simulates the transcribe stream using a single audio input
+        :param input_audio: fp32 numpy array of the audio
+        :return: transcription
+        """
+        audio_queue = Queue()
+        transcription_queue = Queue()
+
+        input_buffer = (input_audio * (1 << 15)).astype(np.int16).tobytes()
+        audio_queue.put(input_buffer)
+        audio_queue.put(None)
+        transcription_thread = Thread(target=self.transcribe_stream, args=(audio_queue, transcription_queue))
+        transcription_thread.start()
+        transcription_thread.join()
+        text = ''
+        while True:
+            _ = transcription_queue.get()
+            if _ is None:
+                break
+            text += _ + ' '
+        return text
+
+
+
     def _listen(self) -> str:
-        '''
+        """
         :return: transcription
         records audio using record_user and returns its transcription
-        '''
+        """
         audio = record_user(self.silence_seconds, self.vad, self.listener)
         if TIMING:
             start_time = monotonic()
@@ -131,7 +156,10 @@ class BaseEar:
                 return ''
             else:
                 duration = len(interruption_audio) / 16_000
-                text = self.transcribe(interruption_audio)
+                if self.stream:
+                    text = self.transcribe_stream(interruption_audio)
+                else:
+                    text = self.transcribe(interruption_audio)
                 # remove any punctuation using re
                 text = re.sub(r'[^\w\s]', '', text)
                 text = text.lower()
