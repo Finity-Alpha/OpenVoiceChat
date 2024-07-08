@@ -7,6 +7,8 @@ from threading import Thread
 from queue import Queue
 import pandas as pd
 import os
+from dotenv import load_dotenv
+load_dotenv()
 
 TIMING = int(os.environ.get('TIMING', 0))
 

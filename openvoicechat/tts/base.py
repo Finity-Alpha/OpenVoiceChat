@@ -7,6 +7,8 @@ from typing import Callable
 import numpy as np
 import pandas as pd
 import os
+from dotenv import load_dotenv
+load_dotenv()
 
 TIMING = int(os.environ.get('TIMING', 0))
 

@@ -4,6 +4,8 @@ import librosa
 import numpy as np
 import os
 import pandas as pd
+from dotenv import load_dotenv
+load_dotenv()
 
 TIMING = int(os.environ.get('TIMING', 0))
 LOGGING = int(os.environ.get('LOGGING', 0))
