@@ -157,7 +157,7 @@ class BaseEar:
             else:
                 duration = len(interruption_audio) / 16_000
                 if self.stream:
-                    text = self.transcribe_stream(interruption_audio)
+                    text = self._sim_transcribe_stream(interruption_audio)
                 else:
                     text = self.transcribe(interruption_audio)
                 # remove any punctuation using re
