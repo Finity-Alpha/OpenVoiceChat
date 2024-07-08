@@ -16,7 +16,8 @@ class Ear_hf(BaseEar):
         self.generate_kwargs = generate_kwargs
 
     def transcribe(self, audio):
-        with torch.no_grad():
+        from torch import no_grad
+        with no_grad():
             transcription = self.pipe(audio, generate_kwargs=self.generate_kwargs)
         return transcription['text'].strip()
 
