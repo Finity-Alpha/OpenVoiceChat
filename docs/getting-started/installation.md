@@ -4,7 +4,8 @@
 - portaudio by running `sudo apt-get install portaudio19-dev `
 - [torch](https://pytorch.org/get-started/locally/)
 - [torchaudio](https://pytorch.org/get-started/locally/)
-- 
+
+
 ### Model specific requirements
 - [llama-cpp-python](https://llama-cpp-python.readthedocs.io/en/latest/)
 Make sure to install it using the correct CMAKE flag(s).
