@@ -19,6 +19,8 @@ theme:
       primary: deep orange
     logo: main_logo_no_text.png
     favicon: main_logo_no_text.png
+    features:
+      - content.code.copy
 
 markdown_extensions:
   - pymdownx.highlight:
