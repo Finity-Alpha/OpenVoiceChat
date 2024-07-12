@@ -119,7 +119,6 @@ def record_user_stream(silence_seconds, vad, audio_queue, streamer=None):
     one_second_iters = int(RATE / CHUNK)
     print("* recording")
 
-    print("*listening to speech*")
     while True:
         data = stream.read(CHUNK)
         frames.append(data)
@@ -127,6 +126,7 @@ def record_user_stream(silence_seconds, vad, audio_queue, streamer=None):
         contains_speech = vad.contains_speech(frames[int(-one_second_iters * silence_seconds):])
         if not started and contains_speech:
             started = True
+            print("*listening to speech*")
         if started and contains_speech is False:
             break
     audio_queue.put(None)

@@ -10,3 +10,4 @@ _*.md
 _*.py
 __pycache__
 localhost*
+chat_log.txt

@@ -8,6 +8,7 @@ from queue import Queue
 import pandas as pd
 import os
 from dotenv import load_dotenv
+
 load_dotenv()
 
 TIMING = int(os.environ.get('TIMING', 0))
@@ -69,8 +70,6 @@ class BaseEar:
             text += _ + ' '
         return text
 
-
-
     def _listen(self) -> str:
         """
         :return: transcription
@@ -106,9 +105,8 @@ class BaseEar:
         audio_thread.start()
         transcription_thread.start()
 
-        audio_thread.join()
-
         if TIMING:
+            audio_thread.join()
             start_time = monotonic()
 
             transcription_thread.join()
@@ -124,13 +122,14 @@ class BaseEar:
             new_row_df = pd.DataFrame([{'Model': 'STT', 'Time Taken': time_diff}])
             new_row_df.to_csv('times.csv', mode='a', header=False, index=False)
         else:
-            transcription_thread.join()
             text = ''
             while True:
                 _ = transcription_queue.get()
                 if _ is None:
                     break
                 text += _ + ' '
+        audio_thread.join()
+        transcription_thread.join()
         return text
 
     def listen(self) -> str:
