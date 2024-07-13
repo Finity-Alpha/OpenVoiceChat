@@ -143,22 +143,23 @@ class BaseMouth:
                         first_sentence = False
                 else:
                     continue
-            if sentence.strip() != '': # what is this for?
+            if sentence.strip() != '':
                 clean_sentence = remove_words_in_brackets_and_spaces(sentence).strip()
-                if TIMING and first_audio:
-                    tts_start = monotonic()
-                    output = self.run_tts(clean_sentence)
-                    tts_end = monotonic()
-                    time_diff = tts_end - tts_start
-                    new_row = {'Model': 'TTS', 'Time Taken': time_diff}
-                    new_row_df = pd.DataFrame([new_row])
-                    new_row_df.to_csv('times.csv', mode='a', header=False, index=False)
-                    first_audio = False
-                else:
-                    output = self.run_tts(clean_sentence)
-                audio_queue.put((output, clean_sentence))
+                if clean_sentence.strip() != '': # sentence only contains words in brackets
+                    if TIMING and first_audio:
+                        tts_start = monotonic()
+                        output = self.run_tts(clean_sentence)
+                        tts_end = monotonic()
+                        time_diff = tts_end - tts_start
+                        new_row = {'Model': 'TTS', 'Time Taken': time_diff}
+                        new_row_df = pd.DataFrame([new_row])
+                        new_row_df.to_csv('times.csv', mode='a', header=False, index=False)
+                        first_audio = False
+                    else:
+                        output = self.run_tts(clean_sentence)
+                    audio_queue.put((output, clean_sentence))
+                    interrupt_text_list.append(clean_sentence)
                 all_response.append(sentence)
-                interrupt_text_list.append(clean_sentence)
             if self.interrupted:
                 all_response = self._handle_interruption(interrupt_text_list, interrupt_queue)
                 self.interrupted = ''
