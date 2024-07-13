@@ -1,6 +1,6 @@
 # Quickstart
 
-Talk to a apple sales agent.
+Talk to an apple sales agent.
 
 ```py
 import os
