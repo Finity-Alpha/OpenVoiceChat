@@ -7,15 +7,21 @@ else:
 
 
 class Mouth_xtts(BaseMouth):
-    def __init__(self, model_id='tts_models/en/jenny/jenny', device='cpu', player=sd):
+    def __init__(self, model_id='tts_models/en/jenny/jenny',
+                 device='cpu', player=sd,
+                 speaker=None):
         from TTS.api import TTS
         self.model = TTS(model_id)
         self.device = device
         self.model.to(device)
+        self.speaker = speaker
         super().__init__(sample_rate=self.model.synthesizer.output_sample_rate, player=player)
 
     def run_tts(self, text):
-        output = self.model.tts(text=text, split_sentences=False)
+        output = self.model.tts(text=text,
+                                split_sentences=False,
+                                speaker=self.speaker,
+                                language='en')
         return np.array(output)
 
 
