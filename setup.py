@@ -20,7 +20,8 @@ setup(
         'python-dotenv',
         'websockets',
         'fastapi',
-        'pandas'
+        'pandas',
+        'phonemizer'
     ],
     extras_require={
         'transformers': ['transformers'],
