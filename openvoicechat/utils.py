@@ -51,8 +51,8 @@ def run_chat(mouth, ear, chatbot, verbose=True,
         llm_thread.start()
         tts_thread.start()
 
-        tts_thread.join()
         llm_thread.join()
+        tts_thread.join()
         if not interrupt_queue.empty():
             pre_interruption_text = interrupt_queue.get()
         else:

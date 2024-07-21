@@ -42,10 +42,9 @@ class BaseChatbot:
         """
         out = self.run(input_text)
         response_text = ''
-        for o in out:
+        for text in out:
             if not interrupt_queue.empty():
                 break
-            text = o
             output_queue.put(text)
             response_text += text
         output_queue.put(None)
