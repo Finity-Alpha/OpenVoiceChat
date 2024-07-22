@@ -6,7 +6,7 @@ import os
 
 class Chatbot_gpt(BaseChatbot):
     def __init__(self, sys_prompt='',
-                 Model='gpt-3.5-turbo',
+                 Model='gpt-4o-mini',
                  api_key=''):
         from openai import OpenAI
         from dotenv import load_dotenv
