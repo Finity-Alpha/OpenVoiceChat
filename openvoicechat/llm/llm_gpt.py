@@ -4,12 +4,13 @@ else:
     from .base import BaseChatbot
 import os
 
+
 class Chatbot_gpt(BaseChatbot):
     def __init__(self, sys_prompt='',
                  Model='gpt-3.5-turbo',
                  api_key='',
                  tools=None,
-                 tool_choice="auto",
+                 tool_choice: str = "auto",
                  tool_utterances=None):
         if tools is None:
             tools = []
@@ -41,8 +42,9 @@ class Chatbot_gpt(BaseChatbot):
                 messages=self.messages,
                 stream=True,
                 tools=self.tools,
-                tool_choice="auto",
+                tool_choice=self.tool_choice,
             )
+
             for chunk in stream:
                 finish_reason = chunk.choices[0].finish_reason
                 if chunk.choices[0].delta.tool_calls is not None:
@@ -52,7 +54,7 @@ class Chatbot_gpt(BaseChatbot):
                         func_call["name"] = tool_call.function.name
                         func_call["id"] = tool_call.id
                         func_call['arguments'] = ''
-                        yield func_utterance[func_call['name']]
+                        yield self.tool_utterances[func_call['name']]
                     if tool_call.function.arguments:
                         func_call["arguments"] += tool_call.function.arguments
                 if function_call_detected and finish_reason == 'tool_calls':
@@ -83,6 +85,9 @@ class Chatbot_gpt(BaseChatbot):
                     finished = True
 
     def post_process(self, response):
+        #remove the tool utterances from the response
+        for tool in self.tool_utterances:
+            response = response.replace(self.tool_utterances[tool], '')
         self.messages.append({"role": "assistant", "content": response})
         return response
 
