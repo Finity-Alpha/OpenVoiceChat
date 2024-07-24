@@ -12,6 +12,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 TIMING = int(os.environ.get('TIMING', 0))
+TIMING_PATH = os.environ.get('TIMING_PATH', 'times.csv')
 
 
 class BaseEar:
@@ -27,10 +28,10 @@ class BaseEar:
         self.listener = listener
         self.stream = stream
         if TIMING:
-            if not os.path.exists('times.csv'):
+            if not os.path.exists(TIMING_PATH):
                 columns = ['Model', 'Time Taken']
                 df = pd.DataFrame(columns=columns)
-                df.to_csv('times.csv', index=False)
+                df.to_csv(TIMING_PATH, index=False)
 
     def transcribe(self, input_audio: np.ndarray) -> str:
         '''
@@ -84,7 +85,7 @@ class BaseEar:
             stop_time = monotonic()
             time_diff = stop_time - start_time
             new_row_df = pd.DataFrame([{'Model': 'STT', 'Time Taken': time_diff}])
-            new_row_df.to_csv('times.csv', mode='a', header=False, index=False)
+            new_row_df.to_csv(TIMING_PATH, mode='a', header=False, index=False)
         else:
             text = self.transcribe(audio)
         return text
@@ -120,7 +121,7 @@ class BaseEar:
             stop_time = monotonic()
             time_diff = stop_time - start_time
             new_row_df = pd.DataFrame([{'Model': 'STT', 'Time Taken': time_diff}])
-            new_row_df.to_csv('times.csv', mode='a', header=False, index=False)
+            new_row_df.to_csv(TIMING_PATH, mode='a', header=False, index=False)
         else:
             text = ''
             while True:
