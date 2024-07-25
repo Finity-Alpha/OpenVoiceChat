@@ -11,3 +11,4 @@ _*.py
 __pycache__
 localhost*
 chat_log.txt
+**/.DS_Store
