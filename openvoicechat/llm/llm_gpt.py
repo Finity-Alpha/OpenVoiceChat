@@ -95,8 +95,8 @@ class Chatbot_gpt(BaseChatbot):
 
     def post_process(self, response):
         #remove the tool utterances from the response
-        for tool in self.tool_utterances:
-            response = response.replace(self.tool_utterances[tool], '')
+        # for tool in self.tool_utterances:
+        #     response = response.replace(self.tool_utterances[tool], '')
         self.messages.append({"role": "assistant", "content": response})
         return response
 
