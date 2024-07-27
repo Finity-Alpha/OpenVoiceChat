@@ -61,5 +61,5 @@ if __name__ == "__main__":
     # text = ear.transcribe(np.array(audio))
     # print(text)
 
-    text = ear.listen_stream()
+    text = ear.listen()
     print(text)

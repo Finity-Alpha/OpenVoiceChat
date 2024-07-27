@@ -21,7 +21,7 @@ if __name__ == "__main__":
 
     load_dotenv()
 
-    chatbot = Chatbot_llama(sys_prompt=llama_sales)
+    chatbot = Chatbot_gpt(sys_prompt=llama_sales)
 
     mouth = Mouth_piper(device=device)
 

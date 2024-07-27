@@ -10,6 +10,10 @@ load_dotenv()
 TIMING = int(os.environ.get('TIMING', 0))
 LOGGING = int(os.environ.get('LOGGING', 0))
 
+LOGGING_PATH = os.environ.get('LOGGING_PATH', 'chat_log.txt')
+TIMING_PATH = os.environ.get('TIMING_PATH', 'times.csv')
+
+
 def log_to_file(file_path, text):
     with open(file_path, 'a') as file:
         file.write(text + '\n')
@@ -30,7 +34,7 @@ def run_chat(mouth, ear, chatbot, verbose=True,
     to the user's next input. The chat stops when the stopping_criteria function returns True for a bot's response.
     """
     if TIMING:
-        pd.DataFrame(columns=['Model', 'Time Taken']).to_csv('times.csv', index=False)
+        pd.DataFrame(columns=['Model', 'Time Taken']).to_csv(TIMING_PATH, index=False)
 
     pre_interruption_text = ''
     while True:
@@ -39,7 +43,7 @@ def run_chat(mouth, ear, chatbot, verbose=True,
         if verbose:
             print("USER: ", user_input)
         if LOGGING:
-            log_to_file('chat_log.txt', "USER: " + user_input)
+            log_to_file(LOGGING_PATH, "USER: " + user_input)
 
         llm_output_queue = queue.Queue()
         interrupt_queue = queue.Queue()
@@ -51,10 +55,12 @@ def run_chat(mouth, ear, chatbot, verbose=True,
         llm_thread.start()
         tts_thread.start()
 
-        tts_thread.join()
         llm_thread.join()
+        tts_thread.join()
         if not interrupt_queue.empty():
             pre_interruption_text = interrupt_queue.get()
+        else:
+            pre_interruption_text = ''
 
         res = llm_output_queue.get()
         if stopping_criteria(res):
@@ -62,7 +68,7 @@ def run_chat(mouth, ear, chatbot, verbose=True,
         if verbose:
             print('BOT: ', res)
         if LOGGING:
-            log_to_file('chat_log.txt', "BOT: " + res)
+            log_to_file(LOGGING_PATH, "BOT: " + res)
 
 class Player_ws:
     def __init__(self, q):

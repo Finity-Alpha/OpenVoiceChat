@@ -11,6 +11,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 TIMING = int(os.environ.get('TIMING', 0))
+TIMING_PATH = os.environ.get('TIMING_PATH', 'times.csv')
 
 
 def remove_words_in_brackets_and_spaces(text):
@@ -139,7 +140,7 @@ class BaseMouth:
                         time_diff = llm_end - llm_start
                         new_row = {'Model': 'LLM', 'Time Taken': time_diff}
                         new_row_df = pd.DataFrame([new_row])
-                        new_row_df.to_csv('times.csv', mode='a', header=False, index=False)
+                        new_row_df.to_csv(TIMING_PATH, mode='a', header=False, index=False)
                         first_sentence = False
                 else:
                     continue
@@ -153,7 +154,7 @@ class BaseMouth:
                         time_diff = tts_end - tts_start
                         new_row = {'Model': 'TTS', 'Time Taken': time_diff}
                         new_row_df = pd.DataFrame([new_row])
-                        new_row_df.to_csv('times.csv', mode='a', header=False, index=False)
+                        new_row_df.to_csv(TIMING_PATH, mode='a', header=False, index=False)
                         first_audio = False
                     else:
                         output = self.run_tts(clean_sentence)

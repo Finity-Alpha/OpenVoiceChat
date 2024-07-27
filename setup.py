@@ -20,7 +20,7 @@ setup(
         'python-dotenv',
         'websockets',
         'fastapi',
-        'pandas'
+        'pandas',
     ],
     extras_require={
         'transformers': ['transformers'],
@@ -28,7 +28,7 @@ setup(
         'vosk': ['vosk'],
         'openai': ['openai'],
         'tortoise': ['tortoise-tts'],
-        'xtts': ['TTS'],
+        'xtts': ['TTS', 'phonemizer'],
     },
     dependency_links=[],
 )

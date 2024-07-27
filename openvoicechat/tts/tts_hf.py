@@ -1,6 +1,6 @@
 import sounddevice as sd
+import torch
 if __name__ == '__main__':
-    import torch
     from base import BaseMouth
 else:
     from .base import BaseMouth
