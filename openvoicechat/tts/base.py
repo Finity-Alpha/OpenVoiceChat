@@ -7,7 +7,9 @@ from typing import Callable
 import numpy as np
 import pandas as pd
 import os
+import pysbd
 from dotenv import load_dotenv
+
 load_dotenv()
 
 TIMING = int(os.environ.get('TIMING', 0))
@@ -28,9 +30,9 @@ def remove_words_in_brackets_and_spaces(text):
 class BaseMouth:
     def __init__(self, sample_rate: int, player=sd):
         self.sample_rate = sample_rate
-        self.sentence_stop_pattern = r'[.?](?=\s+\S)'
         self.interrupted = ''
         self.player = player
+        self.seg = pysbd.Segmenter(language="en", clean=True)
 
     def run_tts(self, text: str) -> np.ndarray:
         '''
@@ -131,10 +133,10 @@ class BaseMouth:
                 sentence = response
             else:
                 response += text
-                if bool(re.search(self.sentence_stop_pattern, response)):
-                    sentences = re.split(self.sentence_stop_pattern, response, maxsplit=1)
+                sentences = self.seg.segment(response)
+                if len(sentences) > 1:
                     sentence = sentences[0]
-                    response = sentences[1]
+                    response = ' '.join(sentences[1:])
                     if first_sentence and TIMING:
                         llm_end = monotonic()
                         time_diff = llm_end - llm_start
@@ -146,7 +148,7 @@ class BaseMouth:
                     continue
             if sentence.strip() != '':
                 clean_sentence = remove_words_in_brackets_and_spaces(sentence).strip()
-                if clean_sentence.strip() != '': # sentence only contains words in brackets
+                if clean_sentence.strip() != '':  # sentence only contains words in brackets
                     if TIMING and first_audio:
                         tts_start = monotonic()
                         output = self.run_tts(clean_sentence)
@@ -172,4 +174,4 @@ class BaseMouth:
         if self.interrupted:
             all_response = self._handle_interruption(interrupt_text_list, interrupt_queue)
         text_queue.queue.clear()
-        text_queue.put('. '.join(all_response))
+        text_queue.put(' '.join(all_response))
