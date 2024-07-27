@@ -3,19 +3,23 @@ if __name__ == '__main__':
 else:
     from .base import BaseChatbot
 import os
+import json
 
 
 class Chatbot_gpt(BaseChatbot):
     def __init__(self, sys_prompt='',
-                 Model='gpt-3.5-turbo',
+                 Model='gpt-4o-mini',
                  api_key='',
                  tools=None,
                  tool_choice: str = "auto",
-                 tool_utterances=None):
+                 tool_utterances=None,
+                 functions=None):
         if tools is None:
             tools = []
         if tool_utterances is None:
             tool_utterances = {}
+        if functions is None:
+            self.functions = {}
         from openai import OpenAI
         from dotenv import load_dotenv
         if api_key == '':
@@ -72,7 +76,7 @@ class Chatbot_gpt(BaseChatbot):
                             }]
                     })
                     # run the function
-                    function_response = eval(f"{func_call['name']}(**{func_call['arguments']})")
+                    function_response = self.functions[func_call['name']](*json.loads(func_call['arguments']))
                     self.messages.append({
                         "tool_call_id": func_call['id'],
                         "role": "tool",
