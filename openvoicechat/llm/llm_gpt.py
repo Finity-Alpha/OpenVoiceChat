@@ -14,17 +14,21 @@ class Chatbot_gpt(BaseChatbot):
                  tool_choice: str = "auto",
                  tool_utterances=None,
                  functions=None):
+
         if tools is None:
             tools = []
         if tool_utterances is None:
             tool_utterances = {}
         if functions is None:
             self.functions = {}
+
         from openai import OpenAI
         from dotenv import load_dotenv
+
         if api_key == '':
             load_dotenv()
             api_key = os.getenv('OPENAI_API_KEY')
+
         self.MODEL = Model
         self.client = OpenAI(api_key=api_key)
         self.messages = []
@@ -32,6 +36,7 @@ class Chatbot_gpt(BaseChatbot):
         self.tools = tools
         self.tool_choice = tool_choice
         self.tool_utterances = tool_utterances
+        self.functions = functions
 
     def run(self, input_text):
         self.messages.append({"role": "user", "content": input_text})
