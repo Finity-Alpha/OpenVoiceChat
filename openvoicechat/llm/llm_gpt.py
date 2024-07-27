@@ -81,7 +81,8 @@ class Chatbot_gpt(BaseChatbot):
                             }]
                     })
                     # run the function
-                    function_response = self.functions[func_call['name']](*json.loads(func_call['arguments']))
+                    print(func_call['arguments'])
+                    function_response = self.functions[func_call['name']](**json.loads(func_call['arguments']))
                     self.messages.append({
                         "tool_call_id": func_call['id'],
                         "role": "tool",
