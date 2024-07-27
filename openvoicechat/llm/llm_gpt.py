@@ -64,7 +64,8 @@ class Chatbot_gpt(BaseChatbot):
                         func_call["name"] = tool_call.function.name
                         func_call["id"] = tool_call.id
                         func_call['arguments'] = ''
-                        yield random.choice(self.tool_utterances[func_call['name']])
+                        yield random.choice(self.tool_utterances[func_call['name']]) + ' . ' # the period is to make
+                        # it say immediately
                     if tool_call.function.arguments:
                         func_call["arguments"] += tool_call.function.arguments
                 if function_call_detected and finish_reason == 'tool_calls':
