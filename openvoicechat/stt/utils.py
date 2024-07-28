@@ -69,7 +69,6 @@ def record_user(silence_seconds, vad, streamer=None,
                 started=False):
     frames = []
 
-    started = False
     if streamer is None:
         stream = make_stream()
         global CHUNK
