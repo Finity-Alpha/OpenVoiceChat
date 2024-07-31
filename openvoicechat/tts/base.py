@@ -79,9 +79,7 @@ class BaseMouth:
         Splits the text into sentences separated by ['.', '?', '!']. Then plays the sentences one by one
         using run_tts and say
         '''
-        pattern = r'[.?!]'
-        sentences = re.split(pattern, text)
-        sentences = [sentence.strip() for sentence in sentences if sentence.strip()]
+        sentences = self.seg.segment(text)
         print(sentences)
         audio_queue = queue.Queue()
         say_thread = threading.Thread(target=self.say, args=(audio_queue, listen_interruption_func))
