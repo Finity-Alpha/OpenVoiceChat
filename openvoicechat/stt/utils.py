@@ -65,10 +65,10 @@ def record_interruption(vad, record_seconds=100, streamer=None):
     return None
 
 
-def record_user(silence_seconds, vad, streamer=None):
+def record_user(silence_seconds, vad, streamer=None,
+                started=False):
     frames = []
 
-    started = False
     if streamer is None:
         stream = make_stream()
         global CHUNK
