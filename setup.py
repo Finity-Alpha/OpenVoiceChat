@@ -21,6 +21,7 @@ setup(
         'websockets',
         'fastapi',
         'pandas',
+        'pysbd'
     ],
     extras_require={
         'transformers': ['transformers'],
