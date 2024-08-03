@@ -147,6 +147,7 @@ class BaseMouth:
                     continue
             if sentence.strip() != '':
                 clean_sentence = remove_words_in_brackets_and_spaces(sentence).strip()
+                print("Clean sent: ", clean_sentence)
                 if clean_sentence.strip() != '':  # sentence only contains words in brackets
                     if TIMING and first_audio:
                         tts_start = monotonic()
