@@ -134,7 +134,7 @@ class BaseMouth:
                 sentences = self.seg.segment(response)
                 if len(sentences) > 1:
                     sentence = sentences[0]
-                    response = ' '.join(sentences[1:])
+                    response = ' '.join([s for s in sentences[1:] if s != '.'])
                     if first_sentence and TIMING:
                         llm_end = monotonic()
                         time_diff = llm_end - llm_start
@@ -144,7 +144,7 @@ class BaseMouth:
                         first_sentence = False
                 else:
                     continue
-            if sentence.strip() != '' and sentence.strip() != '.':
+            if sentence.strip() != '':
                 clean_sentence = remove_words_in_brackets_and_spaces(sentence).strip()
                 if clean_sentence.strip() != '':  # sentence only contains words in brackets
                     if TIMING and first_audio:
