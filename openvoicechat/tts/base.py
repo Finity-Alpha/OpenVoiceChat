@@ -63,8 +63,6 @@ class BaseMouth:
                 break
             # get the duration of audio
             duration = len(output) / self.sample_rate
-            print("PLAYING: ", text)
-            print("FOR: ", duration, " seconds")
             self.player.play(output, samplerate=self.sample_rate)
             interruption = listen_interruption_func(duration)
             if interruption:
@@ -129,7 +127,6 @@ class BaseMouth:
         say_thread.start()
         while True:
             text = text_queue.get()
-            print(text)
             if text is None:
                 sentence = response
             else:
@@ -177,4 +174,3 @@ class BaseMouth:
             all_response = self._handle_interruption(interrupt_text_list, interrupt_queue)
         text_queue.queue.clear()
         text_queue.put(' '.join(all_response))
-        print("ALL RESPONSE: ", all_response)
