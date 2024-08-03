@@ -144,7 +144,7 @@ class BaseMouth:
                         first_sentence = False
                 else:
                     continue
-            if sentence.strip() != '':
+            if sentence.strip() != '' and sentence.strip() != '.':
                 clean_sentence = remove_words_in_brackets_and_spaces(sentence).strip()
                 if clean_sentence.strip() != '':  # sentence only contains words in brackets
                     if TIMING and first_audio:
