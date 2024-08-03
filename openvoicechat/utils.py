@@ -62,13 +62,17 @@ def run_chat(mouth, ear, chatbot, verbose=True,
         tts_thread.start()
 
         llm_thread.join()
+        print('LLM finished')
         tts_thread.join()
+        print('TTS finished')
         if not interrupt_queue.empty():
             pre_interruption_text = interrupt_queue.get()
         else:
             pre_interruption_text = ''
 
+        print("Geting response")
         res = llm_output_queue.get()
+        print("Got response")
         if stopping_criteria(res):
             break
         if verbose:
