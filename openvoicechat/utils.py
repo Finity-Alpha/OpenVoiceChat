@@ -98,8 +98,6 @@ class Player_ws:
 
     def wait(self):
         time_to_wait = 0
-        while not self.output_queue.empty():
-            time.sleep(0.1)
         #     peek at the first element
         # time_to_wait = len(self.output_queue.queue[0]) / (44100 * 4)
         # print(time_to_wait)
