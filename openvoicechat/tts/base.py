@@ -177,3 +177,4 @@ class BaseMouth:
             all_response = self._handle_interruption(interrupt_text_list, interrupt_queue)
         text_queue.queue.clear()
         text_queue.put(' '.join(all_response))
+        print("ALL RESPONSE: ", all_response)
