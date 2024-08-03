@@ -88,19 +88,17 @@ class Player_ws:
     def play(self, audio_array, samplerate):
         self.playing = True
         duration = len(audio_array) / samplerate
-        print(duration)
         if audio_array.dtype == np.int16:
             audio_array = audio_array / (1 << 15)
         audio_array = audio_array.astype(np.float32)
         audio_array = librosa.resample(y=audio_array, orig_sr=samplerate, target_sr=44100)
         audio_array = audio_array.tobytes()
         self.output_queue.put(audio_array)
-        self._timer_thread = multiprocessing.Process(target=self._timer, args=(duration, ))
+        if self._timer_thread is not None:
+            if self._timer_thread.is_alive():
+                self._timer_thread.terminate()
+        self._timer_thread = multiprocessing.Process(target=time.sleep, args=(duration, ))
         self._timer_thread.start()
-
-    def _timer(self, duration):
-        time.sleep(duration)
-        self.playing = False
 
     def stop(self):
         self.playing = False
@@ -109,8 +107,8 @@ class Player_ws:
         self._timer_thread.terminate()
 
     def wait(self):
-        while self.playing:
-            pass
+        self._timer_thread.join()
+        self.playing = False
 
 
 class Listener_ws:
