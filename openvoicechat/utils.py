@@ -88,6 +88,7 @@ class Player_ws:
     def play(self, audio_array, samplerate):
         self.playing = True
         duration = len(audio_array) / samplerate
+        print(duration)
         if audio_array.dtype == np.int16:
             audio_array = audio_array / (1 << 15)
         audio_array = audio_array.astype(np.float32)
