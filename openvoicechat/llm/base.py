@@ -49,5 +49,4 @@ class BaseChatbot:
             response_text += text
         output_queue.put(None)
         response = self.post_process(response_text)
-        print("Chatbot finished")
         return response
