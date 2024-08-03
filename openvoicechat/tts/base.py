@@ -127,6 +127,7 @@ class BaseMouth:
         say_thread.start()
         while True:
             text = text_queue.get()
+            print(text)
             if text is None:
                 sentence = response
             else:
