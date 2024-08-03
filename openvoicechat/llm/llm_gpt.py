@@ -94,7 +94,6 @@ class Chatbot_gpt(BaseChatbot):
                     yield chunk.choices[0].delta.content
                 if finish_reason == 'stop':
                     finished = True
-                    print("Chatbot finished")
 
     def post_process(self, response):
         #remove the tool utterances from the response
