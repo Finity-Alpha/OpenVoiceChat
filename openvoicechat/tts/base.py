@@ -63,6 +63,8 @@ class BaseMouth:
                 break
             # get the duration of audio
             duration = len(output) / self.sample_rate
+            print("PLAYING: ", text)
+            print("FOR: ", duration, " seconds")
             self.player.play(output, samplerate=self.sample_rate)
             interruption = listen_interruption_func(duration)
             if interruption:
@@ -147,9 +149,7 @@ class BaseMouth:
                     continue
             if sentence.strip() != '':
                 clean_sentence = remove_words_in_brackets_and_spaces(sentence).strip()
-                print("Clean sent: ", clean_sentence)
                 if clean_sentence.strip() != '':  # sentence only contains words in brackets
-                    print("PLAYING: ", clean_sentence)
                     if TIMING and first_audio:
                         tts_start = monotonic()
                         output = self.run_tts(clean_sentence)
@@ -171,6 +171,7 @@ class BaseMouth:
             if text is None:
                 break
         audio_queue.put((None, ''))
+
         say_thread.join()
         if self.interrupted:
             all_response = self._handle_interruption(interrupt_text_list, interrupt_queue)
