@@ -44,7 +44,7 @@ class BaseMouth:
     def say_text(self, text: str):
         """
         :param text: The text to synthesize speech for
-        calls run_tts and plays the audio using sounddevice.
+        calls run_tts and plays the audio using the player.
         """
         output = self.run_tts(text)
         self.player.play(output, samplerate=self.sample_rate)
@@ -54,7 +54,7 @@ class BaseMouth:
         """
         :param audio_queue: The queue where the audio is stored for it to be played
         :param listen_interruption_func: callable function from the ear class.
-        Plays the audios in the queue using sounddevice. Stops if interruption occurred.
+        Plays the audios in the queue using the player. Stops if interruption occurred.
         """
         self.interrupted = ''
         while True:
