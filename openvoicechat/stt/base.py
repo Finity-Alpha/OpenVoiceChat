@@ -76,18 +76,29 @@ class BaseEar:
         :return: transcription
         records audio using record_user and returns its transcription
         """
-        audio = record_user(self.silence_seconds, self.vad, self.listener)
-        if TIMING:
-            start_time = monotonic()
+        import pysbd
+        sentence_finished = False
+        first = True
+        audio = np.zeros(0, dtype=np.float32)
+        while not sentence_finished:
+            new_audio = record_user(self.silence_seconds, self.vad,
+                                     self.listener, started=not first)
+            audio = np.concatenate((audio, new_audio), 0)
+            if TIMING and first:
+                start_time = monotonic()
 
-            text = self.transcribe(audio)
+                text = self.transcribe(audio)
 
-            stop_time = monotonic()
-            time_diff = stop_time - start_time
-            new_row_df = pd.DataFrame([{'Model': 'STT', 'Time Taken': time_diff}])
-            new_row_df.to_csv(TIMING_PATH, mode='a', header=False, index=False)
-        else:
-            text = self.transcribe(audio)
+                stop_time = monotonic()
+                time_diff = stop_time - start_time
+                new_row_df = pd.DataFrame([{'Model': 'STT', 'Time Taken': time_diff}])
+                new_row_df.to_csv(TIMING_PATH, mode='a', header=False, index=False)
+            else:
+                text = self.transcribe(audio)
+            first = False
+            seg = pysbd.Segmenter(language="en", clean=False)
+            if len(seg.segment(text + ' .')) > 1:
+                sentence_finished = True
         return text
 
     def _listen_stream(self) -> str:

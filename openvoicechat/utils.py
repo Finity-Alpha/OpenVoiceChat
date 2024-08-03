@@ -5,6 +5,7 @@ import numpy as np
 import os
 import pandas as pd
 from dotenv import load_dotenv
+
 load_dotenv()
 
 TIMING = int(os.environ.get('TIMING', 0))
@@ -18,8 +19,10 @@ def log_to_file(file_path, text):
     with open(file_path, 'a') as file:
         file.write(text + '\n')
 
+
 def run_chat(mouth, ear, chatbot, verbose=True,
-             stopping_criteria=lambda x: False):
+             stopping_criteria=lambda x: False,
+             starting_message=''):
     """
     Runs a chat session between a user and a bot.
 
@@ -35,6 +38,9 @@ def run_chat(mouth, ear, chatbot, verbose=True,
     """
     if TIMING:
         pd.DataFrame(columns=['Model', 'Time Taken']).to_csv(TIMING_PATH, index=False)
+
+    if starting_message:
+        mouth.say_text(starting_message)
 
     pre_interruption_text = ''
     while True:
@@ -69,6 +75,7 @@ def run_chat(mouth, ear, chatbot, verbose=True,
             print('BOT: ', res)
         if LOGGING:
             log_to_file(LOGGING_PATH, "BOT: " + res)
+
 
 class Player_ws:
     def __init__(self, q):
