@@ -1,10 +1,12 @@
 import threading
+import multiprocessing
 import queue
 import librosa
 import numpy as np
 import os
 import pandas as pd
 from dotenv import load_dotenv
+import time
 
 load_dotenv()
 
@@ -81,28 +83,32 @@ class Player_ws:
     def __init__(self, q):
         self.output_queue = q
         self.playing = False
+        self._timer_thread = None
 
     def play(self, audio_array, samplerate):
+        self.playing = True
+        duration = len(audio_array) / samplerate
         if audio_array.dtype == np.int16:
             audio_array = audio_array / (1 << 15)
         audio_array = audio_array.astype(np.float32)
         audio_array = librosa.resample(y=audio_array, orig_sr=samplerate, target_sr=44100)
         audio_array = audio_array.tobytes()
         self.output_queue.put(audio_array)
+        # the timer thread is used to wait for the audio to finish playing on the serverside
+        if self._timer_thread is not None:
+            if self._timer_thread.is_alive():
+                self._timer_thread.terminate()
+        self._timer_thread = multiprocessing.Process(target=time.sleep, args=(duration, ))
+        self._timer_thread.start()
 
     def stop(self):
         self.playing = False
         self.output_queue.queue.clear()
         self.output_queue.put('stop'.encode())
+        self._timer_thread.terminate()
 
     def wait(self):
-        time_to_wait = 0
-        # while not self.output_queue.empty():
-        #     time.sleep(0.1)
-        #     peek at the first element
-        # time_to_wait = len(self.output_queue.queue[0]) / (44100 * 4)
-        # print(time_to_wait)
-        # time.sleep(time_to_wait)
+        self._timer_thread.join()
         self.playing = False
 
 

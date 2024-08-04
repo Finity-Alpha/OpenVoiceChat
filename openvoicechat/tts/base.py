@@ -44,7 +44,7 @@ class BaseMouth:
     def say_text(self, text: str):
         """
         :param text: The text to synthesize speech for
-        calls run_tts and plays the audio using sounddevice.
+        calls run_tts and plays the audio using the player.
         """
         output = self.run_tts(text)
         self.player.play(output, samplerate=self.sample_rate)
@@ -54,7 +54,7 @@ class BaseMouth:
         """
         :param audio_queue: The queue where the audio is stored for it to be played
         :param listen_interruption_func: callable function from the ear class.
-        Plays the audios in the queue using sounddevice. Stops if interruption occurred.
+        Plays the audios in the queue using the player. Stops if interruption occurred.
         """
         self.interrupted = ''
         while True:
@@ -134,7 +134,7 @@ class BaseMouth:
                 sentences = self.seg.segment(response)
                 if len(sentences) > 1:
                     sentence = sentences[0]
-                    response = ' '.join(sentences[1:])
+                    response = ' '.join([s for s in sentences[1:] if s != '.'])
                     if first_sentence and TIMING:
                         llm_end = monotonic()
                         time_diff = llm_end - llm_start
@@ -168,6 +168,7 @@ class BaseMouth:
             if text is None:
                 break
         audio_queue.put((None, ''))
+
         say_thread.join()
         if self.interrupted:
             all_response = self._handle_interruption(interrupt_text_list, interrupt_queue)
