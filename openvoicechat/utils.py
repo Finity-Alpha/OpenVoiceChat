@@ -94,6 +94,7 @@ class Player_ws:
         audio_array = librosa.resample(y=audio_array, orig_sr=samplerate, target_sr=44100)
         audio_array = audio_array.tobytes()
         self.output_queue.put(audio_array)
+        # the timer thread is used to wait for the audio to finish playing on the serverside
         if self._timer_thread is not None:
             if self._timer_thread.is_alive():
                 self._timer_thread.terminate()

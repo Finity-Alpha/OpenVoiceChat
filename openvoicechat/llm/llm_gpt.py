@@ -64,6 +64,7 @@ class Chatbot_gpt(BaseChatbot):
                         func_call["name"] = tool_call.function.name
                         func_call["id"] = tool_call.id
                         func_call['arguments'] = ''
+                        # Choose a utterance for the tool at random and output it for the tts
                         yield random.choice(self.tool_utterances[func_call['name']]) + ' . ' # the period is to make
                         # it say immediately
                     if tool_call.function.arguments:
