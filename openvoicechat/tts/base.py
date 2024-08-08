@@ -28,11 +28,12 @@ def remove_words_in_brackets_and_spaces(text):
 
 
 class BaseMouth:
-    def __init__(self, sample_rate: int, player=sd):
+    def __init__(self, sample_rate: int, player=sd, timing_path=TIMING_PATH):
         self.sample_rate = sample_rate
         self.interrupted = ''
         self.player = player
         self.seg = pysbd.Segmenter(language="en", clean=True)
+        self.timing_path = timing_path
 
     def run_tts(self, text: str) -> np.ndarray:
         """
@@ -140,7 +141,7 @@ class BaseMouth:
                         time_diff = llm_end - llm_start
                         new_row = {'Model': 'LLM', 'Time Taken': time_diff}
                         new_row_df = pd.DataFrame([new_row])
-                        new_row_df.to_csv(TIMING_PATH, mode='a', header=False, index=False)
+                        new_row_df.to_csv(self.timing_path, mode='a', header=False, index=False)
                         first_sentence = False
                 else:
                     continue
@@ -154,7 +155,7 @@ class BaseMouth:
                         time_diff = tts_end - tts_start
                         new_row = {'Model': 'TTS', 'Time Taken': time_diff}
                         new_row_df = pd.DataFrame([new_row])
-                        new_row_df.to_csv(TIMING_PATH, mode='a', header=False, index=False)
+                        new_row_df.to_csv(self.timing_path, mode='a', header=False, index=False)
                         first_audio = False
                     else:
                         output = self.run_tts(clean_sentence)

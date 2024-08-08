@@ -19,7 +19,8 @@ class BaseEar:
     def __init__(self, silence_seconds=2,
                  not_interrupt_words=None,
                  listener=None,
-                 stream=False):
+                 stream=False,
+                 timing_path=TIMING_PATH):
         if not_interrupt_words is None:
             not_interrupt_words = ['you', 'yes', 'yeah', 'hmm']  # you because whisper says "you" in silence
         self.silence_seconds = silence_seconds
@@ -27,11 +28,12 @@ class BaseEar:
         self.vad = VoiceActivityDetection()
         self.listener = listener
         self.stream = stream
+        self.timing_path = timing_path
         if TIMING:
-            if not os.path.exists(TIMING_PATH):
+            if not os.path.exists(self.timing_path):
                 columns = ['Model', 'Time Taken']
                 df = pd.DataFrame(columns=columns)
-                df.to_csv(TIMING_PATH, index=False)
+                df.to_csv(self.timing_path, index=False)
 
     def transcribe(self, input_audio: np.ndarray) -> str:
         '''
@@ -92,7 +94,7 @@ class BaseEar:
                 stop_time = monotonic()
                 time_diff = stop_time - start_time
                 new_row_df = pd.DataFrame([{'Model': 'STT', 'Time Taken': time_diff}])
-                new_row_df.to_csv(TIMING_PATH, mode='a', header=False, index=False)
+                new_row_df.to_csv(self.timing_path, mode='a', header=False, index=False)
             else:
                 text = self.transcribe(audio)
             first = False
@@ -132,7 +134,7 @@ class BaseEar:
             stop_time = monotonic()
             time_diff = stop_time - start_time
             new_row_df = pd.DataFrame([{'Model': 'STT', 'Time Taken': time_diff}])
-            new_row_df.to_csv(TIMING_PATH, mode='a', header=False, index=False)
+            new_row_df.to_csv(self.timing_path, mode='a', header=False, index=False)
         else:
             text = ''
             while True:
