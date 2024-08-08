@@ -5,6 +5,7 @@ else:
 import os
 import json
 import random
+from openai._types import NOT_GIVEN
 
 
 class Chatbot_gpt(BaseChatbot):
@@ -12,12 +13,12 @@ class Chatbot_gpt(BaseChatbot):
                  Model='gpt-4o-mini',
                  api_key='',
                  tools=None,
-                 tool_choice: str = "auto",
+                 tool_choice=NOT_GIVEN,
                  tool_utterances=None,
                  functions=None):
 
         if tools is None:
-            tools = []
+            tools = NOT_GIVEN
         if tool_utterances is None:
             tool_utterances = {}
         if functions is None:
