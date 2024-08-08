@@ -13,6 +13,8 @@ load_dotenv()
 TIMING = int(os.environ.get('TIMING', 0))
 LOGGING = int(os.environ.get('LOGGING', 0))
 
+timing_path = os.environ.get('TIMING_PATH', 'times.csv')
+
 
 def log_to_file(file_path, text):
     with open(file_path, 'a') as file:
@@ -23,7 +25,7 @@ def run_chat(mouth, ear, chatbot, verbose=True,
              stopping_criteria=lambda x: False,
              starting_message='',
              logging_path='chat_log.txt',
-             timing_path='timing.csv'):
+             ):
     """
     Runs a chat session between a user and a bot.
 
