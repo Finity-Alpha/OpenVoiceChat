@@ -84,6 +84,8 @@ def record_user(silence_seconds, vad, streamer=None,
         data = stream.read(CHUNK)
         assert len(data) == CHUNK * 2, 'chunk size does not match 2 bytes per sample'
         frames.append(data)
+        if len(frames) < one_second_iters * silence_seconds:
+            continue
         contains_speech = vad.contains_speech(frames[int(-one_second_iters * silence_seconds):])
         if not started and contains_speech:
             started = True
