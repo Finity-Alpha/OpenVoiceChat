@@ -1,3 +1,4 @@
+uploads/
 .env
 *.ipynb
 models/
