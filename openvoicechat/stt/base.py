@@ -82,7 +82,8 @@ class BaseEar:
         sentence_finished = False
         first = True
         audio = np.zeros(0, dtype=np.float32)
-        while not sentence_finished:
+        n = 2 # number of times to see if the sentence ends
+        while not sentence_finished and n > 0:
             new_audio = record_user(self.silence_seconds, self.vad,
                                      self.listener, started=not first)
             audio = np.concatenate((audio, new_audio), 0)
@@ -101,6 +102,8 @@ class BaseEar:
             seg = pysbd.Segmenter(language="en", clean=False)
             if len(seg.segment(text + ' .')) > 1:
                 sentence_finished = True
+            else:
+                n -= 1
         return text
 
     def _listen_stream(self) -> str:

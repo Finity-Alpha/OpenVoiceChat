@@ -5,9 +5,10 @@ else:
 
 class Chatbot_ollama(BaseChatbot):
     def __init__(self, sys_prompt='',
-                 Model='llama3'):
+                 model='llama3'):
         import ollama
-        self.MODEL = Model
+        ollama.pull(model)
+        self.MODEL = model
         self.client = ollama
         self.messages = []
         self.messages.append({"role": "system", "content": sys_prompt})
