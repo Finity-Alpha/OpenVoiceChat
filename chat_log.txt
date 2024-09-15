@@ -1,7 +1,0 @@
-USER:  Hi
-BOT:  Hello! This is John, your Apple product specialist.  How can I help you today.  Is there a specific product you're interested in or do you have any questions about our offerings.  I'm here to help and make sure you have the best experience possible.
-USER:  Thank you very much John.
-BOT: You're welcome! I'm glad to be of assistance. ...
-USER:  Hey, what's up?
-BOT:   Hello! *friendly smile* How can I help you today with your Apple needs?
-USER:  Just let him know any other product.

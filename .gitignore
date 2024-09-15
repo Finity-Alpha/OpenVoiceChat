@@ -1,3 +1,4 @@
+uploads/
 .env
 *.ipynb
 models/
@@ -84,3 +85,4 @@ dmypy.json
 .pyre/
 .pytype/
 cython_debug/
+_*
