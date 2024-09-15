@@ -1,28 +1,36 @@
-import os
-from openvoicechat.tts.tts_elevenlabs import Mouth_elevenlabs
-from openvoicechat.tts.tts_piper import Mouth_piper
-from openvoicechat.llm.llm_gpt import Chatbot_gpt
-from openvoicechat.llm.llm_llama import Chatbot_llama
-from openvoicechat.stt.stt_deepgram import Ear_deepgram
+from openvoicechat.tts.tts_xtts import Mouth_xtts
+from openvoicechat.llm.llm_ollama import Chatbot_ollama
 from openvoicechat.stt.stt_hf import Ear_hf
 from openvoicechat.utils import run_chat
 from openvoicechat.llm.prompts import llama_sales
+import torch
 from dotenv import load_dotenv
+import os
+
 load_dotenv()
 
 
 if __name__ == "__main__":
-    device = 'cuda'
+    if torch.backends.mps.is_available():
+        device = "mps"
+    elif torch.cuda.is_available():
+        device = "cuda"
+    else:
+        device = "cpu"
 
-    print('loading models... ', device)
-    api_key = os.getenv('DEEPGRAM_API_KEY')
-    # ear = Ear_deepgram(silence_seconds=2, api_key=api_key)
-    ear = Ear_hf(silence_seconds=2, device=device)
-
+    print("loading models... ", device)
     load_dotenv()
+    ear = Ear_hf(
+        model_id="openai/whisper-tiny.en",
+        silence_seconds=1.5,
+        device=device,
+        listen_interruptions=False,
+    )
 
-    chatbot = Chatbot_gpt(sys_prompt=llama_sales)
+    chatbot = Chatbot_ollama(sys_prompt=llama_sales, model="qwen2:0.5b")
 
-    mouth = Mouth_piper(device=device)
+    mouth = Mouth_xtts(device=device)
 
-    run_chat(mouth, ear, chatbot, verbose=True, stopping_criteria=lambda x: '[END]' in x)
+    run_chat(
+        mouth, ear, chatbot, verbose=True, stopping_criteria=lambda x: "[END]" in x
+    )

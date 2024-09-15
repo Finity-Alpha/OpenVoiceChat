@@ -1,13 +1,15 @@
-if __name__ == '__main__':
+if __name__ == "__main__":
     from base import BaseChatbot
 else:
     from .base import BaseChatbot
 
+
 class Chatbot_ollama(BaseChatbot):
-    def __init__(self, sys_prompt='',
-                 Model='llama3'):
+    def __init__(self, sys_prompt="", model="llama3"):
         import ollama
-        self.MODEL = Model
+
+        ollama.pull(model)
+        self.MODEL = model
         self.client = ollama
         self.messages = []
         self.messages.append({"role": "system", "content": sys_prompt})
@@ -21,8 +23,8 @@ class Chatbot_ollama(BaseChatbot):
         )
 
         for chunk in stream:
-            if chunk['message']['content'] is not None:
-                yield chunk['message']['content']
+            if chunk["message"]["content"] is not None:
+                yield chunk["message"]["content"]
 
     def post_process(self, response):
         self.messages.append({"role": "assistant", "content": response})
@@ -30,7 +32,7 @@ class Chatbot_ollama(BaseChatbot):
 
 
 if __name__ == "__main__":
-    preprompt = 'You are a helpful assistant.'
+    preprompt = "You are a helpful assistant."
     john = Chatbot_ollama(sys_prompt=preprompt)
     print("type: exit, quit or stop to end the chat")
     print("Chat started:")

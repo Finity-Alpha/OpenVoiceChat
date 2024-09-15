@@ -5,3 +5,5 @@ python-dotenv
 pydub
 websockets
 fastapi
+pandas
+pysbd
