@@ -25,15 +25,16 @@ class BaseChatbot:
         :return: The chatbot's response.
         """
         out = self.run(input_text)
-        response_text = ''
+        response_text = ""
         for o in out:
             text = o
             response_text += text
         response = self.post_process(response_text)
         return response
 
-    def generate_response_stream(self, input_text: str, output_queue: queue.Queue,
-                                 interrupt_queue: queue.Queue) -> str:
+    def generate_response_stream(
+        self, input_text: str, output_queue: queue.Queue, interrupt_queue: queue.Queue
+    ) -> str:
         """
         :param input_text: The user input
         :param output_queue: The text output queue where the result is accumulated.
@@ -41,7 +42,7 @@ class BaseChatbot:
         :return: The chatbot's response after running self.post_process
         """
         out = self.run(input_text)
-        response_text = ''
+        response_text = ""
         for text in out:
             if not interrupt_queue.empty():
                 break

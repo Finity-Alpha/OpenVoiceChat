@@ -1,4 +1,4 @@
-if __name__ == '__main__':
+if __name__ == "__main__":
     from base import BaseEar
 else:
     from .base import BaseEar
@@ -10,18 +10,20 @@ import asyncio
 
 
 class Ear_deepgram(BaseEar):
-    def __init__(self, silence_seconds=2, api_key='', listener=None):
+    def __init__(self, silence_seconds=2, api_key="", listener=None):
         super().__init__(silence_seconds, stream=True, listener=listener)
         self.api_key = api_key
 
     def transcribe_stream(self, audio_queue, transcription_queue):
-        extra_headers = {
-           'Authorization': 'token ' + self.api_key
-        }
+        extra_headers = {"Authorization": "token " + self.api_key}
+
         async def f():
-            async with websockets.connect('wss://api.deepgram.com/v1/listen?encoding=linear16&sample_rate=16000'
-                                          '&channels=1&model=nova-2',
-                                          extra_headers=extra_headers) as ws:
+            async with websockets.connect(
+                "wss://api.deepgram.com/v1/listen?encoding=linear16&sample_rate=16000"
+                "&channels=1&model=nova-2",
+                extra_headers=extra_headers,
+            ) as ws:
+
                 async def sender(ws):  # sends audio to websocket
                     try:
                         while True:
@@ -31,23 +33,23 @@ class Ear_deepgram(BaseEar):
                                 break
                             await ws.send(data)
                     except Exception as e:
-                        print('Error while sending: ', str(e))
+                        print("Error while sending: ", str(e))
                         raise
 
                 async def receiver(ws):
                     async for msg in ws:
                         msg = json.loads(msg)
-                        if 'channel' not in msg:
+                        if "channel" not in msg:
                             transcription_queue.put(None)
                             break
-                        transcript = msg['channel']['alternatives'][0]['transcript']
+                        transcript = msg["channel"]["alternatives"][0]["transcript"]
 
                         if transcript:
                             transcription_queue.put(transcript)
 
                 await asyncio.gather(sender(ws), receiver(ws))
-        asyncio.run(f())
 
+        asyncio.run(f())
 
 
 if __name__ == "__main__":
