@@ -20,8 +20,12 @@ if __name__ == "__main__":
 
     print("loading models... ", device)
     load_dotenv()
-    ear = Ear_hf(model_id="openai/whisper-tiny.en", silence_seconds=1.5, device=device)
-    ear.interrupt_listen = lambda x: False
+    ear = Ear_hf(
+        model_id="openai/whisper-tiny.en",
+        silence_seconds=1.5,
+        device=device,
+        listen_interruptions=False,
+    )
 
     chatbot = Chatbot_ollama(sys_prompt=llama_sales, model="qwen2:0.5b")
 
