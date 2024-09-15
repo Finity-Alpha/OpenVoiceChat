@@ -21,7 +21,7 @@ class Mouth_xtts(BaseMouth):
         output = self.model.tts(text=text,
                                 split_sentences=False,
                                 speaker=self.speaker,
-                                language='en')
+                                language='en' if self.model.is_multi_lingual else None)
         return np.array(output)
 
 
