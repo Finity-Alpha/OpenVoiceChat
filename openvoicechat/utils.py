@@ -126,16 +126,17 @@ class Player_ws:
 
 
 class Listener_ws:
-    def __init__(self, q):
+    def __init__(self, q, samplerate=44100):
         self.input_queue = q
         self.listening = False
         self.CHUNK = 5945
         self.RATE = 16_000
+        self.samplerate = samplerate
 
     def read(self, x):
         data = self.input_queue.get()
         data = np.frombuffer(data, dtype=np.float32)
-        data = librosa.resample(y=data, orig_sr=44100, target_sr=16_000)
+        data = librosa.resample(y=data, orig_sr=self.samplerate, target_sr=16_000)
         data = data * (1 << 15)
         data = data.astype(np.int16)
         data = data.tobytes()
