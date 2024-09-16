@@ -1,4 +1,3 @@
-# Download the helper library from https://www.twilio.com/docs/python/install
 import os
 from twilio.rest import Client
 from dotenv import load_dotenv
@@ -13,8 +12,7 @@ server_url = os.environ.get("TWILIO_SERVER_URL")
 client = Client(account_sid, auth_token)
 
 call = client.calls.create(
-    url=server_url,
-    # url="http://demo.twilio.com/docs/voice.xml",
+    url=server_url.replace("wss", "https") + "/twiml",
     to=os.environ.get("MY_NUMBER"),
     from_=os.environ.get("TWILIO_NUMBER"),
 )
