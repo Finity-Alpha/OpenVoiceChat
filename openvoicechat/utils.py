@@ -143,6 +143,7 @@ class Listener_ws:
         return data
 
     def close(self):
+        # TODO: Do we have to make listening False here?
         pass
 
     def make_stream(self):
