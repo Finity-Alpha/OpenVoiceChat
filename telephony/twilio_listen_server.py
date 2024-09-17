@@ -49,7 +49,7 @@ async def websocket_endpoint(websocket: WebSocket):
                 log("Start Message received", message)
             elif data["event"] == "media":
                 media = data["media"]
-                print(media)
+                print(str(media) + ",")
                 # audio = base64.b64decode(media["payload"])
                 # data += audio
             elif data["event"] == "closed":
