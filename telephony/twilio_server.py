@@ -81,10 +81,11 @@ class Player_twilio:
     def stop(self):
         self.playing = False
         self.output_queue.queue.clear()
+        self.output_queue.put("stop")
 
     def wait(self):
-        # TODO use the mark message to wait for the audio to finish playing
-        self.playing = False
+        while self.playing:
+            pass
 
 
 class Listener_twilio:
@@ -100,7 +101,7 @@ class Listener_twilio:
         pcm_audio = audioop.ulaw2lin(data, 2)  # '2' indicates 16-bit PCM
 
         data = np.frombuffer(pcm_audio, dtype=np.int16)
-        data = data / (1 << 15)
+        data = data / (1 << 15)  # TODO: make the conversions faster
         data = data.astype(np.float32)
         data = librosa.resample(y=data, orig_sr=self.samplerate, target_sr=16_000)
         data = data * (1 << 15)
@@ -109,6 +110,7 @@ class Listener_twilio:
         return data
 
     def close(self):
+        self.listening = False
         pass
 
     def make_stream(self):
@@ -130,15 +132,19 @@ async def websocket_endpoint(websocket: WebSocket):
     ear = Ear(
         model_id="openai/whisper-base.en",
         device=device,
-        silence_seconds=1.5,
+        silence_seconds=1,
         listener=listener,
-        listen_interruptions=False,
+        listen_interruptions=True,
     )
     load_dotenv()
 
     chatbot = Chatbot(sys_prompt=llama_sales)
-    threading.Thread(target=run_chat, args=(mouth, ear, chatbot, True)).start()
+    threading.Thread(
+        target=run_chat,
+        args=(mouth, ear, chatbot, True, lambda x: False, "Hello, I am John."),
+    ).start()
 
+    mark_queue = []
     try:
         while True:
             message = await websocket.receive_text()
@@ -152,15 +158,34 @@ async def websocket_endpoint(websocket: WebSocket):
                 media = data["media"]
                 if listener.listening:
                     input_queue.put(media["payload"])
+            elif data["event"] == "mark":
+                name = int(data["mark"]["name"])
+                mark_queue.remove(name)
+                if len(mark_queue) == 0:
+                    player.playing = False
+
             if not output_queue.empty():
-                print("send media")
                 response_data = output_queue.get_nowait()
-                response_json = {
-                    "event": "media",
-                    "media": {"payload": response_data},
-                    "streamSid": data["streamSid"],
-                }
-                await websocket.send_text(json.dumps(response_json))
+                if response_data == "stop":
+                    response_json = {
+                        "event": "clear",
+                        "streamSid": data["streamSid"],
+                    }
+                    await websocket.send_text(json.dumps(response_json))
+                else:
+                    response_json = {
+                        "event": "media",
+                        "media": {"payload": response_data},
+                        "streamSid": data["streamSid"],
+                    }
+                    mark_queue.append(max(mark_queue) + 1 if mark_queue else 0)
+                    mark_message = {
+                        "event": "mark",
+                        "streamSid": data["streamSid"],
+                        "mark": {"name": f"{mark_queue[-1]}"},
+                    }
+                    await websocket.send_text(json.dumps(response_json))
+                    await websocket.send_text(json.dumps(mark_message))
 
             elif data["event"] == "closed":
                 log("Closed Message received", message)
@@ -170,6 +195,7 @@ async def websocket_endpoint(websocket: WebSocket):
         log(f"Connection error: {e}")
     finally:
         await websocket.close()
+        # TODO: join thread and close gracefully
 
 
 if __name__ == "__main__":
