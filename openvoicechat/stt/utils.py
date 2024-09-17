@@ -121,6 +121,7 @@ def record_user_stream(silence_seconds, vad, audio_queue, streamer=None):
 
     while True:
         data = stream.read(CHUNK)
+        assert len(data) == CHUNK * 2, "chunk size does not match 2 bytes per sample"
         frames.append(data)
         audio_queue.put(data)
         contains_speech = vad.contains_speech(
