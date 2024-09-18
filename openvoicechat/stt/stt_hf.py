@@ -14,8 +14,13 @@ class Ear_hf(BaseEar):
         silence_seconds=2,
         generate_kwargs=None,
         listener=None,
+        listen_interruptions=True,
     ):
-        super().__init__(silence_seconds, listener=listener)
+        super().__init__(
+            silence_seconds,
+            listener=listener,
+            listen_interruptions=listen_interruptions,
+        )
         from transformers import pipeline
 
         self.pipe = pipeline(

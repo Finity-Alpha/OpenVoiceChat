@@ -28,12 +28,13 @@ def remove_words_in_brackets_and_spaces(text):
 
 
 class BaseMouth:
-    def __init__(self, sample_rate: int, player=sd, timing_path=TIMING_PATH):
+    def __init__(self, sample_rate: int, player=sd, timing_path=TIMING_PATH, wait=True):
         self.sample_rate = sample_rate
         self.interrupted = ""
         self.player = player
         self.seg = pysbd.Segmenter(language="en", clean=True)
         self.timing_path = timing_path
+        self.wait = True
 
     def run_tts(self, text: str) -> np.ndarray:
         """
@@ -61,6 +62,7 @@ class BaseMouth:
         while True:
             output, text = audio_queue.get()
             if output is None:
+                self.player.wait()  # wait for the last audio to finish
                 break
             # get the duration of audio
             duration = len(output) / self.sample_rate
@@ -71,11 +73,12 @@ class BaseMouth:
                 self.interrupted = (interruption, text)
                 break
             else:
-                self.player.wait()
+                if self.wait:
+                    self.player.wait()  # No need for wait here
 
     def say_multiple(self, text: str, listen_interruption_func: Callable):
         """
-        :param text: Intput text to synthesize
+        :param text: Input text to synthesize
         :param listen_interruption_func: callable function from the ear class
         Splits the text into sentences. Then plays the sentences one by one
         using run_tts() and say()

@@ -7,3 +7,4 @@ websockets
 fastapi
 pandas
 pysbd
+uvicorn
