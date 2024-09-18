@@ -61,7 +61,7 @@ class Player_twilio:
     def __init__(self, q, target_sr=8000):
         self.output_queue = q
         self.playing = False
-        self.target_sr = 8000
+        self.target_sr = target_sr
 
     def play(self, audio_array, samplerate):
         self.playing = True
@@ -97,6 +97,7 @@ class Listener_twilio:
         self.samplerate = samplerate
 
     def read(self, x):
+        assert x == self.CHUNK
         data = base64.b64decode(self.input_queue.get())
         pcm_audio = audioop.ulaw2lin(data, 2)  # '2' indicates 16-bit PCM
 
@@ -119,26 +120,29 @@ class Listener_twilio:
         return self
 
 
+input_queue = queue.Queue()
+output_queue = queue.Queue()
+listener = Listener_twilio(input_queue)
+player = Player_twilio(output_queue)
+
+mouth = Mouth(player=player, device=device)
+ear = Ear(
+    model_id="openai/whisper-small.en",
+    device=device,
+    silence_seconds=2,
+    listener=listener,
+    listen_interruptions=False,
+)
+mouth.wait = False
+
+chatbot = Chatbot(sys_prompt=llama_sales)
+
+
 @app.websocket("/")
 async def websocket_endpoint(websocket: WebSocket):
     await websocket.accept()
     log("Connection accepted")
-    input_queue = queue.Queue()
-    output_queue = queue.Queue()
-    listener = Listener_twilio(input_queue)
-    player = Player_twilio(output_queue)
 
-    mouth = Mouth(player=player, device=device)
-    ear = Ear(
-        model_id="openai/whisper-base.en",
-        device=device,
-        silence_seconds=1,
-        listener=listener,
-        listen_interruptions=True,
-    )
-    load_dotenv()
-
-    chatbot = Chatbot(sys_prompt=llama_sales)
     threading.Thread(
         target=run_chat,
         args=(mouth, ear, chatbot, True, lambda x: False, "Hello, I am John."),
