@@ -7,7 +7,7 @@
 <h3>
 Have a natural voice conversation with an LLM
 
-[Homepage](https://www.finityalpha.com/OpenVoiceChat/) | [Documentation](https://www.finityalpha.com/OpenVoiceChat/home/) | [Discord](https://discord.gg/M5S2JksapH)
+[Homepage](https://www.finityalpha.com/OpenVoiceChat/) | [Documentation](https://www.finityalpha.com/OpenVoiceChat/docs/) | [Discord](https://discord.gg/M5S2JksapH)
 
 </h3>
 
