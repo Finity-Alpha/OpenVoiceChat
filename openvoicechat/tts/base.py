@@ -34,7 +34,7 @@ class BaseMouth:
         self.player = player
         self.seg = pysbd.Segmenter(language="en", clean=True)
         self.timing_path = timing_path
-        self.wait = True
+        self.wait = wait
 
     def run_tts(self, text: str) -> np.ndarray:
         """

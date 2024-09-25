@@ -14,6 +14,7 @@ class Mouth_xtts(BaseMouth):
         device="cpu",
         player=sd,
         speaker=None,
+        wait=True,
     ):
         from TTS.api import TTS
 
@@ -22,7 +23,9 @@ class Mouth_xtts(BaseMouth):
         self.model.to(device)
         self.speaker = speaker
         super().__init__(
-            sample_rate=self.model.synthesizer.output_sample_rate, player=player
+            sample_rate=self.model.synthesizer.output_sample_rate,
+            player=player,
+            wait=wait,
         )
 
     def run_tts(self, text):

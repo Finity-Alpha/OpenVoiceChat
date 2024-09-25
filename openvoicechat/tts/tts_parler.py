@@ -28,6 +28,7 @@ class Mouth_parler(BaseMouth):
         device="cpu",
         temperature=1.0,
         player=sd,
+        wait=True,
     ):
         from parler_tts import ParlerTTSForConditionalGeneration
         from transformers import AutoTokenizer
@@ -53,7 +54,9 @@ class Mouth_parler(BaseMouth):
             ).last_hidden_state
         )
         self.temperature = temperature
-        super().__init__(sample_rate=self.model.config.sampling_rate, player=player)
+        super().__init__(
+            sample_rate=self.model.config.sampling_rate, player=player, wait=wait
+        )
 
     def run_tts(self, text):
         prompt_input_ids = self.tokenizer(text, return_tensors="pt").input_ids.to(

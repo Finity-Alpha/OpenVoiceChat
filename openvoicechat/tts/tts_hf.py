@@ -14,13 +14,14 @@ class Mouth_hf(BaseMouth):
         device="cpu",
         forward_params=None,
         player=sd,
+        wait=True,
     ):
         from transformers import pipeline
 
         self.pipe = pipeline("text-to-speech", model=model_id, device=device)
         self.device = device
         self.forward_params = forward_params
-        super().__init__(sample_rate=self.pipe.sampling_rate, player=player)
+        super().__init__(sample_rate=self.pipe.sampling_rate, player=player, wait=wait)
 
     def run_tts(self, text):
         with torch.no_grad():
