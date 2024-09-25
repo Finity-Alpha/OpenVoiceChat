@@ -1,30 +1,58 @@
 # Installation
 
-### Requirements
-- portaudio by running `sudo apt-get install portaudio19-dev `
-- [torch](https://pytorch.org/get-started/locally/)
-- [torchaudio](https://pytorch.org/get-started/locally/)
-
-
-### Model specific requirements
-- [llama-cpp-python](https://llama-cpp-python.readthedocs.io/en/latest/)
-Make sure to install it using the correct CMAKE flag(s).
-- [onnxruntime-gpu](https://onnxruntime.ai/docs/install/)
-
-
 ### pip installation
 ```shell
 pip install openvoicechat
 ```
 
-### To install base and functionality specific packages
-```shell
-pip install openvoicechat[piper,openai,transformers]
-```
+### Other Requirements
+- portaudio
+- [torch](https://pytorch.org/get-started/locally/)
+- [torchaudio](https://pytorch.org/get-started/locally/)
 
-similarly "piper" and "openai" can be replaced by any of the following install options:
+### Install model specific packages
 
-- piper ([link](https://github.com/rhasspy/piper)) (does not work on windows)
-- openai ([link](https://github.com/openai/openai-python))
-- xtts ([link](https://github.com/coqui-ai/TTS))
-- transformers ([link](https://github.com/huggingface/transformers))
+| Category | Model Name           | Required Packages       |
+|----------|----------------------|-------------------------|
+| TTS      | Piper                | ```pip install piper-tts piper-phonemize```                 |
+| TTS      | xtts                 | `pip install TTS phonemizer`                  |
+| ALL      | HuggingFace     | `pip install transformers`          |
+| LLM      | Ollama               | `pip install ollama`                |
+| LLM      | OpenAI               | `pip install openai`                |
+
+
+Below you can select the required packages, and the `pip install` command will be generated automatically:
+
+<div id="pip-install-generator">
+    <h2>Select Required Packages</h2>
+    <div class="package-selection">
+        <input type="checkbox" id="transformers" value="transformers" onchange="generateCommand()">
+        <label for="transformers">HuggingFace (All) - transformers</label><br>
+        <input type="checkbox" id="ollama" value="ollama" onchange="generateCommand()">
+        <label for="ollama">Ollama - ollama</label><br>
+        <input type="checkbox" id="openai" value="openai" onchange="generateCommand()">
+        <label for="openai">OpenAI - openai</label><br>
+        <input type="checkbox" id="deepgram-sdk" value="deepgram-sdk" onchange="generateCommand()">
+        <label for="deepgram-sdk">Deepgram - deepgram-sdk</label><br>
+        <input type="checkbox" id="elevenlabs" value="elevenlabs" onchange="generateCommand()">
+        <label for="elevenlabs">ElevenLabs - elevenlabs</label><br>
+        <input type="checkbox" id="pip3r" value="pip3r" onchange="generateCommand()">
+        <label for="pip3r">Piper - pip3r</label><br>
+        <input type="checkbox" id="xtts" value="xtts" onchange="generateCommand()">
+        <label for="xtts">xtts - xtts</label><br>
+    </div>
+    <pre class="result"><code id="result">pip install <package_name></code></pre>
+</div>
+
+<script>
+    function generateCommand() {
+        let selectedPackages = [];
+        const checkboxes = document.querySelectorAll('input[type="checkbox"]:checked');
+        checkboxes.forEach((checkbox) => {
+            selectedPackages.push(checkbox.value);
+        });
+
+        let command = "pip install " + (selectedPackages.length > 0 ? selectedPackages.join(" ") : "<package_name>");
+        document.getElementById("result").innerText = command;
+    }
+</script>
