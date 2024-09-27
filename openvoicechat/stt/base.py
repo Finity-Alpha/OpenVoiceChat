@@ -25,6 +25,17 @@ class BaseEar:
         timing_path=TIMING_PATH,
         listen_interruptions=True,
     ):
+        """
+        Initializes the BaseEar class.
+        Args:
+            silence_seconds (float, optional): Number of seconds of silence to detect. Defaults to 2.
+            not_interrupt_words (list, optional): List of words that should not be considered as interruptions.
+            listener (object, optional): Listener object to receive the audio from. Defaults to None.
+            stream (bool, optional): Flag indicating whether to stream the audio or process it as a whole. Defaults to False.
+            timing_path (str, optional): Path to the timing file. Defaults to TIMING_PATH.
+            listen_interruptions (bool, optional): Flag indicating whether to listen for interruptions. Defaults to True.
+        """
+
         if not_interrupt_words is None:
             not_interrupt_words = [
                 "you",
