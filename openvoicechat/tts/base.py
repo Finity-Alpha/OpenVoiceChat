@@ -29,6 +29,14 @@ def remove_words_in_brackets_and_spaces(text):
 
 class BaseMouth:
     def __init__(self, sample_rate: int, player=sd, timing_path=TIMING_PATH, wait=True):
+        """
+        Initializes the BaseMouth class.
+        Args:
+            sample_rate (int): The sample rate of the audio.
+            player (object, optional): The audio player object. Defaults to sounddeivce.
+            timing_path (str, optional): The path to the timing file. Defaults to TIMING_PATH.
+            wait (bool, optional): Whether to wait for the audio to finish playing. Defaults to True.
+        """
         self.sample_rate = sample_rate
         self.interrupted = ""
         self.player = player
