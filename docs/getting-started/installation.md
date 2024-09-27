@@ -14,11 +14,11 @@ pip install openvoicechat
 
 | Category | Model Name           | Required Packages       |
 |----------|----------------------|-------------------------|
-| TTS      | Piper                | ```pip install piper-tts piper-phonemize```                 |
-| TTS      | xtts                 | `pip install TTS phonemizer`                  |
-| ALL      | HuggingFace     | `pip install transformers`          |
-| LLM      | Ollama               | `pip install ollama`                |
-| LLM      | OpenAI               | `pip install openai`                |
+| TTS      | [Piper](https://github.com/rhasspy/piper.git)                | ```pip install piper-tts piper-phonemize```                 |
+| TTS      | [xtts - Coqui](https://github.com/coqui-ai/TTS)                 | `pip install TTS phonemizer`                  |
+| ALL      | [transformers - HuggingFace](https://huggingface.co/docs/transformers/index)     | `pip install transformers`          |
+| LLM      | [Ollama](https://ollama.com/)               | `pip install ollama`                |
+| LLM      | [OpenAI](https://github.com/openai/openai-python)               | `pip install openai`                |
 
 
 Below you can select the required packages, and the `pip install` command will be generated automatically:
@@ -27,19 +27,15 @@ Below you can select the required packages, and the `pip install` command will b
     <h2>Select Required Packages</h2>
     <div class="package-selection">
         <input type="checkbox" id="transformers" value="transformers" onchange="generateCommand()">
-        <label for="transformers">HuggingFace (All) - transformers</label><br>
+        <label for="transformers">HuggingFace - transformers</label><br>
         <input type="checkbox" id="ollama" value="ollama" onchange="generateCommand()">
-        <label for="ollama">Ollama - ollama</label><br>
+        <label for="ollama">Ollama</label><br>
         <input type="checkbox" id="openai" value="openai" onchange="generateCommand()">
-        <label for="openai">OpenAI - openai</label><br>
-        <input type="checkbox" id="deepgram-sdk" value="deepgram-sdk" onchange="generateCommand()">
-        <label for="deepgram-sdk">Deepgram - deepgram-sdk</label><br>
-        <input type="checkbox" id="elevenlabs" value="elevenlabs" onchange="generateCommand()">
-        <label for="elevenlabs">ElevenLabs - elevenlabs</label><br>
-        <input type="checkbox" id="pip3r" value="pip3r" onchange="generateCommand()">
-        <label for="pip3r">Piper - pip3r</label><br>
-        <input type="checkbox" id="xtts" value="xtts" onchange="generateCommand()">
-        <label for="xtts">xtts - xtts</label><br>
+        <label for="openai">OpenAI</label><br>
+        <input type="checkbox" id="piper" value="piper-tts piper-phonemize" onchange="generateCommand()">
+        <label for="piper">Piper-tts</label><br>
+        <input type="checkbox" id="xtts" value="TTS phonemizer" onchange="generateCommand()">
+        <label for="xtts">xtts</label><br>
     </div>
     <pre class="result"><code id="result">pip install <package_name></code></pre>
 </div>
@@ -51,7 +47,8 @@ Below you can select the required packages, and the `pip install` command will b
         checkboxes.forEach((checkbox) => {
             selectedPackages.push(checkbox.value);
         });
-
+        selectedPackages.shift();
+        console.log(selectedPackages);
         let command = "pip install " + (selectedPackages.length > 0 ? selectedPackages.join(" ") : "<package_name>");
         document.getElementById("result").innerText = command;
     }
