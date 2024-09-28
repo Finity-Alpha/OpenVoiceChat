@@ -10,29 +10,29 @@ import queue
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
-from openvoicechat.utils import Listener_ws, Player_ws
+from openvoicechat.player import Player_ws
+from openvoicechat.listener import Listener_ws
 import torch
 
 app = FastAPI()
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
-device = 'cuda' if torch.cuda.is_available() else 'cpu'
+device = "cuda" if torch.cuda.is_available() else "cpu"
 
 
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
     await websocket.accept()
-    print('connected')
+    print("connected")
 
     input_queue = queue.Queue()
     output_queue = queue.Queue()
     listener = Listener_ws(input_queue)
     player = Player_ws(output_queue)
 
-    mouth = Mouth(player=player, voice_id='IKne3meq5aSn9XLyUdCD')
-    ear = Ear(device=device, silence_seconds=2,
-              listener=listener)
+    mouth = Mouth(player=player, voice_id="IKne3meq5aSn9XLyUdCD")
+    ear = Ear(device=device, silence_seconds=2, listener=listener)
     load_dotenv()
 
     chatbot = Chatbot_gpt(sys_prompt=llama_sales)
@@ -46,14 +46,15 @@ async def websocket_endpoint(websocket: WebSocket):
             if not output_queue.empty():
                 response_data = output_queue.get_nowait()
             else:
-                response_data = 'none'.encode()
+                response_data = "none".encode()
             await websocket.send_bytes(response_data)
     except WebSocketDisconnect:
         print("WebSocket disconnected")
         del mouth
         del ear
-        #clear cuda cache
+        # clear cuda cache
         import torch
+
         torch.cuda.empty_cache()
     finally:
         await websocket.close()
@@ -61,9 +62,14 @@ async def websocket_endpoint(websocket: WebSocket):
 
 @app.get("/")
 def read_root():
-    return FileResponse('static/stream_audio.html')
+    return FileResponse("static/stream_audio.html")
 
 
 if __name__ == "__main__":
-    uvicorn.run(app, host='0.0.0.0', port=8000,
-                ssl_keyfile="localhost+2-key.pem", ssl_certfile="localhost+2.pem")
+    uvicorn.run(
+        app,
+        host="0.0.0.0",
+        port=8000,
+        ssl_keyfile="localhost+2-key.pem",
+        ssl_certfile="localhost+2.pem",
+    )
