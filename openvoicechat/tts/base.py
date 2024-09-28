@@ -31,11 +31,11 @@ class BaseMouth:
     def __init__(self, sample_rate: int, player=sd, timing_path=TIMING_PATH, wait=True):
         """
         Initializes the BaseMouth class.
-        Args:
-            sample_rate (int): The sample rate of the audio.
-            player (object, optional): The audio player object. Defaults to sounddeivce.
-            timing_path (str, optional): The path to the timing file. Defaults to TIMING_PATH.
-            wait (bool, optional): Whether to wait for the audio to finish playing. Defaults to True.
+
+        :param sample_rate: The sample rate of the audio.
+        :param player: The audio player object. Defaults to sounddevice.
+        :param timing_path: The path to the timing file. Defaults to TIMING_PATH.
+        :param wait: Whether to wait for the audio to finish playing. Defaults to True.
         """
         self.sample_rate = sample_rate
         self.interrupted = ""
@@ -53,8 +53,8 @@ class BaseMouth:
 
     def say_text(self, text: str):
         """
-        :param text: The text to synthesize speech for
         calls run_tts and plays the audio using the player.
+        :param text: The text to synthesize speech for
         """
         output = self.run_tts(text)
         self.player.play(output, samplerate=self.sample_rate)
@@ -62,9 +62,9 @@ class BaseMouth:
 
     def say(self, audio_queue: queue.Queue, listen_interruption_func: Callable):
         """
+        Plays the audios in the queue using the player. Stops if interruption occurred.
         :param audio_queue: The queue where the audio is stored for it to be played
         :param listen_interruption_func: callable function from the ear class.
-        Plays the audios in the queue using the player. Stops if interruption occurred.
         """
         self.interrupted = ""
         while True:
@@ -86,10 +86,11 @@ class BaseMouth:
 
     def say_multiple(self, text: str, listen_interruption_func: Callable):
         """
-        :param text: Input text to synthesize
-        :param listen_interruption_func: callable function from the ear class
         Splits the text into sentences. Then plays the sentences one by one
         using run_tts() and say()
+
+        :param text: Input text to synthesize
+        :param listen_interruption_func: callable function from the ear class
         """
         sentences = self.seg.segment(text)
         print(sentences)
@@ -124,12 +125,14 @@ class BaseMouth:
         audio_queue: queue.Queue = None,
     ):
         """
+        Receives text from the text_queue. As soon as a sentence is made run_tts is called to
+        synthesize its speech and sent to the audio_queue for it to be played.
+
         :param text_queue: The queue where the llm adds the predicted tokens
         :param listen_interruption_func: callable function from the ear class
         :param interrupt_queue: The queue where True is put when interruption occurred.
         :param audio_queue: The queue where the audio to be played is placed
-        Receives text from the text_queue. As soon as a sentence is made run_tts is called to
-        synthesize its speech and sent to the audio_queue for it to be played.
+
         """
         response = ""
         all_response = []

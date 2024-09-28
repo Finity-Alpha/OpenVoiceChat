@@ -32,16 +32,15 @@ def run_chat(
 ):
     """
     Runs a chat session between a user and a bot.
-
-    Parameters: mouth (object): An object responsible for the bot's speech output. ear (object): An object
-    responsible for listening to the user's input. chatbot (object): An object responsible for generating the bot's
-    responses. verbose (bool, optional): If True, prints the user's input and the bot's responses. Defaults to True.
-    stopping_criteria (function, optional): A function that determines when the chat should stop. It takes the bot's
-    response as input and returns a boolean. Defaults to a function that always returns False.
-
     The function works by continuously listening to the user's input and generating the bot's responses in separate
     threads. If the user interrupts the bot's speech, the remaining part of the bot's response is saved and prepended
     to the user's next input. The chat stops when the stopping_criteria function returns True for a bot's response.
+
+    :param mouth: An object responsible for the bot's speech output.
+    :param ear: An object responsible for listening to the user's input.
+    :param chatbot: An object responsible for generating the bot's responses.
+    :param verbose: If True, prints the user's input and the bot's responses. Defaults to True.
+    :param stopping_criteria: A function that determines when the chat should stop. It takes the bot's response as input and returns a boolean. Defaults to a function that always returns False.
     """
     if TIMING:
         pd.DataFrame(columns=["Model", "Time Taken"]).to_csv(timing_path, index=False)

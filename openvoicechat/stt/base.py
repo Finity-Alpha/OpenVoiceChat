@@ -27,13 +27,19 @@ class BaseEar:
     ):
         """
         Initializes the BaseEar class.
-        Args:
-            silence_seconds (float, optional): Number of seconds of silence to detect. Defaults to 2.
-            not_interrupt_words (list, optional): List of words that should not be considered as interruptions.
-            listener (object, optional): Listener object to receive the audio from. Defaults to None.
-            stream (bool, optional): Flag indicating whether to stream the audio or process it as a whole. Defaults to False.
-            timing_path (str, optional): Path to the timing file. Defaults to TIMING_PATH.
-            listen_interruptions (bool, optional): Flag indicating whether to listen for interruptions. Defaults to True.
+
+        :param silence_seconds: Number of seconds of silence to detect. Defaults to 2.
+        :type silence_seconds: float, optional
+        :param not_interrupt_words: List of words that should not be considered as interruptions.
+        :type not_interrupt_words: list, optional
+        :param listener: Listener object to receive the audio from. Defaults to None.
+        :type listener: object, optional
+        :param stream: Flag indicating whether to stream the audio or process it as a whole. Defaults to False.
+        :type stream: bool, optional
+        :param timing_path: Path to the timing file. Defaults to TIMING_PATH.
+        :type timing_path: str, optional
+        :param listen_interruptions: Flag indicating whether to listen for interruptions. Defaults to True.
+        :type listen_interruptions: bool, optional
         """
 
         if not_interrupt_words is None:
@@ -58,7 +64,7 @@ class BaseEar:
 
     def transcribe(self, input_audio: np.ndarray) -> str:
         """
-
+        Given an audio input, return the transcription
         :param input_audio:
         :return: transcription
         """
@@ -98,8 +104,8 @@ class BaseEar:
 
     def _listen(self) -> str:
         """
-        :return: transcription
         records audio using record_user and returns its transcription
+        :return: transcription
         """
         import pysbd
 
@@ -133,8 +139,8 @@ class BaseEar:
 
     def _listen_stream(self) -> str:
         """
-        :return: transcription
         records audio using record_user and returns its transcription
+        :return: transcription
         """
 
         audio_queue = Queue()
@@ -180,8 +186,8 @@ class BaseEar:
 
     def listen(self) -> str:
         """
-        :return: transcription
         records audio using record_user and returns its transcription
+        :return: transcription
         """
         if self.stream:
             return self._listen_stream()
