@@ -2,7 +2,7 @@
 Tips and tricks for getting the most out of OpenVoiceChat.
 
 ### [Key words]
-Text surrounded in square brackets are not spoken by the tts model. This form of "tokens" can be used for stopping criteria, special commands, or other purposes.
+Text surrounded in square brackets is not spoken by the tts model. This form of "tokens" can be used for stopping criteria, special commands, or other purposes.
 
 ### Stopping criteria
 
