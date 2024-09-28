@@ -13,6 +13,7 @@ nav:
     - LLM Classes: llm_classes.md
     - Utils: utils.md
   - Custom Models: Adding_models.md
+  - Advanced Usage: Advanced_Usage.md
 theme:
     name: 'material'
     palette:
