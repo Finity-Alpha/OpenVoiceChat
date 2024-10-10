@@ -1,18 +1,18 @@
-## NOTE: Not a sink or unpack audio issue. Seems like a not ready problem inside recv_audio in pycord.
-
-
 import discord
 import os
 from dotenv import load_dotenv
 import threading
-from openvoicechat.stt.stt_hf import Ear_hf
+
+# from openvoicechat.stt.stt_hf import Ear_hf
 import numpy as np
 import librosa
+import sounddevice as sd
+import time
 
 
 load_dotenv()
 
-ear = Ear_hf(device="cuda")
+# ear = Ear_hf(device="cuda")
 
 bot = discord.Bot()
 
@@ -37,52 +37,15 @@ connections = {}
 sink = discord.sinks.WaveSink()
 
 
-def unpack_audio(self, data):
-    """Takes an audio packet received from Discord and decodes it into pcm audio data.
-    If there are no users talking in the channel, `None` will be returned.
-
-    You must be connected to receive audio.
-
-    .. versionadded:: 2.0
-
-    Parameters
-    ----------
-    data: :class:`bytes`
-        Bytes received by Discord via the UDP connection used for sending and receiving voice data.
-    """
-    if 200 <= data[1] <= 204:
-        # RTCP received.
-        # RTCP provides information about the connection
-        # as opposed to actual audio data, so it's not
-        # important at the moment.
-        return
-    if self.paused:
-        return
-
-    data = discord.sinks.RawData(data, self)
-
-    self.decoder.decode(data)
-
-
 async def record_callback(
     this: discord.sinks, channel: discord.TextChannel = None, *args
 ):
-    print("Echo ended.")
-
-
-def print_transcription(sink: discord.sinks.WaveSink):
-    print("running print")
-    while True:
-        audio_files = sink.audio_data.values()
-        for file in audio_files:
-            file = file.read()
-            print(len(file), type(file))
-            audio_arr = np.frombuffer(b"".join(file), dtype=np.int16)
-            audio_arr = audio_arr / (1 << 15)
-            audio_arr = audio_arr.astype(np.float32)
-            audio_arr = librosa.resample(audio_arr, orig_sr=48_000, target_sr=16_000)
-            text = ear.transcribe(audio_arr)
-            print(text)
+    audio_files = list(this.audio_data.values())
+    if len(audio_files) > 0:
+        audio_files[0].file.seek(0)
+        file = audio_files[0].file.read()
+        audio_arr = np.frombuffer(file, dtype=np.int32)
+        sd.play(audio_arr, 48_000, blocking=True)
 
 
 @bot.command()
@@ -95,13 +58,13 @@ async def join_voice_channel(ctx: discord.ApplicationContext):
         await ctx.followup.send("You aren't in a voice channel!")
 
     vc = await voice.channel.connect()  # Connect to the voice channel the author is in.
-    vc.unpack_audio = unpack_audio.__get__(vc)
     print("connected")
 
     vc.start_recording(
         sink=sink,
         callback=record_callback,
     )
+    print(vc.decoder.SAMPLING_RATE)
     print("started recording")
     await ctx.followup.send(f"Connected to channel {voice.channel.name}")
 
@@ -111,15 +74,20 @@ async def join_voice_channel(ctx: discord.ApplicationContext):
     # start print transcription thread
     print("starting loop")
     while True:
-        try:
-            audio_files = list(sink.audio_data.values())
-            if len(audio_files) > 0:
-                audio_files[0].file.seek(0)
-                # print(len(audio_files[0].file.read()))
-            else:
-                print("no files")
-        except KeyboardInterrupt:
-            break
+        audio_files = list(sink.audio_data.values())
+        if len(audio_files) > 0:
+            audio_files[0].file.seek(0)
+            # print(len(audio_files[0].file.read()))
+            file = audio_files[0].file.read()
+            audio_arr = np.frombuffer(file, dtype=np.int32)
+            if librosa.get_duration(y=audio_arr, sr=48_000) > 5:
+                break
+            # save audio to buffer
+        else:
+            pass
+
+    print("loop ended")
+    # save audio to file
 
     try:
         vc.stop_recording()  # Stop recording if doing so
