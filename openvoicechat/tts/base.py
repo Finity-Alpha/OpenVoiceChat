@@ -150,7 +150,16 @@ class BaseMouth:
         )
         say_thread.start()
         while True:
+
             text = text_queue.get()
+            while not text_queue.empty():
+                new_text = text_queue.get()
+                if new_text is not None:
+                    text += new_text
+                else:
+                    text_queue.put(None)
+                    break
+
             if text is None:
                 sentence = response
             else:
