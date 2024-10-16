@@ -1,4 +1,4 @@
-from openvoicechat.tts.tts_xtts import Mouth_xtts
+from openvoicechat.tts.tts_hf import Mouth_hf
 from openvoicechat.llm.llm_ollama import Chatbot_ollama
 from openvoicechat.stt.stt_hf import Ear_hf
 from openvoicechat.utils import run_chat
@@ -29,7 +29,10 @@ if __name__ == "__main__":
 
     chatbot = Chatbot_ollama(sys_prompt=llama_sales, model="qwen2:0.5b")
 
-    mouth = Mouth_xtts(device=device)
+    mouth = Mouth_hf(
+        device=device,
+        forward_params={"speaker_id": 10},
+    )
 
     run_chat(
         mouth, ear, chatbot, verbose=True, stopping_criteria=lambda x: "[END]" in x

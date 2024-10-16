@@ -8,3 +8,6 @@ fastapi
 pandas
 pysbd
 uvicorn
+phonemizer
+transformers
+ollama

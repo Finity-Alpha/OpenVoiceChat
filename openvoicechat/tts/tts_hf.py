@@ -28,7 +28,10 @@ class Mouth_hf(BaseMouth):
             # inputs = self.tokenizer(text, return_tensors="pt")
             # inputs = inputs.to(self.device)
             # output = self.model(**inputs, speaker_id=self.speaker_id).waveform[0].to('cpu')
-            output = self.pipe(text, forward_params=self.forward_params)
+            if self.forward_params:
+                output = self.pipe(text, forward_params=self.forward_params)
+            else:
+                output = self.pipe(text)
             self.sample_rate = output["sampling_rate"]
             return output["audio"][0]
 

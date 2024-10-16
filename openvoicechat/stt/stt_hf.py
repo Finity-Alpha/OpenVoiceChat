@@ -15,6 +15,7 @@ class Ear_hf(BaseEar):
         generate_kwargs=None,
         listener=None,
         listen_interruptions=True,
+        language="en",
     ):
         super().__init__(
             silence_seconds,
