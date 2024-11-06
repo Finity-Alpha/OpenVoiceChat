@@ -1,21 +1,8 @@
 import threading
 import queue
-import numpy as np
-import os
-import pandas as pd
 from dotenv import load_dotenv
 
 load_dotenv()
-
-TIMING = int(os.environ.get("TIMING", 0))
-LOGGING = int(os.environ.get("LOGGING", 0))
-
-timing_path = os.environ.get("TIMING_PATH", "times.csv")
-
-
-def log_to_file(file_path, text):
-    with open(file_path, "a") as file:
-        file.write(text + "\n")
 
 
 def run_chat(
@@ -25,7 +12,6 @@ def run_chat(
     verbose=True,
     stopping_criteria=lambda x: False,
     starting_message="",
-    logging_path="chat_log.txt",
 ):
     """
     Runs a chat session between a user and a bot.
@@ -36,11 +22,8 @@ def run_chat(
     :param mouth: A mouth object.
     :param ear: An ear object.
     :param chatbot: A chatbot object.
-    :param verbose: If True, prints the user's input and the bot's responses. Defaults to True.
     :param stopping_criteria: A function that determines when the chat should stop. It takes the bot's response as input and returns a boolean. Defaults to a function that always returns False.
     """
-    if TIMING:
-        pd.DataFrame(columns=["Model", "Time Taken"]).to_csv(timing_path, index=False)
 
     if starting_message:
         mouth.say_text(starting_message)
@@ -51,8 +34,6 @@ def run_chat(
 
         if verbose:
             print("USER: ", user_input)
-        if LOGGING:
-            log_to_file(logging_path, "USER: " + user_input)
 
         llm_output_queue = queue.Queue()
         interrupt_queue = queue.Queue()
@@ -80,5 +61,3 @@ def run_chat(
             break
         if verbose:
             print("BOT: ", res)
-        if LOGGING:
-            log_to_file(logging_path, "BOT: " + res)

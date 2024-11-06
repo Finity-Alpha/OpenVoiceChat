@@ -1,19 +1,13 @@
 import sounddevice as sd
 import re
-from time import monotonic
 import queue
 import threading
 from typing import Callable
 import numpy as np
-import pandas as pd
-import os
 import pysbd
 from dotenv import load_dotenv
 
 load_dotenv()
-
-TIMING = int(os.environ.get("TIMING", 0))
-TIMING_PATH = os.environ.get("TIMING_PATH", "times.csv")
 
 
 def remove_words_in_brackets_and_spaces(text):
@@ -28,20 +22,18 @@ def remove_words_in_brackets_and_spaces(text):
 
 
 class BaseMouth:
-    def __init__(self, sample_rate: int, player=sd, timing_path=TIMING_PATH, wait=True):
+    def __init__(self, sample_rate: int, player=sd, wait=True):
         """
         Initializes the BaseMouth class.
 
         :param sample_rate: The sample rate of the audio.
         :param player: The audio player object. Defaults to sounddevice.
-        :param timing_path: The path to the timing file. Defaults to TIMING_PATH.
         :param wait: Whether to wait for the audio to finish playing. Defaults to True.
         """
         self.sample_rate = sample_rate
         self.interrupted = ""
         self.player = player
         self.seg = pysbd.Segmenter(language="en", clean=True)
-        self.timing_path = timing_path
         self.wait = wait
 
     def run_tts(self, text: str) -> np.ndarray:
@@ -141,10 +133,6 @@ class BaseMouth:
         if audio_queue is None:
             audio_queue = queue.Queue()
 
-        first_sentence = True
-        first_audio = True
-        llm_start = monotonic()
-
         say_thread = threading.Thread(
             target=self.say, args=(audio_queue, listen_interruption_func)
         )
@@ -168,15 +156,6 @@ class BaseMouth:
                 if len(sentences) > 1:
                     sentence = sentences[0]
                     response = " ".join([s for s in sentences[1:] if s != "."])
-                    if first_sentence and TIMING:
-                        llm_end = monotonic()
-                        time_diff = llm_end - llm_start
-                        new_row = {"Model": "LLM", "Time Taken": time_diff}
-                        new_row_df = pd.DataFrame([new_row])
-                        new_row_df.to_csv(
-                            self.timing_path, mode="a", header=False, index=False
-                        )
-                        first_sentence = False
                 else:
                     continue
             if sentence.strip() != "":
@@ -184,19 +163,7 @@ class BaseMouth:
                 if (
                     clean_sentence.strip() != ""
                 ):  # sentence only contains words in brackets
-                    if TIMING and first_audio:
-                        tts_start = monotonic()
-                        output = self.run_tts(clean_sentence)
-                        tts_end = monotonic()
-                        time_diff = tts_end - tts_start
-                        new_row = {"Model": "TTS", "Time Taken": time_diff}
-                        new_row_df = pd.DataFrame([new_row])
-                        new_row_df.to_csv(
-                            self.timing_path, mode="a", header=False, index=False
-                        )
-                        first_audio = False
-                    else:
-                        output = self.run_tts(clean_sentence)
+                    output = self.run_tts(clean_sentence)
                     audio_queue.put((output, clean_sentence))
                     interrupt_text_list.append(clean_sentence)
                 all_response.append(sentence)

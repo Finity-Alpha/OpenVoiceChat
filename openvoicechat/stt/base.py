@@ -1,18 +1,13 @@
 from .utils import record_user, record_interruption, record_user_stream
 from .vad import VoiceActivityDetection
 import re
-from time import monotonic
 import numpy as np
 from threading import Thread
 from queue import Queue
-import pandas as pd
 import os
 from dotenv import load_dotenv
 
 load_dotenv()
-
-TIMING = int(os.environ.get("TIMING", 0))
-TIMING_PATH = os.environ.get("TIMING_PATH", "times.csv")
 
 
 class BaseEar:
@@ -22,7 +17,6 @@ class BaseEar:
         not_interrupt_words=None,
         listener=None,
         stream=False,
-        timing_path=TIMING_PATH,
         listen_interruptions=True,
     ):
         """
@@ -36,8 +30,6 @@ class BaseEar:
         :type listener: object, optional
         :param stream: Flag indicating whether to stream the audio or process it as a whole. Defaults to False.
         :type stream: bool, optional
-        :param timing_path: Path to the timing file. Defaults to TIMING_PATH.
-        :type timing_path: str, optional
         :param listen_interruptions: Flag indicating whether to listen for interruptions. Defaults to True.
         :type listen_interruptions: bool, optional
         """
@@ -54,13 +46,7 @@ class BaseEar:
         self.vad = VoiceActivityDetection()
         self.listener = listener
         self.stream = stream
-        self.timing_path = timing_path
         self.listen_interruptions = listen_interruptions
-        if TIMING:
-            if not os.path.exists(self.timing_path):
-                columns = ["Model", "Time Taken"]
-                df = pd.DataFrame(columns=columns)
-                df.to_csv(self.timing_path, index=False)
 
     def transcribe(self, input_audio: np.ndarray) -> str:
         """
@@ -118,17 +104,7 @@ class BaseEar:
                 self.silence_seconds, self.vad, self.listener, started=not first
             )
             audio = np.concatenate((audio, new_audio), 0)
-            if TIMING and first:
-                start_time = monotonic()
-
-                text = self.transcribe(audio)
-
-                stop_time = monotonic()
-                time_diff = stop_time - start_time
-                new_row_df = pd.DataFrame([{"Model": "STT", "Time Taken": time_diff}])
-                new_row_df.to_csv(self.timing_path, mode="a", header=False, index=False)
-            else:
-                text = self.transcribe(audio)
+            text = self.transcribe(audio)
             first = False
             seg = pysbd.Segmenter(language="en", clean=False)
             if len(seg.segment(text + " .")) > 1:
@@ -157,29 +133,12 @@ class BaseEar:
         audio_thread.start()
         transcription_thread.start()
 
-        if TIMING:
-            audio_thread.join()
-            start_time = monotonic()
-
-            transcription_thread.join()
-            text = ""
-            while True:
-                _ = transcription_queue.get()
-                if _ is None:
-                    break
-                text += _ + " "
-
-            stop_time = monotonic()
-            time_diff = stop_time - start_time
-            new_row_df = pd.DataFrame([{"Model": "STT", "Time Taken": time_diff}])
-            new_row_df.to_csv(self.timing_path, mode="a", header=False, index=False)
-        else:
-            text = ""
-            while True:
-                _ = transcription_queue.get()
-                if _ is None:
-                    break
-                text += _ + " "
+        text = ""
+        while True:
+            _ = transcription_queue.get()
+            if _ is None:
+                break
+            text += _ + " "
         audio_thread.join()
         transcription_thread.join()
         return text
