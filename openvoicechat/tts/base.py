@@ -109,6 +109,17 @@ class BaseMouth:
         interrupt_queue.put(interrupt_transcription)
         return responses_list
 
+    def _get_all_text(self, text_queue):
+        text = text_queue.get()
+        while not text_queue.empty():
+            new_text = text_queue.get()
+            if new_text is not None:
+                text += new_text
+            else:
+                text_queue.put(None)
+                break
+        return text
+
     def say_multiple_stream(
         self,
         text_queue: queue.Queue,
@@ -132,32 +143,27 @@ class BaseMouth:
 
         if audio_queue is None:
             audio_queue = queue.Queue()
-
         say_thread = threading.Thread(
             target=self.say, args=(audio_queue, listen_interruption_func)
         )
         say_thread.start()
-        while True:
+        text = ""
 
-            text = text_queue.get()
-            while not text_queue.empty():
-                new_text = text_queue.get()
-                if new_text is not None:
-                    text += new_text
-                else:
-                    text_queue.put(None)
-                    break
+        while text is not None:
+            text = self._get_all_text(text_queue)
 
             if text is None:
                 sentence = response
             else:
                 response += text
                 sentences = self.seg.segment(response)
+                # if there are multiple sentences we split and play the first one
                 if len(sentences) > 1:
                     sentence = sentences[0]
                     response = " ".join([s for s in sentences[1:] if s != "."])
                 else:
                     continue
+
             if sentence.strip() != "":
                 clean_sentence = remove_words_in_brackets_and_spaces(sentence).strip()
                 if (
@@ -167,14 +173,14 @@ class BaseMouth:
                     audio_queue.put((output, clean_sentence))
                     interrupt_text_list.append(clean_sentence)
                 all_response.append(sentence)
+            # if interruption occurred, handle it
             if self.interrupted:
                 all_response = self._handle_interruption(
                     interrupt_text_list, interrupt_queue
                 )
                 self.interrupted = ""
                 break
-            if text is None:
-                break
+
         audio_queue.put((None, ""))
 
         say_thread.join()
