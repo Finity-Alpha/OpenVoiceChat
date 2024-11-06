@@ -62,7 +62,7 @@ def record_interruption(vad, record_seconds=100, streamer=None):
     return None
 
 
-def record_user(silence_seconds, vad, streamer=None, started=False):
+def record_user(silence_seconds, vad, streamer=None, started=False, logger=None):
     frames = []
 
     if streamer is None:
@@ -74,7 +74,8 @@ def record_user(silence_seconds, vad, streamer=None, started=False):
         CHUNK = streamer.CHUNK
         RATE = streamer.RATE
     one_second_iters = int(RATE / CHUNK)
-    print("* recording")
+    if logger:
+        logger.info("user recording started", extra={"details": "record_user"})
 
     while True:
         data = stream.read(CHUNK)
@@ -87,12 +88,13 @@ def record_user(silence_seconds, vad, streamer=None, started=False):
         )
         if not started and contains_speech:
             started = True
-            print("*listening to speech*")
+            if logger:
+                logger.info("speech detected", extra={"details": "record_user"})
         if started and contains_speech is False:
             break
     stream.close()
-
-    print("* done recording")
+    if logger:
+        logger.info("user recording ended", extra={"details": "record_user"})
 
     # creating a np array from buffer
     frames = np.frombuffer(b"".join(frames), dtype=np.int16)
