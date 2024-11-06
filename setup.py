@@ -10,7 +10,7 @@ setup(
     "opensource, highly extensible and easy to use alternative to the proprietary solutions.",
     url="https://www.finityalpha.com/OpenVoiceChat/",
     name="openvoicechat",
-    version="0.2.0",
+    version="0.2.4",
     packages=find_packages(),
     install_requires=[
         "sounddevice",
