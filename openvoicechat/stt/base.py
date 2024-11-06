@@ -90,9 +90,11 @@ class BaseEar:
             text += _ + " "
         return text
 
-    def _log_event(self, event: str, details: str):
+    def _log_event(self, event: str, details: str, further: str = ""):
         if self.logger:
-            self.logger.info(event, extra={"details": details})
+            self.logger.info(
+                event, extra={"details": details, "further": f'"{further}"'}
+            )
 
     def _listen(self) -> str:
         """
@@ -121,18 +123,19 @@ class BaseEar:
 
             self._log_event("transcribing", "STT")
             text = self.transcribe(audio)
-            self._log_event("transcribed", "STT, " + text)
+            self._log_event("transcribed", "STT", text)
 
-            self._log_event("segmenting", "STT, " + text)
+            self._log_event("segmenting", "STT", text)
             first = False
             if len(seg.segment(text + " .")) > 1:
                 sentence_finished = True
-                self._log_event("sentence boundary detected", "STT, " + text)
+                self._log_event("sentence boundary detected", "STT", text)
             else:
                 n -= 1
                 self._log_event(
                     "no sentence boundary detected",
-                    "STT, " + text + ", tries left: " + str(n),
+                    "STT",
+                    text + ". tries left: " + str(n),
                 )
         return text
 
@@ -189,22 +192,27 @@ class BaseEar:
             return False
         while record_seconds > 0:
             interruption_audio = record_interruption(
-                self.vad, record_seconds, streamer=self.listener
+                self.vad, record_seconds, streamer=self.listener, logger=self.logger
             )
             # duration of interruption audio
             if interruption_audio is None:
                 return ""
             else:
                 duration = len(interruption_audio) / 16_000
+                self._log_event(
+                    "transcribing interruption", "STT", f"{duration} seconds"
+                )
                 if self.stream:
                     text = self._sim_transcribe_stream(interruption_audio)
                 else:
                     text = self.transcribe(interruption_audio)
+                self._log_event("interruption transcribed", "STT", text)
                 # remove any punctuation using re
                 text = re.sub(r"[^\w\s]", "", text)
                 text = text.lower()
                 text = text.strip()
                 if text in self.not_interrupt_words:
+                    self._log_event("not interruption", "STT", text)
                     record_seconds -= duration
                 else:
                     return text

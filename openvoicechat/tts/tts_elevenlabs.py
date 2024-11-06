@@ -19,6 +19,7 @@ class Mouth_elevenlabs(BaseMouth):
         api_key="",
         player=sd,
         wait=True,
+        logger=None,
     ):
         self.model_id = model_id
         self.voice_id = voice_id
@@ -26,7 +27,7 @@ class Mouth_elevenlabs(BaseMouth):
             load_dotenv()
             api_key = os.getenv("ELEVENLABS_API_KEY")
         self.api_key = api_key
-        super().__init__(sample_rate=44100, player=player, wait=wait)
+        super().__init__(sample_rate=44100, player=player, wait=wait, logger=logger)
 
     def run_tts(self, text):
         url = f"https://api.elevenlabs.io/v1/text-to-speech/{self.voice_id}?optimize_streaming_latency=4"

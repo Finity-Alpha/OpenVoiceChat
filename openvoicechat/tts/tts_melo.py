@@ -17,6 +17,7 @@ class Mouth_melo(BaseMouth):
         speed=1.2,
         player=sd,
         speaker="EN-US",
+        logger=None,
     ):
         from melo.api import TTS
 
@@ -26,7 +27,7 @@ class Mouth_melo(BaseMouth):
         self.model = TTS(language=language, device=device)
         self.speaker_ids = self.model.hps.data.spk2id
 
-        super().__init__(sample_rate=44100, player=player)
+        super().__init__(sample_rate=44100, player=player, logger=logger)
 
     def run_tts(self, text):
         if self.speaker in self.speaker_ids:

@@ -5,7 +5,9 @@ else:
 
 
 class Chatbot_ollama(BaseChatbot):
-    def __init__(self, sys_prompt="", model="llama3"):
+    def __init__(self, sys_prompt="", model="llama3", logger=None):
+        super().__init__(logger=logger)
+
         import ollama
 
         ollama.pull(model)

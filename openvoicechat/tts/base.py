@@ -22,7 +22,7 @@ def remove_words_in_brackets_and_spaces(text):
 
 
 class BaseMouth:
-    def __init__(self, sample_rate: int, player=sd, wait=True):
+    def __init__(self, sample_rate: int, player=sd, wait=True, logger=None):
         """
         Initializes the BaseMouth class.
 
@@ -35,6 +35,7 @@ class BaseMouth:
         self.player = player
         self.seg = pysbd.Segmenter(language="en", clean=True)
         self.wait = wait
+        self.logger = logger
 
     def run_tts(self, text: str) -> np.ndarray:
         """
@@ -66,9 +67,11 @@ class BaseMouth:
                 break
             # get the duration of audio
             duration = len(output) / self.sample_rate
+            self._log_event("playing audio", "TTS", f"{duration} seconds")
             self.player.play(output, samplerate=self.sample_rate)
             interruption = listen_interruption_func(duration)
             if interruption:
+                self._log_event("audio interrupted", f"TTS")
                 self.player.stop()
                 self.interrupted = (interruption, text)
                 break
@@ -101,6 +104,7 @@ class BaseMouth:
 
     def _handle_interruption(self, responses_list, interrupt_queue):
         interrupt_transcription, interrupt_text = self.interrupted
+        self._log_event("interruption detected", "TTS", interrupt_transcription)
         idx = responses_list.index(interrupt_text)
         assert (
             idx != -1
@@ -119,6 +123,12 @@ class BaseMouth:
                 text_queue.put(None)
                 break
         return text
+
+    def _log_event(self, event: str, details: str, further: str = ""):
+        if self.logger:
+            self.logger.info(
+                event, extra={"details": details, "further": f'"{further}"'}
+            )
 
     def say_multiple_stream(
         self,
@@ -146,30 +156,40 @@ class BaseMouth:
         say_thread = threading.Thread(
             target=self.say, args=(audio_queue, listen_interruption_func)
         )
+        self._log_event("audio play thread started", "TTS")
         say_thread.start()
         text = ""
 
         while text is not None:
+            self._log_event("getting all text", "TTS")
             text = self._get_all_text(text_queue)
+            self._log_event("all text received", "TTS")
 
             if text is None:
+                self._log_event("Stream ended", "TTS")
                 sentence = response
             else:
                 response += text
+                self._log_event("segmenting text", "TTS", response)
                 sentences = self.seg.segment(response)
                 # if there are multiple sentences we split and play the first one
                 if len(sentences) > 1:
+                    self._log_event("multiple sentences detected", "TTS")
                     sentence = sentences[0]
                     response = " ".join([s for s in sentences[1:] if s != "."])
                 else:
+                    self._log_event("single sentence detected", "TTS")
                     continue
 
             if sentence.strip() != "":
+                self._log_event("cleaning sentence", "TTS")
                 clean_sentence = remove_words_in_brackets_and_spaces(sentence).strip()
                 if (
                     clean_sentence.strip() != ""
                 ):  # sentence only contains words in brackets
+                    self._log_event("running tts", "TTS", clean_sentence)
                     output = self.run_tts(clean_sentence)
+                    self._log_event("tts output received", "TTS")
                     audio_queue.put((output, clean_sentence))
                     interrupt_text_list.append(clean_sentence)
                 all_response.append(sentence)
@@ -184,6 +204,7 @@ class BaseMouth:
         audio_queue.put((None, ""))
 
         say_thread.join()
+        self._log_event("audio play thread ended", "TTS")
         if self.interrupted:
             all_response = self._handle_interruption(
                 interrupt_text_list, interrupt_queue
