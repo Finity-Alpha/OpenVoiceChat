@@ -1,12 +1,11 @@
 import logging
-import csv
-import time
 from datetime import datetime
 import os
-from typing import Dict, Any
 
 
-def make_logger(log_dir: str = "logs", console_log: bool = False):
+def make_logger(
+    log_dir: str = "logs", log_name: str = "ovc", console_log: bool = False
+):
     log_dir = log_dir
     os.makedirs(log_dir, exist_ok=True)
 
@@ -14,11 +13,11 @@ def make_logger(log_dir: str = "logs", console_log: bool = False):
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     print(timestamp)
 
-    logger = logging.getLogger("OVC")
+    logger = logging.getLogger(log_name)
     logger.setLevel(logging.INFO)
 
     # File handler
-    fh = logging.FileHandler(os.path.join(log_dir, f"ovc_{timestamp}.log"))
+    fh = logging.FileHandler(os.path.join(log_dir, f"{log_name}_{timestamp}.log"))
     fh.setLevel(logging.INFO)
 
     # Console handler
