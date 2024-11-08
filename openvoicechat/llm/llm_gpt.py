@@ -18,7 +18,9 @@ class Chatbot_gpt(BaseChatbot):
         tool_choice=NOT_GIVEN,
         tool_utterances=None,
         functions=None,
+        logger=None,
     ):
+        super().__init__(logger=logger)
 
         if tools is None:
             tools = NOT_GIVEN

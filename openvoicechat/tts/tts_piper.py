@@ -15,6 +15,7 @@ class Mouth_piper(BaseMouth):
         config_path="models/en_en_US_ryan_high_en_US-ryan-high.onnx.json",
         player=sd,
         wait=True,
+        logger=None,
     ):
         import piper
 
@@ -24,7 +25,10 @@ class Mouth_piper(BaseMouth):
             use_cuda=True if device == "cuda" else False,
         )
         super().__init__(
-            sample_rate=self.model.config.sample_rate, player=player, wait=wait
+            sample_rate=self.model.config.sample_rate,
+            player=player,
+            wait=wait,
+            logger=logger,
         )
 
     def run_tts(self, text):

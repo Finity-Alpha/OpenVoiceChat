@@ -2,10 +2,11 @@ import queue
 
 
 class BaseChatbot:
-    def __init__(self):
+    def __init__(self, logger=None):
         """
         Initialize the model and other things here
         """
+        self.logger = logger
 
     def run(self, input_text: str):
         """
@@ -32,6 +33,10 @@ class BaseChatbot:
         response = self.post_process(response_text)
         return response
 
+    def _log_event(self, event: str, details: str, further: str):
+        if self.logger:
+            self.logger.info(event, extra={"details": details, "further": further})
+
     def generate_response_stream(
         self, input_text: str, output_queue: queue.Queue, interrupt_queue: queue.Queue
     ) -> str:
@@ -41,13 +46,17 @@ class BaseChatbot:
         :param interrupt_queue: The interrupt queue which stores the transcription if interruption occurred. Used to stop generating.
         :return: The chatbot's response after running self.post_process
         """
+        self._log_event("llm request sent", "LLM", "")
         out = self.run(input_text)
         response_text = ""
         for text in out:
             if not interrupt_queue.empty():
+                self._log_event("interruption detected", "LLM", "")
                 break
+            self._log_event("llm token received", "LLM", f'"{text}"')
             output_queue.put(text)
             response_text += text
         output_queue.put(None)
+        self._log_event("llm post processing", "LLM", "")
         response = self.post_process(response_text)
         return response

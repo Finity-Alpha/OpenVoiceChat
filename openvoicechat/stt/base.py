@@ -18,6 +18,7 @@ class BaseEar:
         listener=None,
         stream=False,
         listen_interruptions=True,
+        logger=None,
     ):
         """
         Initializes the BaseEar class.
@@ -47,6 +48,7 @@ class BaseEar:
         self.listener = listener
         self.stream = stream
         self.listen_interruptions = listen_interruptions
+        self.logger = logger
 
     def transcribe(self, input_audio: np.ndarray) -> str:
         """
@@ -88,6 +90,12 @@ class BaseEar:
             text += _ + " "
         return text
 
+    def _log_event(self, event: str, details: str, further: str = ""):
+        if self.logger:
+            self.logger.info(
+                event, extra={"details": details, "further": f'"{further}"'}
+            )
+
     def _listen(self) -> str:
         """
         records audio using record_user and returns its transcription
@@ -95,22 +103,40 @@ class BaseEar:
         """
         import pysbd
 
+        seg = pysbd.Segmenter(language="en", clean=False)
+
         sentence_finished = False
         first = True
         audio = np.zeros(0, dtype=np.float32)
         n = 2  # number of times to see if the sentence ends
         while not sentence_finished and n > 0:
+
             new_audio = record_user(
-                self.silence_seconds, self.vad, self.listener, started=not first
+                self.silence_seconds,
+                self.vad,
+                self.listener,
+                started=not first,
+                logger=self.logger,
             )
+
             audio = np.concatenate((audio, new_audio), 0)
+
+            self._log_event("transcribing", "STT")
             text = self.transcribe(audio)
+            self._log_event("transcribed", "STT", text)
+
+            self._log_event("segmenting", "STT", text)
             first = False
-            seg = pysbd.Segmenter(language="en", clean=False)
             if len(seg.segment(text + " .")) > 1:
                 sentence_finished = True
+                self._log_event("sentence boundary detected", "STT", text)
             else:
                 n -= 1
+                self._log_event(
+                    "no sentence boundary detected",
+                    "STT",
+                    text + ". tries left: " + str(n),
+                )
         return text
 
     def _listen_stream(self) -> str:
@@ -166,22 +192,27 @@ class BaseEar:
             return False
         while record_seconds > 0:
             interruption_audio = record_interruption(
-                self.vad, record_seconds, streamer=self.listener
+                self.vad, record_seconds, streamer=self.listener, logger=self.logger
             )
             # duration of interruption audio
             if interruption_audio is None:
                 return ""
             else:
                 duration = len(interruption_audio) / 16_000
+                self._log_event(
+                    "transcribing interruption", "STT", f"{duration} seconds"
+                )
                 if self.stream:
                     text = self._sim_transcribe_stream(interruption_audio)
                 else:
                     text = self.transcribe(interruption_audio)
+                self._log_event("interruption transcribed", "STT", text)
                 # remove any punctuation using re
                 text = re.sub(r"[^\w\s]", "", text)
                 text = text.lower()
                 text = text.strip()
                 if text in self.not_interrupt_words:
+                    self._log_event("not interruption", "STT", text)
                     record_seconds -= duration
                 else:
                     return text
