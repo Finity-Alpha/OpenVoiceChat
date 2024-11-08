@@ -33,6 +33,10 @@ class BaseChatbot:
         response = self.post_process(response_text)
         return response
 
+    def _log_event(self, event: str, details: str, further: str):
+        if self.logger:
+            self.logger.info(event, extra={"details": details, "further": further})
+
     def generate_response_stream(
         self, input_text: str, output_queue: queue.Queue, interrupt_queue: queue.Queue
     ) -> str:
@@ -42,35 +46,17 @@ class BaseChatbot:
         :param interrupt_queue: The interrupt queue which stores the transcription if interruption occurred. Used to stop generating.
         :return: The chatbot's response after running self.post_process
         """
-        if self.logger:
-            self.logger.info(
-                "llm request sent", extra={"details": "LLM", "further": ""}
-            )
+        self._log_event("llm request sent", "LLM", "")
         out = self.run(input_text)
         response_text = ""
         for text in out:
             if not interrupt_queue.empty():
-                if self.logger:
-                    self.logger.info(
-                        "interruption detected",
-                        extra={"details": "LLM", "further": ""},
-                    )
+                self._log_event("interruption detected", "LLM", "")
                 break
-            if self.logger:
-                self.logger.info(
-                    "llm token received",
-                    extra={"details": "LLM", "further": f'"{text}"'},
-                )
+            self._log_event("llm token received", "LLM", f'"{text}"')
             output_queue.put(text)
             response_text += text
         output_queue.put(None)
-        if self.logger:
-            self.logger.info(
-                "llm post processing", extra={"details": "LLM", "further": ""}
-            )
+        self._log_event("llm post processing", "LLM", "")
         response = self.post_process(response_text)
-        if self.logger:
-            self.logger.info(
-                "llm response processed", extra={"details": "LLM", "further": ""}
-            )
         return response
