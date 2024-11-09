@@ -86,3 +86,4 @@ dmypy.json
 .pytype/
 cython_debug/
 _*
+*.egg.info
