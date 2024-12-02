@@ -1,4 +1,4 @@
-from .utils import record_user, record_interruption, record_user_stream
+from ..audio_utils import record_user, record_interruption, record_user_stream
 from .vad import VoiceActivityDetection
 import re
 import numpy as np
@@ -15,7 +15,7 @@ class BaseEar:
         self,
         silence_seconds=2,
         not_interrupt_words=None,
-        listener=None,
+        audio_handler=None,
         stream=False,
         listen_interruptions=True,
         logger=None,
@@ -27,8 +27,8 @@ class BaseEar:
         :type silence_seconds: float, optional
         :param not_interrupt_words: List of words that should not be considered as interruptions.
         :type not_interrupt_words: list, optional
-        :param listener: Listener object to receive the audio from. Defaults to None.
-        :type listener: object, optional
+        :param audio_handler: Audio handler object to receive the audio from. Defaults to None.
+        :type audio_handler: object, optional
         :param stream: Flag indicating whether to stream the audio or process it as a whole. Defaults to False.
         :type stream: bool, optional
         :param listen_interruptions: Flag indicating whether to listen for interruptions. Defaults to True.
@@ -45,7 +45,7 @@ class BaseEar:
         self.silence_seconds = silence_seconds
         self.not_interrupt_words = not_interrupt_words
         self.vad = VoiceActivityDetection()
-        self.listener = listener
+        self.audio_handler = audio_handler
         self.stream = stream
         self.listen_interruptions = listen_interruptions
         self.logger = logger
@@ -106,16 +106,13 @@ class BaseEar:
         seg = pysbd.Segmenter(language="en", clean=False)
 
         sentence_finished = False
-        first = True
         audio = np.zeros(0, dtype=np.float32)
         n = 2  # number of times to see if the sentence ends
         while not sentence_finished and n > 0:
 
-            new_audio = record_user(
+            new_audio = self.audio_handler.record(  # was record_user before
                 self.silence_seconds,
                 self.vad,
-                self.listener,
-                started=not first,
                 logger=self.logger,
             )
 
@@ -126,7 +123,6 @@ class BaseEar:
             self._log_event("transcribed", "STT", text)
 
             self._log_event("segmenting", "STT", text)
-            first = False
             if len(seg.segment(text + " .")) > 1:
                 sentence_finished = True
                 self._log_event("sentence boundary detected", "STT", text)
@@ -186,7 +182,7 @@ class BaseEar:
         interruption.
 
         :param record_seconds: Max seconds to record for
-        :return: boolean indicating the if an interruption occured
+        :return: boolean indicating the if an interruption occurred
         """
         if not self.listen_interruptions:
             return False

@@ -13,6 +13,7 @@ from fastapi.staticfiles import StaticFiles
 from openvoicechat.player import Player_ws
 from openvoicechat.listener import Listener_ws
 import torch
+import json
 
 app = FastAPI()
 
@@ -41,8 +42,12 @@ async def websocket_endpoint(websocket: WebSocket):
     try:
         while True:
             data = await websocket.receive_bytes()
-            if listener.listening:
-                input_queue.put(data)
+            message = json.loads(data.decode("utf-8"))
+            if message["type"] == "stt":
+                if listener.listening:
+                    input_queue.put(message["data"])
+            if message["type"] == "tts":
+                player.handle_message(message["data"])
             if not output_queue.empty():
                 response_data = output_queue.get_nowait()
             else:

@@ -44,7 +44,7 @@ class BaseMouth:
         """
         raise NotImplementedError("This method should be implemented by the subclass")
 
-    def say_text(self, text: str):
+    def say_simple(self, text: str):
         """
         calls run_tts and plays the audio using the player.
         :param text: The text to synthesize speech for
@@ -53,65 +53,39 @@ class BaseMouth:
         self.player.play(output, samplerate=self.sample_rate)
         self.player.wait()
 
-    def say(self, audio_queue: queue.Queue, listen_interruption_func: Callable):
-        """
-        Plays the audios in the queue using the player. Stops if interruption occurred.
-        :param audio_queue: The queue where the audio is stored for it to be played
-        :param listen_interruption_func: callable function from the ear class.
-        """
-        self.interrupted = ""
-        while True:
-            output, text = audio_queue.get()
-            if output is None:
-                self.player.wait()  # wait for the last audio to finish
-                break
-            # get the duration of audio
-            duration = len(output) / self.sample_rate
-            self._log_event("playing audio", "TTS", f"{duration} seconds")
-            self.player.play(output, samplerate=self.sample_rate)
-            interruption = listen_interruption_func(duration)
-            if interruption:
-                self._log_event("audio interrupted", f"TTS")
-                self.player.stop()
-                self.interrupted = (interruption, text)
-                break
-            else:
-                if self.wait:
-                    self.player.wait()  # No need for wait here
-
-    def say_multiple(self, text: str, listen_interruption_func: Callable):
-        """
-        Splits the text into sentences. Then plays the sentences one by one
-        using run_tts() and say()
-
-        :param text: Input text to synthesize
-        :param listen_interruption_func: callable function from the ear class
-        """
-        sentences = self.seg.segment(text)
-        print(sentences)
-        audio_queue = queue.Queue()
-        say_thread = threading.Thread(
-            target=self.say, args=(audio_queue, listen_interruption_func)
-        )
-        say_thread.start()
-        for sentence in sentences:
-            output = self.run_tts(sentence)
-            audio_queue.put((output, sentence))
-            if self.interrupted:
-                break
-        audio_queue.put((None, ""))
-        say_thread.join()
-
-    def _handle_interruption(self, responses_list, interrupt_queue):
-        interrupt_transcription, interrupt_text = self.interrupted
-        self._log_event("interruption detected", "TTS", interrupt_transcription)
-        idx = responses_list.index(interrupt_text)
-        assert (
-            idx != -1
-        ), "Interrupted text not found in responses list. This should not happen. Raise an issue."
-        responses_list = responses_list[:idx] + ["..."]
-        interrupt_queue.put(interrupt_transcription)
-        return responses_list
+    # all of this should be done on the client side
+    # the server sends the audio as soon as it is synthesized
+    # on the client side the audio is played using the player
+    # and the ear listens for interruptions
+    # when an interruption occurs, the client should know which text was being played
+    # the client will then send back the text that was being played --and the interruption transcription--
+    # does the client need to send the interruption transcription to the server?
+    # the transcription is conducted on the server side, might as well just pass it here.
+    # def say(self, audio_queue: queue.Queue, listen_interruption_func: Callable):
+    #     """
+    #     Plays the audios in the queue using the player. Stops if interruption occurred.
+    #     :param audio_queue: The queue where the audio is stored for it to be played
+    #     :param listen_interruption_func: callable function from the ear class.
+    #     """
+    #     self.interrupted = ""
+    #     while True:
+    #         output, text = audio_queue.get()
+    #         if output is None:
+    #             self.player.wait()  # wait for the last audio to finish
+    #             break
+    #         # get the duration of audio
+    #         duration = len(output) / self.sample_rate
+    #         self._log_event("playing audio", "TTS", f"{duration} seconds")
+    #         self.player.play(output, samplerate=self.sample_rate)
+    #         interruption = listen_interruption_func(duration)
+    #         if interruption:
+    #             self._log_event("audio interrupted", f"TTS")
+    #             self.player.stop()
+    #             self.interrupted = (interruption, text)
+    #             break
+    #         else:
+    #             if self.wait:
+    #                 self.player.wait()  # No need for wait here
 
     def _get_all_text(self, text_queue):
         text = text_queue.get()
@@ -130,12 +104,9 @@ class BaseMouth:
                 event, extra={"details": details, "further": f'"{further}"'}
             )
 
-    def say_multiple_stream(
+    def say(
         self,
         text_queue: queue.Queue,
-        listen_interruption_func: Callable,
-        interrupt_queue: queue.Queue,
-        audio_queue: queue.Queue = None,
     ):
         """
         Receives text from the text_queue. As soon as a sentence is made run_tts is called to
@@ -143,21 +114,12 @@ class BaseMouth:
 
         :param text_queue: The queue where the llm adds the predicted tokens
         :param listen_interruption_func: callable function from the ear class
-        :param interrupt_queue: The queue where True is put when interruption occurred.
-        :param audio_queue: The queue where the audio to be played is placed
 
         """
         response = ""
         all_response = []
         interrupt_text_list = []
 
-        if audio_queue is None:
-            audio_queue = queue.Queue()
-        say_thread = threading.Thread(
-            target=self.say, args=(audio_queue, listen_interruption_func)
-        )
-        self._log_event("audio play thread started", "TTS")
-        say_thread.start()
         text = ""
 
         while text is not None:
@@ -190,24 +152,12 @@ class BaseMouth:
                     self._log_event("running tts", "TTS", clean_sentence)
                     output = self.run_tts(clean_sentence)
                     self._log_event("tts output received", "TTS")
-                    audio_queue.put((output, clean_sentence))
+                    self.player.play(
+                        output, samplerate=self.sample_rate
+                    )  # send the audio to be played at the client
                     interrupt_text_list.append(clean_sentence)
                 all_response.append(sentence)
-            # if interruption occurred, handle it
-            if self.interrupted:
-                all_response = self._handle_interruption(
-                    interrupt_text_list, interrupt_queue
-                )
-                self.interrupted = ""
-                break
+        self.player.wait()
 
-        audio_queue.put((None, ""))
-
-        say_thread.join()
-        self._log_event("audio play thread ended", "TTS")
-        if self.interrupted:
-            all_response = self._handle_interruption(
-                interrupt_text_list, interrupt_queue
-            )
         text_queue.queue.clear()
         text_queue.put(" ".join(all_response))

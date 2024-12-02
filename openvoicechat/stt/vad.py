@@ -1,6 +1,6 @@
 import torch
 import numpy as np
-from .utils import record_user
+from ..audio_utils import record_user
 
 
 class VoiceActivityDetection:
