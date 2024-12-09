@@ -4,6 +4,7 @@ import numpy as np
 import queue
 from threading import Thread
 import time
+import sounddevice as sd
 
 
 class AudioHandler(BaseAudioHandler):
