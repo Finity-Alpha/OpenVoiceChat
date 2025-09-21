@@ -301,17 +301,3 @@ if __name__ == "__main__":
     room = create_daily_room(API_KEY, privacy="public")
     print(room["url"])
     read_audio(room["url"])
-    # if not API_KEY:
-    #     print("❌ Please set DAILY_API_KEY environment variable")
-    #     print("Get your API key from: https://dashboard.daily.co/developers")
-    # else:
-    #     # Example 1: Create a room with auto-generated name that expires in 1 hour
-    #     room = create_daily_room(API_KEY, privacy="public")
-
-    # Example 2: Create a private room with custom name and 24 hour expiration
-    # room = create_daily_room(
-    #     API_KEY,
-    #     room_name="my-voice-chat-room",
-    #     privacy="private",
-    #     exp_hours=24
-    # )
