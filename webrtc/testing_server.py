@@ -9,8 +9,8 @@ import threading
 from openvoicechat.listener import BaseListener
 from openvoicechat.player import BasePlayer
 from daily import *
-from openvoicechat.tts.tts_xtts import Mouth_xtts
-from openvoicechat.stt.stt_hf import Ear_hf
+from openvoicechat.tts.base import BaseMouth
+from openvoicechat.stt.base import BaseEar
 from openvoicechat.llm.llm_ollama import Chatbot_ollama
 from openvoicechat.utils import run_chat
 from openvoicechat.llm.prompts import llama_sales
@@ -22,7 +22,28 @@ import librosa
 
 load_dotenv()
 
-logger = make_logger(console_log=True)
+# logger = make_logger(console_log=True)
+logger = None
+
+
+class Mouth_service(BaseMouth):
+    def __init__(self, player):
+        super().__init__(sample_rate=48000, player=player)
+
+    def run_tts(self, text):
+        res = requests.post("http://localhost:8000/synthesize", data=text)
+
+        return np.frombuffer(res.content, dtype=np.float32)
+
+
+class Ear_service(BaseEar):
+    def __init__(self, listener):
+        super().__init__(listener=listener)
+
+    def transcribe(self, audio: np.ndarray):
+        res = requests.post("http://localhost:8000/transcribe", data=audio.tobytes())
+        print(res.json())
+        return res.json()["transcription"]
 
 
 def create_daily_room(
@@ -213,6 +234,21 @@ class ReceiveAudioApp:
         self.__thread_receive.join()
         self.__thread_send.join()
 
+    def just_join(self, meeting_url):
+        self.__client.join(
+            meeting_url,
+            client_settings={
+                "inputs": {
+                    "camera": False,
+                    "microphone": {
+                        "isEnabled": True,
+                        "settings": {"deviceId": "my-mic"},
+                    },
+                }
+            },
+            completion=self.on_joined,
+        )
+
     def leave(self):
         self.__app_quit = True
         self.__thread_receive.join()
@@ -269,25 +305,19 @@ def read_audio(meeting_url):
 
     print("loading models... ", device)
     load_dotenv()
-    ear = Ear_hf(
-        model_id="openai/whisper-tiny.en",
-        silence_seconds=1.5,
-        device=device,
-        listen_interruptions=True,
-        listener=listener,
-        logger=logger,
-    )
+    ear = Ear_service(listener=listener)
 
     chatbot = Chatbot_ollama(sys_prompt=llama_sales, model="qwen2:0.5b", logger=logger)
 
-    mouth = Mouth_xtts(device=device, player=player, logger=logger)
-    run_chat_thread = threading.Thread(
-        target=run_chat, args=(mouth, ear, chatbot, True)
-    )
-    run_chat_thread.start()
+    mouth = Mouth_service(player=player)
+    # run_chat_thread = threading.Thread(
+    #     target=run_chat, args=(mouth, ear, chatbot, True)
+    # )
+    # run_chat_thread.start()
 
     try:
-        app.run(meeting_url)
+        app.just_join(meeting_url)
+        run_chat(mouth, ear, chatbot, True)
     except KeyboardInterrupt:
         print("Ctrl-C detected. Exiting!", file=sys.stderr)
     finally:
