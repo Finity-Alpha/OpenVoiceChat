@@ -18,7 +18,8 @@ from openvoicechat.logging_utils import make_logger
 import os
 import torch
 import numpy as np
-import librosa
+# import librosa
+import torchaudio.functional as F
 
 load_dotenv()
 
@@ -28,7 +29,7 @@ logger = None
 
 class Mouth_service(BaseMouth):
     def __init__(self, player):
-        super().__init__(sample_rate=48000, player=player)
+        super().__init__(sample_rate=48000, player=player, logger=logger)
 
     def run_tts(self, text):
         res = requests.post("http://localhost:8000/synthesize", data=text)
@@ -38,7 +39,7 @@ class Mouth_service(BaseMouth):
 
 class Ear_service(BaseEar):
     def __init__(self, listener):
-        super().__init__(listener=listener)
+        super().__init__(listener=listener, logger=logger)
 
     def transcribe(self, audio: np.ndarray):
         res = requests.post("http://localhost:8000/transcribe", data=audio.tobytes())
@@ -160,9 +161,10 @@ class Player_daily(BasePlayer):
     def play(self, audio_array, samplerate):
         self.playing = True
         if samplerate != self.sample_rate:
-            audio_array = librosa.resample(
-                y=audio_array, orig_sr=samplerate, target_sr=self.sample_rate
+            audio_array = F.resample(
+                torch.tensor(audio_array), samplerate, self.sample_rate
             )
+            audio_array = audio_array.numpy()
 
         # Convert float32 audio to int16 properly before sending
         if audio_array.dtype != np.int16:
@@ -307,7 +309,7 @@ def read_audio(meeting_url):
     load_dotenv()
     ear = Ear_service(listener=listener)
 
-    chatbot = Chatbot_ollama(sys_prompt=llama_sales, model="qwen2:0.5b", logger=logger)
+    chatbot = Chatbot_ollama(sys_prompt=llama_sales, model="qwen2:0.5b", logger=None)
 
     mouth = Mouth_service(player=player)
     # run_chat_thread = threading.Thread(
