@@ -1,3 +1,4 @@
+*.wav
 uploads/
 .env
 *.ipynb

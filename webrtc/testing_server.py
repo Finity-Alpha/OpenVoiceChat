@@ -6,6 +6,7 @@ import queue
 import requests
 import sys
 import threading
+import wave
 from openvoicechat.listener import BaseListener
 from openvoicechat.player import BasePlayer
 from daily import *
@@ -18,18 +19,19 @@ from openvoicechat.logging_utils import make_logger
 import os
 import torch
 import numpy as np
-# import librosa
+import uuid
+
 import torchaudio.functional as F
 
 load_dotenv()
 
-# logger = make_logger(console_log=True)
-logger = None
+logger = make_logger(console_log=False)
+# logger = None
 
 
 class Mouth_service(BaseMouth):
     def __init__(self, player):
-        super().__init__(sample_rate=48000, player=player, logger=logger)
+        super().__init__(sample_rate=24000, player=player, logger=logger)
 
     def run_tts(self, text):
         res = requests.post("http://localhost:8000/synthesize", data=text)
@@ -39,7 +41,12 @@ class Mouth_service(BaseMouth):
 
 class Ear_service(BaseEar):
     def __init__(self, listener):
-        super().__init__(listener=listener, logger=logger)
+        super().__init__(
+            listener=listener,
+            logger=logger,
+            silence_seconds=1.5,
+            listen_interruptions=False,
+        )
 
     def transcribe(self, audio: np.ndarray):
         res = requests.post("http://localhost:8000/transcribe", data=audio.tobytes())
@@ -233,6 +240,9 @@ class ReceiveAudioApp:
             },
             completion=self.on_joined,
         )
+        # self.__client.start_recording(
+        #     layout={"preset": "audio-only"}, stream_id=str(uuid.uuid4())
+        # )
         self.__thread_receive.join()
         self.__thread_send.join()
 
@@ -273,6 +283,8 @@ class ReceiveAudioApp:
                     self.__listener.input_queue.put(buffer)
                 else:
                     pass
+            else:
+                pass
 
     def send_raw_audio(self):
         self.__start_event.wait()
@@ -332,4 +344,18 @@ if __name__ == "__main__":
     API_KEY = os.getenv("DAILY_API_KEY")  # Set this environment variable
     room = create_daily_room(API_KEY, privacy="public")
     print(room["url"])
+
+    # Start recording service in background (non-blocking)
+    import subprocess
+
+    recording_cmd = [
+        "python",
+        "webrtc/recording_service.py",
+        room["url"],
+        "--output",
+        "meeting_recording.wav",
+    ]
+    print(f"🎬 Starting recording service: {' '.join(recording_cmd)}")
+    subprocess.Popen(recording_cmd)
+
     read_audio(room["url"])

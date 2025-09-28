@@ -4,7 +4,7 @@ from fastapi.responses import JSONResponse, Response
 import numpy as np
 import torch
 from openvoicechat.stt.stt_hf import Ear_hf
-from openvoicechat.tts.tts_xtts import Mouth_xtts
+from openvoicechat.tts.tts_kokoro import Mouth_kokoro
 
 # Initialize models globally
 if torch.backends.mps.is_available():
@@ -33,8 +33,10 @@ async def lifespan(app: FastAPI):
     print("STT model loaded successfully")
 
     # Load TTS model
-    tts_model = Mouth_xtts(
-        model_id="tts_models/en/jenny/jenny",
+    tts_model = Mouth_kokoro(
+        lang_code="a",  # American English
+        voice="af_heart",
+        speed=1.0,
         device=device,
         player=None,  # We won't use the audio player
         wait=False,
