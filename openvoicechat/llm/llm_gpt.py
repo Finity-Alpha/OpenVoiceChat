@@ -6,6 +6,47 @@ import os
 import json
 import random
 from openai._types import NOT_GIVEN
+from openai import OpenAI
+from dotenv import load_dotenv
+
+
+class Chatbot_gpt_simple(BaseChatbot):
+    def __init__(self, sys_prompt="", model="gpt-5-nano", api_key="", logger=None):
+        super().__init__(logger=logger)
+        if api_key == "":
+            load_dotenv()
+            api_key = os.getenv("OPENAI_API_KEY")
+        self.MODEL = model
+        self.client = OpenAI(api_key=api_key)
+        self.messages = []
+        self.messages.append({"role": "system", "content": sys_prompt})
+
+    def run(self, input_text):
+        self.messages.append({"role": "user", "content": input_text})
+        if "gpt-5" in self.MODEL:
+            stream = self.client.responses.create(
+                model=self.MODEL,
+                input=self.messages,
+                reasoning={"effort": "minimal"},
+                text={"verbosity": "low"},
+                stream=True,
+                service_tier="priority",
+            )
+        else:
+            stream = self.client.responses.create(
+                model=self.MODEL,
+                input=self.messages,
+                stream=True,
+                service_tier="priority",
+            )
+
+        for event in stream:
+            if event.type == "response.output_text.delta":
+                yield event.delta
+
+    def post_process(self, response):
+        self.messages.append({"role": "assistant", "content": response})
+        return response
 
 
 class Chatbot_gpt(BaseChatbot):

@@ -12,7 +12,9 @@ from openvoicechat.player import BasePlayer
 from daily import *
 from openvoicechat.tts.base import BaseMouth
 from openvoicechat.stt.base import BaseEar
+
 from openvoicechat.llm.llm_ollama import Chatbot_ollama
+from openvoicechat.llm.llm_gpt import Chatbot_gpt_simple
 from openvoicechat.utils import run_chat
 from openvoicechat.llm.prompts import llama_sales
 from openvoicechat.logging_utils import make_logger
@@ -40,17 +42,16 @@ class Mouth_service(BaseMouth):
 
 
 class Ear_service(BaseEar):
-    def __init__(self, listener):
+    def __init__(self, listener, silence_seconds=1.5):
         super().__init__(
             listener=listener,
             logger=logger,
-            silence_seconds=1.5,
+            silence_seconds=silence_seconds,
             listen_interruptions=False,
         )
 
     def transcribe(self, audio: np.ndarray):
         res = requests.post("http://localhost:8000/transcribe", data=audio.tobytes())
-        print(res.json())
         return res.json()["transcription"]
 
 
@@ -319,9 +320,12 @@ def read_audio(meeting_url):
 
     print("loading models... ", device)
     load_dotenv()
-    ear = Ear_service(listener=listener)
+    ear = Ear_service(listener=listener, silence_seconds=1)
 
-    chatbot = Chatbot_ollama(sys_prompt=llama_sales, model="qwen2:0.5b", logger=None)
+    chatbot = Chatbot_gpt_simple(
+        sys_prompt=llama_sales, model="gpt-4.1-nano", logger=None
+    )
+    # chatbot = Chatbot_ollama(sys_prompt=llama_sales, model="qwen2:0.5b", logger=logger)
 
     mouth = Mouth_service(player=player)
     # run_chat_thread = threading.Thread(
@@ -331,7 +335,7 @@ def read_audio(meeting_url):
 
     try:
         app.just_join(meeting_url)
-        run_chat(mouth, ear, chatbot, True)
+        run_chat(mouth, ear, chatbot, False, stopping_criteria=lambda x: "[END]" in x)
     except KeyboardInterrupt:
         print("Ctrl-C detected. Exiting!", file=sys.stderr)
     finally:

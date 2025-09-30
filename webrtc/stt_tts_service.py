@@ -82,7 +82,6 @@ async def transcribe_audio(request: Request):
             content={
                 "transcription": transcription,
                 "success": True,
-                "audio_duration_seconds": len(audio_data) / 16000,
             },
         )
 
@@ -120,9 +119,6 @@ async def synthesize_text(request: Request):
             content=audio_bytes,
             media_type="application/octet-stream",
             headers={
-                "X-Sample-Rate": str(tts_model.sample_rate),
-                "X-Audio-Duration": str(len(audio_data) / tts_model.sample_rate),
-                "X-Text-Length": str(len(text)),
                 "X-Success": "true",
             },
         )
