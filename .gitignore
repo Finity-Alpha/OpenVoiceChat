@@ -1,3 +1,5 @@
+.sesskey
+*.wav
 uploads/
 .env
 *.ipynb
