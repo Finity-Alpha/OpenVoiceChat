@@ -12,7 +12,6 @@ class Ear_hf(BaseEar):
         model_id="openai/whisper-base.en",
         device="cpu",
         silence_seconds=2,
-        generate_kwargs=None,
         listener=None,
         listen_interruptions=True,
         logger=None,
@@ -29,13 +28,12 @@ class Ear_hf(BaseEar):
             "automatic-speech-recognition", model=model_id, device=device
         )
         self.device = device
-        self.generate_kwargs = generate_kwargs
 
     def transcribe(self, audio):
         from torch import no_grad
 
         with no_grad():
-            transcription = self.pipe(audio, generate_kwargs=self.generate_kwargs)
+            transcription = self.pipe(audio)
         return transcription["text"].strip()
 
 

@@ -4,20 +4,32 @@ import os
 
 
 def make_logger(
-    log_dir: str = "logs", log_name: str = "ovc", console_log: bool = False
+    log_dir: str = "logs",
+    log_name: str = "ovc",
+    log_id: str = "",
+    console_log: bool = False,
 ):
+    """
+    Make a logger for the openvoicechat library.
+    :param log_dir: The directory to save the logs to.
+    :param log_name: The name of the log file.
+    :param log_id: The id of the log file, if not provided, a timestamp will be used.
+    :param console_log: Whether to log to the console.
+    :return: A logger object.
+    """
     log_dir = log_dir
     os.makedirs(log_dir, exist_ok=True)
 
     # Create timestamp for file names
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    print(timestamp)
+    if log_id == "":
+        log_id = timestamp
 
     logger = logging.getLogger(log_name)
     logger.setLevel(logging.INFO)
 
     # File handler
-    fh = logging.FileHandler(os.path.join(log_dir, f"{log_name}_{timestamp}.log"))
+    fh = logging.FileHandler(os.path.join(log_dir, f"{log_name}_{log_id}.log"))
     fh.setLevel(logging.INFO)
 
     # Console handler
