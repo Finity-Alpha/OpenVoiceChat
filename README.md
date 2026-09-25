@@ -15,8 +15,6 @@ Have a natural voice conversation with an LLM
 
 ---
 
-https://github.com/fakhirali/OpenVoiceChat/assets/32309516/88b7973d-a362-46f3-ab18-232bb59a188e
-
 ### pip installation
 ```shell
 pip install openvoicechat
